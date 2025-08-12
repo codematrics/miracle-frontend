@@ -206,29 +206,3 @@ export const initialPatientValues = {
     pincode: "",
   },
 };
-
-// Helper function to validate with Zod and return Formik-compatible errors
-export const validatePatientForm = (values) => {
-  try {
-    // Transform string age to number for validation
-    const transformedValues = {
-      ...values,
-      age:
-        values.age && values.age !== "" ? parseInt(values.age, 10) : undefined,
-    };
-
-    patientSchema.parse(transformedValues);
-    return {};
-  } catch (error) {
-    const errors = {};
-
-    if (error.errors) {
-      error.errors.forEach((err) => {
-        const path = err.path.join(".");
-        errors[path] = err.message;
-      });
-    }
-
-    return errors;
-  }
-};

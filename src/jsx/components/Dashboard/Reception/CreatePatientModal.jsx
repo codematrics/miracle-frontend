@@ -48,7 +48,7 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
       }
 
       const response = await axios.post(
-        "http://localhost:5000/api/patients",
+        `${import.meta.env.VITE_API_URL}/patients`,
         submitData,
         {
           headers: {
