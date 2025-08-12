@@ -1,0 +1,26 @@
+.table-background-pending {
+    background-color: #ffffff;
+    color: #000;
+}
+.table-background-collected {
+    background-color: #8a1820;
+    color: #8a1820;
+    background: #8a1820;
+    background-image: linear-gradient(to bottom, #8a1820, #8a1820);
+}
+.table-background-accepted {
+    background-color: #79a8da;
+}
+.table-background-entered {
+    background-color: #4c4add;
+}
+.table-background-verified {
+    background-color: #85d698;
+}
+.table-background-rejected {
+    background-color: #fc5b68;
+}
+.wrap-text {
+    word-wrap: break-word;
+    max-width: 300px; /* Adjust width based on your layout */
+}

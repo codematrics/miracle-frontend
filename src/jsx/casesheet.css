@@ -1,0 +1,90 @@
+@media print {
+    body * {
+        visibility: hidden;
+        color: #000;
+        background: #fff;
+    }
+
+    #printable-prescription,
+    #printable-prescription * {
+        visibility: visible;
+    }
+
+    #printable-prescription {
+        left: 0;
+        top: 0;
+        padding: 10px;
+    }
+
+}
+
+.doctor-name {
+    font-size: 18px;
+    font-weight: 900;
+    font-family: Arial, sans-serif;
+}
+
+.doctor-degree {
+    font-size: 14px;
+    font-weight: 600;
+    font-family: Arial, sans-serif;
+}
+
+.doctor-regno {
+    font-size: 14px;
+    font-weight: 400;
+    font-family: Arial, sans-serif;
+}
+
+.custom-hr {
+    width: 100%;
+    margin: 0px 10px 10px 0px;
+    padding: 0;
+    border: none;
+    border-top: 3px solid black;
+    color: #000;
+    background-color: #fff;
+}
+
+.prescription-container {
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    color: #000;
+}
+
+.hospital-header {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.patient-vital {
+    padding: 5px 0px 15px 0px;
+    font-size: 16px;
+}
+
+.doctor-info {
+    margin-bottom: 5px;
+}
+
+.patient-info {
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.medication-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.medication-table th,
+.medication-table td {
+    padding: 1px;
+    text-align: left;
+}
+
+.signature {
+    margin-top: 70px;
+    text-align: right;
+}
