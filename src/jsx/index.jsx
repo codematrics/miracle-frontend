@@ -104,6 +104,7 @@ import { ThemeContext } from "../context/ThemeContext";
 import BasicDatatable from "./components/table/BasicDatatable";
 import CaseSheet from "./components/Dashboard/Reception/pdf/CaseSheet.tsx";
 import WorkFlow from "./components/Dashboard/Pathology/WorkFlow.jsx";
+import ServicesPage from "./components/Dashboard/Services/ServicesPage";
 
 const Markup = () => {
   const allroutes = [
@@ -121,6 +122,9 @@ const Markup = () => {
 
     // Pathology Dashboard
     { url: "lab-workflow", component: <WorkFlow /> },
+
+    // Services Management
+    { url: "services", component: <ServicesPage /> },
 
     //Apps
     { url: "app-profile", component: <AppProfile /> },

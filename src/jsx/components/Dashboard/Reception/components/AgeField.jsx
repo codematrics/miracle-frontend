@@ -6,7 +6,7 @@ const AgeField = ({
   unitName = "ageUnit",
   label = "Age",
   required = true,
-  className = "col-md-2",
+  className = "",
   ageOptions = [
     { value: "Year", label: "Year" },
     { value: "Month", label: "Month" },

@@ -11,7 +11,7 @@ const FormField = ({
   options = [],
   className = "col-md-4",
   fieldClassName = "",
-  style = { height: "40px" },
+  style = { height: "40px", fontSize: "16px" },
   ...props
 }) => {
   const { errors, touched } = useFormikContext();

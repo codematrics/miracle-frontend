@@ -48,6 +48,10 @@ export const MenuList = [
                 title: 'Appointment',
                 to: 'opd-appointment',                
             },
+            {
+                title: 'Services',
+                to: 'services',                
+            },
             // {
             //     title: 'Doctors',
             //     to: 'doctor',                
