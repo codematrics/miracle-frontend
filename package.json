@@ -32,6 +32,7 @@
     "react-bootstrap-daterangepicker": "^8.0.0",
     "react-calendar": "^5.0.0",
     "react-chartjs-2": "^5.2.0",
+    "react-clock": "^6.0.0",
     "react-color": "^2.19.3",
     "react-datepicker": "^7.4.0",
     "react-dom": "^18.3.1",

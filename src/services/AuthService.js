@@ -5,6 +5,8 @@ import {
     Logout,
 } from '../store/actions/AuthActions';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 export function signUp(email, password) {
     //axios call
     const postData = {
@@ -12,7 +14,7 @@ export function signUp(email, password) {
         password,
     };
     return axios.post(
-        `http://localhost:5000/api/auth/signup`,
+        `${API_URL}/auth/signup`,
         postData,
     );
 }
@@ -24,7 +26,7 @@ export function login(email, password) {
     };
     
     return axios.post(
-        `http://localhost:5000/api/auth/login`,
+        `${API_URL}/auth/login`,
         postData,
     );
 }

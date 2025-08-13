@@ -8,6 +8,8 @@ import FormField from "./components/FormField";
 import FormRow from "./components/FormRow";
 import { initialVisitValues, visitSchema } from "./schemas/visitValidation";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 const CreateVisitModal = ({ show, onHide, onPatientCreated }) => {
   const [patientOptions, setPatientOptions] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -51,7 +53,7 @@ const CreateVisitModal = ({ show, onHide, onPatientCreated }) => {
       }
 
       const response = await axios.post(
-        "http://localhost:5000/api/patients",
+        `${API_URL}/patients`,
         submitData,
         {
           headers: {
