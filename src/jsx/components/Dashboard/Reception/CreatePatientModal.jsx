@@ -115,10 +115,16 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
   };
 
   return (
-    <Modal show={show} onHide={onHide} centered size="xl" backdrop="static">
-      <Modal.Header>
-        <Modal.Title>New Patient</Modal.Title>
-        <Button variant="" className="btn-close" onClick={onHide} />
+    <Modal
+      show={show}
+      onHide={onHide}
+      centered
+      backdrop="static"
+      size="xl"
+      className="create-patient-modal"
+    >
+      <Modal.Header closeButton>
+        <Modal.Title className="h5 mb-0">New Patient</Modal.Title>
       </Modal.Header>
 
       <Formik
@@ -128,46 +134,48 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
       >
         {({ isSubmitting }) => (
           <Form>
-            <Modal.Body>
-              <FormRow>
+            <Modal.Body className="px-3 px-md-4">
+              <FormRow className="row g-3 mb-3">
                 <FormField
                   name="patientName"
                   label="Patient Name"
                   required
-                  className="col-md-4"
+                  className="col-12 col-md-6 col-lg-3"
                 />
                 <FormField
                   name="relation"
                   label="Relation"
                   type="select"
                   required
-                  className="col-md-2"
+                  className="col-12 col-md-6 col-lg-3"
                   options={["S/O", "W/O", "D/O", "Other"]}
                 />
                 <FormField
                   name="fatherOrHusbandName"
                   label="F/H Name"
                   required
-                  className="col-md-4"
+                  className="col-12 col-md-6 col-lg-3"
                 />
-                <AgeField />
+                <div className="col-12 col-md-6 col-lg-3">
+                  <AgeField />
+                </div>
               </FormRow>
 
               {/* Gender and Personal Information Row */}
-              <FormRow>
+              <FormRow className="row g-3 mb-3">
                 <FormField
                   name="gender"
                   label="Gender"
                   type="radio"
                   required
-                  className="col-md-4"
+                  className="col-12 col-md-6 col-lg-6"
                   options={["Male", "Female", "Other"]}
                 />
                 <FormField
                   name="maritalStatus"
                   label="Marital Status"
                   type="select"
-                  className="col-md-2"
+                  className="col-12 col-md-6 col-lg-6"
                   options={[
                     { value: "", label: "Select Marital" },
                     { value: "Divorced", label: "Divorced" },
@@ -181,7 +189,7 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   name="religion"
                   label="Religion"
                   type="select"
-                  className="col-md-2"
+                  className="col-12 col-md-6 col-lg-6"
                   options={[
                     { value: "", label: "Select Religion" },
                     { value: "Hindu", label: "Hindu" },
@@ -198,7 +206,7 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   name="occupation"
                   label="Occupation"
                   type="select"
-                  className="col-md-4"
+                  className="col-12 col-md-6 col-lg-6"
                   options={[
                     { value: "", label: "Select Occupation" },
                     { value: "SELF EMPLOYED", label: "SELF EMPLOYED" },
@@ -214,27 +222,27 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
               </FormRow>
 
               {/* Contact and ID Information Row */}
-              <FormRow>
+              <FormRow className="row g-3 mb-3">
                 <FormField
                   name="mobileNo"
                   label="Mobile No"
                   type="text"
                   required
                   maxLength="10"
-                  className="col-md-2"
+                  className="col-12 col-md-6 col-lg-6"
                 />
                 <FormField
                   name="emailId"
                   label="Email Id"
                   type="email"
-                  className="col-md-5"
+                  className="col-12 col-md-6 col-lg-6"
                 />
                 <FormField
                   name="idType"
                   label="ID Type"
                   type="select"
                   required
-                  className="col-md-2"
+                  className="col-6 col-sm-6 col-lg-6"
                   options={[
                     "Aadhar Card",
                     "Pancard",
@@ -247,80 +255,91 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   name="idNo"
                   label="ID No"
                   required
-                  className="col-md-3"
+                  className="col-6 col-sm-6 col-lg-6"
                 />
               </FormRow>
 
               {/* Patient Type and Address Row 1 */}
-              <FormRow>
+              <FormRow className="row g-3 mb-3">
                 <FormField
                   name="patientType"
                   label="Patient Type"
                   type="select"
-                  className="col-md-3"
+                  className="col-6 col-sm-4 col-lg-3"
                   options={["General", "VIP", "Staff"]}
                 />
                 <FormField
                   name="address.village"
                   label="Village/Colony"
                   required
-                  className="col-md-6"
+                  className="col-12 col-sm-8 col-lg-6"
                 />
                 <FormField
                   name="address.state"
                   label="State"
                   placeholder="Enter state name"
                   required
-                  className="col-md-3"
+                  className="col-6 col-sm-6 col-lg-3"
                 />
               </FormRow>
 
               {/* Address Row 2 */}
-              <FormRow>
+              <FormRow className="row g-3 mb-3">
                 <FormField
                   name="address.district"
                   label="District"
                   placeholder="Enter district name"
                   required
-                  className="col-md-3"
+                  className="col-6 col-sm-6 col-lg-3"
                 />
                 <FormField
                   name="address.tehsil"
                   label="Tehsil"
                   required
-                  className="col-md-3"
+                  className="col-6 col-sm-6 col-lg-3"
                 />
                 <FormField
                   name="address.postOffice"
                   label="Post"
                   required
-                  className="col-md-3"
+                  className="col-6 col-sm-6 col-lg-3"
                 />
                 <FormField
                   name="address.pincode"
                   label="Pincode"
                   maxLength="6"
                   required
-                  className="col-md-2"
+                  className="col-6 col-sm-6 col-lg-3"
                 />
               </FormRow>
             </Modal.Body>
 
-            <Modal.Footer>
+            <Modal.Footer className="d-flex flex-column flex-sm-row gap-2 px-3 px-md-4">
               <Button
                 type="button"
-                className="btn btn-danger btn-sm light"
+                className="btn btn-outline-secondary order-2 order-sm-1"
                 onClick={onHide}
                 disabled={isSubmitting}
               >
-                Close
+                Cancel
               </Button>
               <Button
                 type="submit"
-                className="btn btn-sm btn-primary"
+                className="btn btn-primary order-1 order-sm-2"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Saving..." : "Save Patient"}
+                {isSubmitting ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    Saving...
+                  </>
+                ) : (
+                  "Save Patient"
+                )}
               </Button>
             </Modal.Footer>
           </Form>
