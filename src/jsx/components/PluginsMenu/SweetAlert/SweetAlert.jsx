@@ -1,8 +1,8 @@
 import React, { Fragment } from "react";
 import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 import PageTitle from "../../../layouts/PageTitle";
-import "../../../../assets/vendor/sweetalert2/dist/sweetalert2.min.css";
 const customImageAlert = () => {
   Swal.fire({
     title:"Sweet !!",
