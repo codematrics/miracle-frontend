@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import App from './App.jsx';
 import ThemeContext from './context/ThemeContext.jsx';
-import { store } from './store/store';
+import { store } from './store';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

@@ -24,6 +24,7 @@
     "@loadable/component": "^5.16.4",
     "@n8tb1t/use-scroll-position": "^2.0.3",
     "@react-pdf/renderer": "^4.3.0",
+    "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.7.7",
     "chart.js": "^4.4.4",
     "formik": "^2.4.6",
