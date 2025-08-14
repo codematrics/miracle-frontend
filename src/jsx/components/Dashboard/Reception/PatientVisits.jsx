@@ -1,25 +1,36 @@
-import { useCallback, useEffect, useState } from "react";
-import { Badge, Button, ButtonGroup, Card, Dropdown, Form, InputGroup, Table } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import axios from "axios";
-import CreatePatientModal from "./CreatePatientModal";
-import CreateVisitModal from "./CreateVisitModal";
+import { useCallback, useEffect, useState } from 'react';
+import {
+  Badge,
+  Button,
+  ButtonGroup,
+  Card,
+  Dropdown,
+  Form,
+  InputGroup,
+  Table,
+} from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import axios from 'axios';
+
+import CreatePatientModal from './CreatePatientModal';
+import CreateVisitModal from './CreateVisitModal';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Status Badge Components
 const StatusBadge = ({ status }) => {
   const statusConfig = {
-    scheduled: { bg: "warning", icon: "fa-clock", text: "Scheduled" },
-    in_progress: { bg: "info", icon: "fa-stethoscope", text: "Consulting" },
-    completed: { bg: "success", icon: "fa-check-circle", text: "Completed" },
-    cancelled: { bg: "danger", icon: "fa-times-circle", text: "Cancelled" },
-    no_show: { bg: "secondary", icon: "fa-user-times", text: "No Show" }
+    scheduled: { bg: 'warning', icon: 'fa-clock', text: 'Scheduled' },
+    in_progress: { bg: 'info', icon: 'fa-stethoscope', text: 'Consulting' },
+    completed: { bg: 'success', icon: 'fa-check-circle', text: 'Completed' },
+    cancelled: { bg: 'danger', icon: 'fa-times-circle', text: 'Cancelled' },
+    no_show: { bg: 'secondary', icon: 'fa-user-times', text: 'No Show' },
   };
 
   const config = statusConfig[status] || statusConfig.scheduled;
-  
+
   return (
     <Badge bg={config.bg} className="d-flex align-items-center">
       <i className={`fa ${config.icon} me-1`}></i>
@@ -30,7 +41,7 @@ const StatusBadge = ({ status }) => {
 
 const PatientVisits = () => {
   const navigate = useNavigate();
-  
+
   // State Management
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -38,67 +49,71 @@ const PatientVisits = () => {
     currentPage: 1,
     totalPages: 1,
     total: 0,
-    limit: 10
+    limit: 10,
   });
-  
+
   // Modal States
   const [showPatientModal, setShowPatientModal] = useState(false);
   const [showVisitModal, setShowVisitModal] = useState(false);
-  
+
   // Filter States
   const [filters, setFilters] = useState({
-    search: "",
-    status: "",
-    from: "",
-    to: "",
-    doctorId: ""
+    search: '',
+    status: '',
+    from: '',
+    to: '',
+    doctorId: '',
   });
 
   // Load visits from API
-  const loadVisits = useCallback(async (page = 1, resetData = false) => {
-    setLoading(true);
-    try {
-      const params = {
-        page,
-        limit: pagination.limit,
-        ...filters
-      };
+  const loadVisits = useCallback(
+    async (page = 1, resetData = false) => {
+      setLoading(true);
+      try {
+        const params = {
+          page,
+          limit: pagination.limit,
+          ...filters,
+        };
 
-      // Remove empty filters
-      Object.keys(params).forEach(key => {
-        if (params[key] === "" || params[key] === null || params[key] === undefined) {
-          delete params[key];
-        }
-      });
-
-      const response = await axios.get(`${API_URL}/visits`, { params });
-
-      if (response.data.success) {
-        if (resetData) {
-          setVisits(response.data.data);
-        } else {
-          setVisits(prev => page === 1 ? response.data.data : [...prev, ...response.data.data]);
-        }
-        
-        setPagination({
-          currentPage: response.data.pagination?.currentPage || page,
-          totalPages: response.data.pagination?.totalPages || 1,
-          total: response.data.pagination?.total || response.data.total || response.data.data.length,
-          limit: response.data.pagination?.limit || pagination.limit,
+        // Remove empty filters
+        Object.keys(params).forEach(key => {
+          if (params[key] === '' || params[key] === null || params[key] === undefined) {
+            delete params[key];
+          }
         });
-      } else {
-        throw new Error(response.data.message || "Failed to load visits");
+
+        const response = await axios.get(`${API_URL}/visits`, { params });
+
+        if (response.data.success) {
+          if (resetData) {
+            setVisits(response.data.data);
+          } else {
+            setVisits(prev => (page === 1 ? response.data.data : [...prev, ...response.data.data]));
+          }
+
+          setPagination({
+            currentPage: response.data.pagination?.currentPage || page,
+            totalPages: response.data.pagination?.totalPages || 1,
+            total:
+              response.data.pagination?.total || response.data.total || response.data.data.length,
+            limit: response.data.pagination?.limit || pagination.limit,
+          });
+        } else {
+          throw new Error(response.data.message || 'Failed to load visits');
+        }
+      } catch (error) {
+        console.error('Error loading visits:', error);
+        toast.error('Failed to load visits. Please try again.', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error loading visits:", error);
-      toast.error("Failed to load visits. Please try again.", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [filters, pagination.limit]);
+    },
+    [filters, pagination.limit]
+  );
 
   // Handle filter changes
   const handleFilterChange = (filterName, value) => {
@@ -106,49 +121,49 @@ const PatientVisits = () => {
   };
 
   // Handle search with debouncing
-  const handleSearch = useCallback((searchValue) => {
+  const handleSearch = useCallback(searchValue => {
     setFilters(prev => ({ ...prev, search: searchValue }));
   }, []);
 
   // Format date for display
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     });
   };
 
   // Handle visit creation success
-  const handleVisitCreated = (newVisit) => {
-    console.log("New visit created:", newVisit);
+  const handleVisitCreated = newVisit => {
+    console.log('New visit created:', newVisit);
     loadVisits(1, true); // Refresh visits list
-    toast.success("Visit created successfully!", {
-      position: "top-right",
+    toast.success('Visit created successfully!', {
+      position: 'top-right',
       autoClose: 3000,
     });
   };
 
   // Handle patient creation success
-  const handlePatientCreated = (newPatient) => {
-    console.log("New patient created:", newPatient);
-    toast.success("Patient created successfully!", {
-      position: "top-right",
+  const handlePatientCreated = newPatient => {
+    console.log('New patient created:', newPatient);
+    toast.success('Patient created successfully!', {
+      position: 'top-right',
       autoClose: 3000,
     });
   };
 
   // Navigate to patient details
-  const showPatientDetail = (patientId) => {
+  const showPatientDetail = patientId => {
     navigate(`/patient-details/${patientId}`);
   };
 
   // Open case sheet in new tab
-  const openCaseSheet = (visitId) => {
-    window.open(`/casesheet/${visitId}`, "_blank");
+  const openCaseSheet = visitId => {
+    window.open(`/casesheet/${visitId}`, '_blank');
   };
 
   // Load visits on component mount and filter changes
@@ -168,9 +183,7 @@ const PatientVisits = () => {
             <Card.Header className="d-flex justify-content-between align-items-center">
               <div>
                 <h4 className="card-title mb-0">Patient Visits</h4>
-                <small className="text-muted">
-                  Manage patient visits and appointments
-                </small>
+                <small className="text-muted">Manage patient visits and appointments</small>
               </div>
               <ButtonGroup>
                 <Dropdown>
@@ -201,16 +214,16 @@ const PatientVisits = () => {
                       type="text"
                       placeholder="Search visits..."
                       value={filters.search}
-                      onChange={(e) => handleSearch(e.target.value)}
+                      onChange={e => handleSearch(e.target.value)}
                     />
                   </InputGroup>
                 </div>
-                
+
                 <div className="col-md-2">
                   <Form.Select
                     size="sm"
                     value={filters.status}
-                    onChange={(e) => handleFilterChange("status", e.target.value)}
+                    onChange={e => handleFilterChange('status', e.target.value)}
                   >
                     <option value="">All Status</option>
                     <option value="scheduled">Scheduled</option>
@@ -225,7 +238,7 @@ const PatientVisits = () => {
                     type="date"
                     size="sm"
                     value={filters.from}
-                    onChange={(e) => handleFilterChange("from", e.target.value)}
+                    onChange={e => handleFilterChange('from', e.target.value)}
                     placeholder="From Date"
                   />
                 </div>
@@ -235,7 +248,7 @@ const PatientVisits = () => {
                     type="date"
                     size="sm"
                     value={filters.to}
-                    onChange={(e) => handleFilterChange("to", e.target.value)}
+                    onChange={e => handleFilterChange('to', e.target.value)}
                     placeholder="To Date"
                   />
                 </div>
@@ -284,8 +297,8 @@ const PatientVisits = () => {
                             <h6>No visits found</h6>
                             <p className="mb-0">
                               {Object.values(filters).some(filter => filter)
-                                ? "Try adjusting your filters"
-                                : "Get started by adding your first visit"}
+                                ? 'Try adjusting your filters'
+                                : 'Get started by adding your first visit'}
                             </p>
                           </div>
                         </td>
@@ -294,9 +307,7 @@ const PatientVisits = () => {
                       visits.map((visit, index) => (
                         <tr key={visit.id || visit._id || index}>
                           <td>
-                            <code className="text-primary fw-bold">
-                              {visit.visitId}
-                            </code>
+                            <code className="text-primary fw-bold">{visit.visitId}</code>
                           </td>
                           <td>
                             <div>
@@ -310,10 +321,10 @@ const PatientVisits = () => {
                           </td>
                           <td>
                             <div>
-                              <strong 
+                              <strong
                                 className="text-primary cursor-pointer"
                                 onClick={() => showPatientDetail(visit.patient.id)}
-                                style={{ cursor: "pointer" }}
+                                style={{ cursor: 'pointer' }}
                               >
                                 {visit.patient.name}
                               </strong>
@@ -329,17 +340,13 @@ const PatientVisits = () => {
                             <div>
                               <strong>{visit.visitingdoctor}</strong>
                               {visit.refby && (
-                                <small className="text-muted d-block">
-                                  Ref: {visit.refby}
-                                </small>
+                                <small className="text-muted d-block">Ref: {visit.refby}</small>
                               )}
                             </div>
                           </td>
                           <td>
-                            <Badge bg="outline-info">
-                              {visit.visittype}
-                            </Badge>
-                            {visit.medicolegal === "Yes" && (
+                            <Badge bg="outline-info">{visit.visittype}</Badge>
+                            {visit.medicolegal === 'Yes' && (
                               <Badge bg="warning" className="ms-1">
                                 MLC
                               </Badge>
@@ -383,9 +390,7 @@ const PatientVisits = () => {
                                   Case Sheet
                                 </Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Item
-                                  className="d-flex align-items-center text-warning"
-                                >
+                                <Dropdown.Item className="d-flex align-items-center text-warning">
                                   <i className="fa fa-edit me-2"></i>
                                   Edit Visit
                                 </Dropdown.Item>
@@ -409,7 +414,10 @@ const PatientVisits = () => {
                   >
                     {loading ? (
                       <>
-                        <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                        <span
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                        ></span>
                         Loading...
                       </>
                     ) : (
@@ -432,7 +440,7 @@ const PatientVisits = () => {
         onHide={() => setShowPatientModal(false)}
         onPatientCreated={handlePatientCreated}
       />
-      
+
       <CreateVisitModal
         show={showVisitModal}
         onHide={() => setShowVisitModal(false)}

@@ -1,39 +1,40 @@
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import { Button, Modal } from "react-bootstrap";
-import { toast } from "react-toastify";
-import Swal from "sweetalert2";
-import * as Yup from "yup";
-import { createService, updateService } from "../../../../services/ServicesService";
+import { Button, Modal } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+
+import { ErrorMessage, Field, Form, Formik } from 'formik';
+import Swal from 'sweetalert2';
+import * as Yup from 'yup';
+
+import { createService, updateService } from '../../../../services/ServicesService';
 
 const serviceSchema = Yup.object({
   name: Yup.string()
-    .min(2, "Service name must be at least 2 characters")
-    .max(100, "Service name must be less than 100 characters")
-    .required("Service name is required"),
+    .min(2, 'Service name must be at least 2 characters')
+    .max(100, 'Service name must be less than 100 characters')
+    .required('Service name is required'),
   code: Yup.string()
-    .min(2, "Service code must be at least 2 characters")
-    .max(20, "Service code must be less than 20 characters")
-    .matches(/^[A-Z0-9_]+$/, "Service code must contain only uppercase letters, numbers, and underscores")
-    .required("Service code is required"),
-  description: Yup.string()
-    .max(500, "Description must be less than 500 characters"),
-  category: Yup.string()
-    .required("Category is required"),
-  rate: Yup.number()
-    .min(0, "Rate must be 0 or greater")
-    .required("Rate is required"),
+    .min(2, 'Service code must be at least 2 characters')
+    .max(20, 'Service code must be less than 20 characters')
+    .matches(
+      /^[A-Z0-9_]+$/,
+      'Service code must contain only uppercase letters, numbers, and underscores'
+    )
+    .required('Service code is required'),
+  description: Yup.string().max(500, 'Description must be less than 500 characters'),
+  category: Yup.string().required('Category is required'),
+  rate: Yup.number().min(0, 'Rate must be 0 or greater').required('Rate is required'),
   status: Yup.string()
-    .oneOf(["active", "inactive"], "Status must be either active or inactive")
-    .required("Status is required"),
+    .oneOf(['active', 'inactive'], 'Status must be either active or inactive')
+    .required('Status is required'),
 });
 
 const initialValues = {
-  name: "",
-  code: "",
-  description: "",
-  category: "",
-  rate: "",
-  status: "active",
+  name: '',
+  code: '',
+  description: '',
+  category: '',
+  rate: '',
+  status: 'active',
 };
 
 const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
@@ -55,9 +56,9 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
 
       if (response.success) {
         Swal.fire({
-          icon: "success",
-          title: "Success!",
-          text: response.message || `Service ${isEditing ? "updated" : "created"} successfully`,
+          icon: 'success',
+          title: 'Success!',
+          text: response.message || `Service ${isEditing ? 'updated' : 'created'} successfully`,
           showConfirmButton: false,
           timer: 1500,
         });
@@ -69,17 +70,17 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
           onServiceSaved(response.data);
         }
       } else {
-        throw new Error(response.message || "Operation failed");
+        throw new Error(response.message || 'Operation failed');
       }
     } catch (error) {
-      console.error("Error saving service:", error);
+      console.error('Error saving service:', error);
 
       if (error.response?.status === 400 && error.response?.data?.errors) {
         const validationErrors = error.response.data.errors;
         if (validationErrors.length > 0) {
           const firstError = validationErrors[0];
           toast.error(firstError.message, {
-            position: "top-right",
+            position: 'top-right',
             autoClose: 5000,
           });
         }
@@ -87,10 +88,10 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
         const errorMessage =
           error.response?.data?.message ||
           error.message ||
-          `Failed to ${isEditing ? "update" : "create"} service. Please try again.`;
+          `Failed to ${isEditing ? 'update' : 'create'} service. Please try again.`;
 
         toast.error(errorMessage, {
-          position: "top-right",
+          position: 'top-right',
           autoClose: 5000,
         });
       }
@@ -102,28 +103,28 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
   const getInitialValues = () => {
     if (isEditing && service) {
       return {
-        name: service.name || service.serviceName || "",
-        code: service.code || service.serviceCode || "",
-        description: service.description || "",
-        category: service.category || "",
-        rate: service.rate || service.price || "",
-        status: service.status || "active",
+        name: service.name || service.serviceName || '',
+        code: service.code || service.serviceCode || '',
+        description: service.description || '',
+        category: service.category || '',
+        rate: service.rate || service.price || '',
+        status: service.status || 'active',
       };
     }
     return initialValues;
   };
 
   const categories = [
-    { value: "", label: "Select Category" },
-    { value: "consultation", label: "Consultation" },
-    { value: "diagnostic", label: "Diagnostic" },
-    { value: "laboratory", label: "Laboratory" },
-    { value: "radiology", label: "Radiology" },
-    { value: "procedure", label: "Procedure" },
-    { value: "surgery", label: "Surgery" },
-    { value: "pharmacy", label: "Pharmacy" },
-    { value: "emergency", label: "Emergency" },
-    { value: "other", label: "Other" },
+    { value: '', label: 'Select Category' },
+    { value: 'consultation', label: 'Consultation' },
+    { value: 'diagnostic', label: 'Diagnostic' },
+    { value: 'laboratory', label: 'Laboratory' },
+    { value: 'radiology', label: 'Radiology' },
+    { value: 'procedure', label: 'Procedure' },
+    { value: 'surgery', label: 'Surgery' },
+    { value: 'pharmacy', label: 'Pharmacy' },
+    { value: 'emergency', label: 'Emergency' },
+    { value: 'other', label: 'Other' },
   ];
 
   return (
@@ -137,7 +138,7 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
     >
       <Modal.Header closeButton>
         <Modal.Title className="h5 mb-0">
-          {isEditing ? "Edit Service" : "Add New Service"}
+          {isEditing ? 'Edit Service' : 'Add New Service'}
         </Modal.Title>
       </Modal.Header>
 
@@ -159,17 +160,11 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
                     <Field
                       name="name"
                       type="text"
-                      className={`form-control ${
-                        errors.name && touched.name ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.name && touched.name ? 'is-invalid' : ''}`}
                       placeholder="Enter service name"
-                      style={{ fontSize: "16px" }}
+                      style={{ fontSize: '16px' }}
                     />
-                    <ErrorMessage
-                      name="name"
-                      component="div"
-                      className="invalid-feedback"
-                    />
+                    <ErrorMessage name="name" component="div" className="invalid-feedback" />
                   </div>
                 </div>
 
@@ -181,17 +176,11 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
                     <Field
                       name="code"
                       type="text"
-                      className={`form-control ${
-                        errors.code && touched.code ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.code && touched.code ? 'is-invalid' : ''}`}
                       placeholder="e.g., CON001"
-                      style={{ fontSize: "16px", textTransform: "uppercase" }}
+                      style={{ fontSize: '16px', textTransform: 'uppercase' }}
                     />
-                    <ErrorMessage
-                      name="code"
-                      component="div"
-                      className="invalid-feedback"
-                    />
+                    <ErrorMessage name="code" component="div" className="invalid-feedback" />
                   </div>
                 </div>
 
@@ -203,16 +192,12 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
                       name="description"
                       rows="3"
                       className={`form-control ${
-                        errors.description && touched.description ? "is-invalid" : ""
+                        errors.description && touched.description ? 'is-invalid' : ''
                       }`}
                       placeholder="Enter service description (optional)"
-                      style={{ fontSize: "16px" }}
+                      style={{ fontSize: '16px' }}
                     />
-                    <ErrorMessage
-                      name="description"
-                      component="div"
-                      className="invalid-feedback"
-                    />
+                    <ErrorMessage name="description" component="div" className="invalid-feedback" />
                   </div>
                 </div>
 
@@ -225,21 +210,17 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
                       as="select"
                       name="category"
                       className={`form-control ${
-                        errors.category && touched.category ? "is-invalid" : ""
+                        errors.category && touched.category ? 'is-invalid' : ''
                       }`}
-                      style={{ fontSize: "16px" }}
+                      style={{ fontSize: '16px' }}
                     >
-                      {categories.map((option) => (
+                      {categories.map(option => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>
                       ))}
                     </Field>
-                    <ErrorMessage
-                      name="category"
-                      component="div"
-                      className="invalid-feedback"
-                    />
+                    <ErrorMessage name="category" component="div" className="invalid-feedback" />
                   </div>
                 </div>
 
@@ -253,17 +234,11 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
                       type="number"
                       min="0"
                       step="0.01"
-                      className={`form-control ${
-                        errors.rate && touched.rate ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.rate && touched.rate ? 'is-invalid' : ''}`}
                       placeholder="0.00"
-                      style={{ fontSize: "16px" }}
+                      style={{ fontSize: '16px' }}
                     />
-                    <ErrorMessage
-                      name="rate"
-                      component="div"
-                      className="invalid-feedback"
-                    />
+                    <ErrorMessage name="rate" component="div" className="invalid-feedback" />
                   </div>
                 </div>
 
@@ -276,18 +251,14 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
                       as="select"
                       name="status"
                       className={`form-control ${
-                        errors.status && touched.status ? "is-invalid" : ""
+                        errors.status && touched.status ? 'is-invalid' : ''
                       }`}
-                      style={{ fontSize: "16px" }}
+                      style={{ fontSize: '16px' }}
                     >
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                     </Field>
-                    <ErrorMessage
-                      name="status"
-                      component="div"
-                      className="invalid-feedback"
-                    />
+                    <ErrorMessage name="status" component="div" className="invalid-feedback" />
                   </div>
                 </div>
               </div>
@@ -316,10 +287,10 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
                       role="status"
                       aria-hidden="true"
                     ></span>
-                    {isEditing ? "Updating..." : "Creating..."}
+                    {isEditing ? 'Updating...' : 'Creating...'}
                   </>
                 ) : (
-                  <>{isEditing ? "Update Service" : "Create Service"}</>
+                  <>{isEditing ? 'Update Service' : 'Create Service'}</>
                 )}
               </Button>
             </Modal.Footer>

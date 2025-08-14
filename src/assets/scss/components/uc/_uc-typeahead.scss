@@ -1,29 +1,28 @@
-@import "../../abstracts/variable";
+@import '../../abstracts/variable';
 
 .twitter-typeahead {
+  width: 100%;
+
+  // .form-control {
+  //     background-color: $l-bg !important;
+  // }
+
+  .tt-dataset.tt-dataset-states {
+    border: 1px solid $border;
+  }
+
+  .tt-menu {
     width: 100%;
+    background-color: $white;
 
-    // .form-control {
-    //     background-color: $l-bg !important;
-    // }
+    .tt-suggestion {
+      padding: 0.625rem;
+      cursor: pointer;
 
-    .tt-dataset.tt-dataset-states {
-        border: 1px solid $border;
+      &:hover {
+        background-color: $primary;
+        color: $white;
+      }
     }
-
-    .tt-menu {
-        width: 100%;
-        background-color: $white;
-
-        .tt-suggestion {
-            padding: 0.625rem;
-            cursor: pointer;
-
-            &:hover {
-                background-color: $primary;
-                color: $white;
-            }
-        }
-    }
+  }
 }
-

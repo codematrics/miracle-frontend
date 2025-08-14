@@ -1,25 +1,26 @@
-import { Field, useFormikContext } from "formik";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+
+import { Field, useFormikContext } from 'formik';
 
 const FormField = ({
   name,
   label,
-  type = "text",
+  type = 'text',
   required = false,
-  placeholder = "",
+  placeholder = '',
   maxLength,
   options = [],
-  className = "col-md-4",
-  fieldClassName = "",
-  style = { height: "40px", fontSize: "16px" },
+  className = 'col-md-4',
+  fieldClassName = '',
+  style = { height: '40px', fontSize: '16px' },
   ...props
 }) => {
   const { errors, touched } = useFormikContext();
 
   // Get nested error for address fields
-  const getError = (fieldName) => {
-    if (fieldName.includes(".")) {
-      const keys = fieldName.split(".");
+  const getError = fieldName => {
+    if (fieldName.includes('.')) {
+      const keys = fieldName.split('.');
       let error = errors;
       let touch = touched;
 
@@ -39,26 +40,23 @@ const FormField = ({
 
   const renderField = () => {
     const { hasError, errorMessage } = getError(name);
-    const errorClass = hasError ? "" : "";
+    const errorClass = hasError ? '' : '';
 
-    const renderFieldWithIcon = (fieldElement) => {
+    const renderFieldWithIcon = fieldElement => {
       if (!hasError) return fieldElement;
 
       return (
         <div className="position-relative">
           {fieldElement}
-          <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip>{errorMessage}</Tooltip>}
-          >
+          <OverlayTrigger placement="top" overlay={<Tooltip>{errorMessage}</Tooltip>}>
             <span
               className="position-absolute"
               style={{
-                right: "10px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: "#dc3545",
-                cursor: "pointer",
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#dc3545',
+                cursor: 'pointer',
                 zIndex: 10,
               }}
             >
@@ -70,7 +68,7 @@ const FormField = ({
     };
 
     switch (type) {
-      case "select":
+      case 'select':
         return renderFieldWithIcon(
           <Field
             as="select"
@@ -80,36 +78,27 @@ const FormField = ({
             {...props}
           >
             {options.map((option, index) => (
-              <option
-                key={index}
-                value={typeof option === "string" ? option : option.value}
-              >
-                {typeof option === "string" ? option : option.label}
+              <option key={index} value={typeof option === 'string' ? option : option.value}>
+                {typeof option === 'string' ? option : option.label}
               </option>
             ))}
           </Field>
         );
 
-      case "radio":
+      case 'radio':
         const radioElement = (
           <div className={`form-control ${errorClass}`} style={style}>
             {options.map((option, index) => (
-              <div
-                key={index}
-                className="form-check custom-checkbox form-check-inline text-black"
-              >
+              <div key={index} className="form-check custom-checkbox form-check-inline text-black">
                 <Field
                   type="radio"
                   name={name}
-                  value={typeof option === "string" ? option : option.value}
+                  value={typeof option === 'string' ? option : option.value}
                   className="form-check-input"
                   id={`${name}-${index}`}
                 />
-                <label
-                  className="form-check-label"
-                  htmlFor={`${name}-${index}`}
-                >
-                  {typeof option === "string" ? option : option.label}
+                <label className="form-check-label" htmlFor={`${name}-${index}`}>
+                  {typeof option === 'string' ? option : option.label}
                 </label>
               </div>
             ))}
@@ -119,18 +108,15 @@ const FormField = ({
         return hasError ? (
           <div className="position-relative">
             {radioElement}
-            <OverlayTrigger
-              placement="top"
-              overlay={<Tooltip>{errorMessage}</Tooltip>}
-            >
+            <OverlayTrigger placement="top" overlay={<Tooltip>{errorMessage}</Tooltip>}>
               <span
                 className="position-absolute"
                 style={{
-                  right: "10px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  color: "#dc3545",
-                  cursor: "pointer",
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#dc3545',
+                  cursor: 'pointer',
                   zIndex: 10,
                 }}
               >
@@ -142,7 +128,7 @@ const FormField = ({
           radioElement
         );
 
-      case "textarea":
+      case 'textarea':
         return renderFieldWithIcon(
           <Field
             as="textarea"

@@ -1,8 +1,10 @@
-import { applyMiddleware, combineReducers, compose, createStore } from "redux";
-import { thunk } from "redux-thunk";
-import { AuthReducer } from "./reducers/AuthReducer";
-import PostsReducer from "./reducers/PostsReducer";
-import todoReducers from "./reducers/Reducers";
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
+import { thunk } from 'redux-thunk';
+
+import { AuthReducer } from './reducers/AuthReducer';
+import PostsReducer from './reducers/PostsReducer';
+import todoReducers from './reducers/Reducers';
+
 //import { reducer as reduxFormReducer } from 'redux-form';
 const middleware = applyMiddleware(thunk);
 

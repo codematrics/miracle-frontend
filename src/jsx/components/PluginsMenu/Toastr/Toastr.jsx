@@ -1,12 +1,13 @@
-import React from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import PageTitle from "../../../layouts/PageTitle";
+import React from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import PageTitle from '../../../layouts/PageTitle';
 
 const Toastr = () => {
   const notifyTopRight = () => {
-    toast.success("✔️ Top Right !", {
-      position: "top-right",
+    toast.success('✔️ Top Right !', {
+      position: 'top-right',
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: false,
@@ -16,8 +17,8 @@ const Toastr = () => {
   };
 
   const notifyBottomRight = () => {
-    toast.warn("✔️ Bottom Right !", {
-      position: "bottom-right",
+    toast.warn('✔️ Bottom Right !', {
+      position: 'bottom-right',
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -27,8 +28,8 @@ const Toastr = () => {
   };
 
   const notifyBottomLeft = () => {
-    toast.success("✔️ Bottom Left !", {
-      position: "bottom-left",
+    toast.success('✔️ Bottom Left !', {
+      position: 'bottom-left',
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -39,8 +40,8 @@ const Toastr = () => {
   };
 
   const notifyTopLeft = () => {
-    toast.warn("✔️ Top Left !", {
-      position: "top-left",
+    toast.warn('✔️ Top Left !', {
+      position: 'top-left',
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -51,8 +52,8 @@ const Toastr = () => {
   };
 
   const notifyTopFullWidth = () => {
-    toast.warn("✔️ Top Full Width !", {
-      position: "top-center",
+    toast.warn('✔️ Top Full Width !', {
+      position: 'top-center',
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -63,8 +64,8 @@ const Toastr = () => {
   };
 
   const notifyBottomFullWidth = () => {
-    toast.warn("✔️ Bottom Full Width !", {
-      position: "bottom-center",
+    toast.warn('✔️ Bottom Full Width !', {
+      position: 'bottom-center',
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -75,8 +76,8 @@ const Toastr = () => {
   };
 
   const notifyTopCenter = () => {
-    toast.warn("✔️ Top Center !", {
-      position: "top-center",
+    toast.warn('✔️ Top Center !', {
+      position: 'top-center',
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -87,8 +88,8 @@ const Toastr = () => {
   };
 
   const notifyBottomCenter = () => {
-    toast.warn("✔️ Bottom Center !", {
-      position: "bottom-center",
+    toast.warn('✔️ Bottom Center !', {
+      position: 'bottom-center',
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -98,8 +99,8 @@ const Toastr = () => {
     });
   };
   const notifyInfo = () => {
-    toast.info("❓ Info Notify !", {
-      position: "top-right",
+    toast.info('❓ Info Notify !', {
+      position: 'top-right',
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -109,8 +110,8 @@ const Toastr = () => {
     });
   };
   const notifyWarning = () => {
-    toast.warn("❗ Warning Notify !", {
-      position: "top-right",
+    toast.warn('❗ Warning Notify !', {
+      position: 'top-right',
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -121,8 +122,8 @@ const Toastr = () => {
   };
 
   const notifyError = () => {
-    toast.error("❌ Error Notify !", {
-      position: "top-right",
+    toast.error('❌ Error Notify !', {
+      position: 'top-right',
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -133,12 +134,8 @@ const Toastr = () => {
   };
   return (
     <div className="h-80">
-      <PageTitle
-        activeMenu="Toastr"
-        motherMenu="Plugins"
-        pageContent="Toastr"
-      />
-		<ToastContainer />
+      <PageTitle activeMenu="Toastr" motherMenu="Plugins" pageContent="Toastr" />
+      <ToastContainer />
       <div className="row">
         <div className="col-12">
           <div className="card">
@@ -160,7 +157,6 @@ const Toastr = () => {
                 className="btn btn-dark mb-2  me-2"
                 id="toastr-success-bottom-right"
               >
-                
                 Bottom Right
               </button>
               <button
@@ -169,7 +165,7 @@ const Toastr = () => {
                 className="btn btn-dark mb-2  me-2"
                 id="toastr-success-bottom-left"
               >
-               Bottom Left
+                Bottom Left
               </button>
               <button
                 onClick={notifyTopLeft}
@@ -177,7 +173,7 @@ const Toastr = () => {
                 className="btn btn-dark mb-2  me-2"
                 id="toastr-success-top-left"
               >
-               Top Left
+                Top Left
               </button>
               <button
                 onClick={notifyTopFullWidth}
@@ -193,7 +189,6 @@ const Toastr = () => {
                 className="btn btn-dark mb-2  me-2"
                 id="toastr-success-bottom-full-width"
               >
-                
                 Bottom Full Width
               </button>
               <button

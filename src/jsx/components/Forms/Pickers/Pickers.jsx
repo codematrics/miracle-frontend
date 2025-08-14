@@ -1,14 +1,14 @@
-import React, { useState, Fragment } from "react";
+import React, { Fragment, useState } from 'react';
+import DatePicker from 'react-datepicker';
 
-import DatePicker from "react-datepicker";
+import PageTitle from '../../../layouts/PageTitle';
+import Gradient from './LinearGradientPicker';
 import TimePicker from './TimePicker';
-import Gradient from "./LinearGradientPicker";
-import PageTitle from "../../../layouts/PageTitle";
 
 const Pickers = () => {
   const [colorChange, setColorChange] = useState(null);
-  const [startDate, setStartDate] = useState(new Date("2024/05/08"));
-  const [endDate, setEndDate] = useState(new Date("2024/05/10"));
+  const [startDate, setStartDate] = useState(new Date('2024/05/08'));
+  const [endDate, setEndDate] = useState(new Date('2024/05/10'));
   return (
     <Fragment>
       <PageTitle activeMenu="Pickers" motherMenu="Form" pageContent="Pickers" />
@@ -26,7 +26,7 @@ const Pickers = () => {
                     <p className="mb-1">Start Date </p>
                     <DatePicker
                       selected={startDate}
-                      onChange={(date) => setStartDate(date)}
+                      onChange={date => setStartDate(date)}
                       selectsStart
                       className="form-control"
                       startDate={startDate}
@@ -34,13 +34,13 @@ const Pickers = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className="col-md-6 mb-3">
                   <div className="example rangeDatePicker">
                     <p className="mb-1">End date</p>
                     <DatePicker
                       selected={endDate}
-                      onChange={(date) => setEndDate(date)}
+                      onChange={date => setEndDate(date)}
                       className="form-control"
                       selectsEnd
                       startDate={startDate}
@@ -74,12 +74,11 @@ const Pickers = () => {
               <DatePicker
                 className="form-control"
                 selected={startDate}
-                onChange={(date) => setStartDate(date)}
+                onChange={date => setStartDate(date)}
                 timeInputLabel="Time:"
                 dateFormat="MM/dd/yyyy h:mm aa"
                 showTimeInput
               />
-
             </div>
           </div>
         </div>
@@ -131,9 +130,9 @@ const Pickers = () => {
                     <p className="mb-1">Default Clock Picker</p>
                     <input
                       type="color"
-                      className="as_colorpicker form-control"                      
+                      className="as_colorpicker form-control"
                       value={colorChange}
-                      onChange={(e) => setColorChange(e.target.value)}
+                      onChange={e => setColorChange(e.target.value)}
                     />
                   </div>
                 </div>

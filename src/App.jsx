@@ -1,14 +1,14 @@
-import { lazy, Suspense, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Route, Routes, useNavigate } from "react-router-dom";
-import { checkAutoLogin } from "./services/AuthService";
-import { isAuthenticated } from "./store/selectors/AuthSelectors";
-import "./assets/css/style.css";
+import { Suspense, lazy, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 
-const SignUp = lazy(() => import("./jsx/pages/Registration"));
-const Login = lazy(() => import("./jsx/pages/Login"));
-const Index = lazy(() => import("./jsx"));
+import './assets/css/style.css';
+import { checkAutoLogin } from './services/AuthService';
+import { isAuthenticated } from './store/selectors/AuthSelectors';
 
+const SignUp = lazy(() => import('./jsx/pages/Registration'));
+const Login = lazy(() => import('./jsx/pages/Login'));
+const Index = lazy(() => import('./jsx'));
 
 const LoadingSpinner = () => (
   <div id="preloader">

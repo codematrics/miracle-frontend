@@ -1,6 +1,7 @@
-import React from 'react'
-import Nouislider from 'nouislider-react'
-import 'nouislider/distribute/nouislider.css'
+import React from 'react';
+
+import Nouislider from 'nouislider-react';
+import 'nouislider/distribute/nouislider.css';
 
 class NonlinerSlider extends React.Component {
   state = {
@@ -14,22 +15,22 @@ class NonlinerSlider extends React.Component {
       max: 100,
     },
     ref: null,
-  }
+  };
 
   onSlide = (render, handle, value, un, percent) => {
     this.setState({
       textValue: value[0].toFixed(2),
       percent: percent[0].toFixed(2),
-    })
-  }
+    });
+  };
   render() {
-    const { textValue, percent } = this.state
+    const { textValue, percent } = this.state;
     return (
-      <div className='slider' id='NonlinerSlider'>
+      <div className="slider" id="NonlinerSlider">
         <Nouislider
           connect
           start={[20, 80]}
-          behaviour='tap'
+          behaviour="tap"
           range={{
             min: [0],
             max: [100],
@@ -46,8 +47,8 @@ class NonlinerSlider extends React.Component {
           </div>
         )}
       </div>
-    )
+    );
   }
 }
 
-export default NonlinerSlider
+export default NonlinerSlider;

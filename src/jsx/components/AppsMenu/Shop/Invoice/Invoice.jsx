@@ -1,9 +1,10 @@
-import React, { Fragment } from "react";
-import PageTitle from "../../../../layouts/PageTitle";
+import React, { Fragment } from 'react';
+
+import logoText from '../../../../../assets/images/logo-text.png';
+import logo from '../../../../../assets/images/logo.png';
 // images
-import qrcode from "../../../../../assets/images/qr.png";
-import logo from "../../../../../assets/images/logo.png";
-import logoText from "../../../../../assets/images/logo-text.png";
+import qrcode from '../../../../../assets/images/qr.png';
+import PageTitle from '../../../../layouts/PageTitle';
 
 const Invoice = () => {
   return (
@@ -13,19 +14,19 @@ const Invoice = () => {
         <div className="col-lg-12">
           <div className="card  mt-3">
             <div className="card-header">
-              {" "}
-              Invoice <strong>01/09/2024</strong>{" "}
+              {' '}
+              Invoice <strong>01/09/2024</strong>{' '}
               <span className="float-right">
                 <strong>Status:</strong> Pending
-              </span>{" "}
+              </span>{' '}
             </div>
             <div className="card-body">
               <div className="row mb-5">
                 <div className="mt-4 col-xl-3 col-lg-3 col-md-6 col-sm-6">
                   <h6>From:</h6>
                   <div>
-                    {" "}
-                    <strong>Webz Poland</strong>{" "}
+                    {' '}
+                    <strong>Webz Poland</strong>{' '}
                   </div>
                   <div>Madalinskiego 8</div>
                   <div>71-101 Szczecin, Poland</div>
@@ -35,8 +36,8 @@ const Invoice = () => {
                 <div className="mt-4 col-xl-3 col-lg-3 col-md-6 col-sm-6">
                   <h6>To:</h6>
                   <div>
-                    {" "}
-                    <strong>Bob Mart</strong>{" "}
+                    {' '}
+                    <strong>Bob Mart</strong>{' '}
                   </div>
                   <div>Attn: Daniel Marek</div>
                   <div>43-190 Mikolow, Poland</div>
@@ -47,26 +48,20 @@ const Invoice = () => {
                   <div className="row align-items-center">
                     <div className="col-sm-9">
                       <div className="brand-logo mb-3">
-                        <img className="logo-abbr me-2" src={logo} alt="" width="50px"/>{" "}
-                        <img className="logo-compact" src={logoText} alt="" width="110px"/>
+                        <img className="logo-abbr me-2" src={logo} alt="" width="50px" />{' '}
+                        <img className="logo-compact" src={logoText} alt="" width="110px" />
                       </div>
                       <span>
-                        Please send exact amount:{" "}
+                        Please send exact amount:{' '}
                         <strong className="d-block">0.15050000 BTC</strong>
                         <strong>1DonateWffyhwAjskoEwXt83pHZxhLTr8H</strong>
                       </span>
                       <br />
-                      <small className="text-muted">
-                        Current exchange rate 1BTC = $6590 USD
-                      </small>
+                      <small className="text-muted">Current exchange rate 1BTC = $6590 USD</small>
                     </div>
                     <div className="col-sm-3 mt-3">
-                      {" "}
-                      <img
-                        src={qrcode}
-                        className="img-fluid width110"
-                        alt=""
-                      />{" "}
+                      {' '}
+                      <img src={qrcode} className="img-fluid width110" alt="" />{' '}
                     </div>
                   </div>
                 </div>
@@ -95,9 +90,7 @@ const Invoice = () => {
                     <tr>
                       <td className="center">2</td>
                       <td className="left">Custom Services</td>
-                      <td className="left">
-                        Instalation and Customization (cost per hour)
-                      </td>
+                      <td className="left">Instalation and Customization (cost per hour)</td>
                       <td className="right">$150,00</td>
                       <td className="center">20</td>
                       <td className="right">$3.000,00</td>

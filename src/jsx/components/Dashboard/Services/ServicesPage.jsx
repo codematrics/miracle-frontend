@@ -1,22 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
-import {
-  Badge,
-  Button,
-  Card,
-  Col,
-  Dropdown,
-  Form,
-  InputGroup,
-  Row,
-  Table,
-} from "react-bootstrap";
-import { toast } from "react-toastify";
-import Swal from "sweetalert2";
-import {
-  deleteService,
-  fetchServicesWithPagination,
-} from "../../../../services/ServicesService";
-import ServiceModal from "./ServiceModal";
+import { useCallback, useEffect, useState } from 'react';
+import { Badge, Button, Card, Col, Dropdown, Form, InputGroup, Row, Table } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+
+import Swal from 'sweetalert2';
+
+import { deleteService, fetchServicesWithPagination } from '../../../../services/ServicesService';
+import ServiceModal from './ServiceModal';
 
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
@@ -30,9 +19,9 @@ const ServicesPage = () => {
     itemsPerPage: 10,
   });
   const [filters, setFilters] = useState({
-    search: "",
-    category: "",
-    status: "",
+    search: '',
+    category: '',
+    status: '',
   });
 
   // Load services with pagination and filters
@@ -47,12 +36,8 @@ const ServicesPage = () => {
         };
 
         // Remove empty filters
-        Object.keys(params).forEach((key) => {
-          if (
-            params[key] === "" ||
-            params[key] === null ||
-            params[key] === undefined
-          ) {
+        Object.keys(params).forEach(key => {
+          if (params[key] === '' || params[key] === null || params[key] === undefined) {
             delete params[key];
           }
         });
@@ -63,27 +48,22 @@ const ServicesPage = () => {
           if (resetData) {
             setServices(response.data);
           } else {
-            setServices((prev) =>
-              page === 1 ? response.data : [...prev, ...response.data]
-            );
+            setServices(prev => (page === 1 ? response.data : [...prev, ...response.data]));
           }
 
           setPagination({
             currentPage: response.pagination?.currentPage || page,
             totalPages: response.pagination?.totalPages || 1,
-            totalItems:
-              response.pagination?.total ||
-              response.total ||
-              response.data.length,
+            totalItems: response.pagination?.total || response.total || response.data.length,
             itemsPerPage: response.pagination?.limit || pagination.itemsPerPage,
           });
         } else {
-          throw new Error(response.message || "Failed to load services");
+          throw new Error(response.message || 'Failed to load services');
         }
       } catch (error) {
-        console.error("Error loading services:", error);
-        toast.error("Failed to load services. Please try again.", {
-          position: "top-right",
+        console.error('Error loading services:', error);
+        toast.error('Failed to load services. Please try again.', {
+          position: 'top-right',
           autoClose: 3000,
         });
       } finally {
@@ -94,13 +74,13 @@ const ServicesPage = () => {
   );
 
   // Handle search with debouncing
-  const handleSearch = useCallback((searchValue) => {
-    setFilters((prev) => ({ ...prev, search: searchValue }));
+  const handleSearch = useCallback(searchValue => {
+    setFilters(prev => ({ ...prev, search: searchValue }));
   }, []);
 
   // Handle filter changes
   const handleFilterChange = (filterName, value) => {
-    setFilters((prev) => ({ ...prev, [filterName]: value }));
+    setFilters(prev => ({ ...prev, [filterName]: value }));
   };
 
   // Handle service creation/editing
@@ -110,18 +90,16 @@ const ServicesPage = () => {
   };
 
   // Handle service deletion
-  const handleDeleteService = async (service) => {
+  const handleDeleteService = async service => {
     const result = await Swal.fire({
-      title: "Are you sure?",
-      text: `Do you want to delete the service "${
-        service.name || service.serviceName
-      }"?`,
-      icon: "warning",
+      title: 'Are you sure?',
+      text: `Do you want to delete the service "${service.name || service.serviceName}"?`,
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
     });
 
     if (result.isConfirmed) {
@@ -130,9 +108,9 @@ const ServicesPage = () => {
 
         if (response.success) {
           Swal.fire({
-            icon: "success",
-            title: "Deleted!",
-            text: response.message || "Service has been deleted successfully.",
+            icon: 'success',
+            title: 'Deleted!',
+            text: response.message || 'Service has been deleted successfully.',
             showConfirmButton: false,
             timer: 1500,
           });
@@ -140,19 +118,19 @@ const ServicesPage = () => {
           // Reload services
           loadServices(1, true);
         } else {
-          throw new Error(response.message || "Failed to delete service");
+          throw new Error(response.message || 'Failed to delete service');
         }
       } catch (error) {
-        console.error("Error deleting service:", error);
+        console.error('Error deleting service:', error);
 
         const errorMessage =
           error.response?.data?.message ||
           error.message ||
-          "Failed to delete service. Please try again.";
+          'Failed to delete service. Please try again.';
 
         Swal.fire({
-          icon: "error",
-          title: "Error!",
+          icon: 'error',
+          title: 'Error!',
           text: errorMessage,
         });
       }
@@ -160,7 +138,7 @@ const ServicesPage = () => {
   };
 
   // Handle edit service
-  const handleEditService = (service) => {
+  const handleEditService = service => {
     setSelectedService(service);
     setShowModal(true);
   };
@@ -172,31 +150,31 @@ const ServicesPage = () => {
   };
 
   // Get status badge variant
-  const getStatusVariant = (status) => {
+  const getStatusVariant = status => {
     switch (status?.toLowerCase()) {
-      case "active":
-        return "success";
-      case "inactive":
-        return "secondary";
+      case 'active':
+        return 'success';
+      case 'inactive':
+        return 'secondary';
       default:
-        return "warning";
+        return 'warning';
     }
   };
 
   // Get category badge variant
-  const getCategoryVariant = (category) => {
+  const getCategoryVariant = category => {
     const variants = {
-      consultation: "primary",
-      diagnostic: "info",
-      laboratory: "warning",
-      radiology: "danger",
-      procedure: "success",
-      surgery: "dark",
-      pharmacy: "secondary",
-      emergency: "danger",
-      other: "light",
+      consultation: 'primary',
+      diagnostic: 'info',
+      laboratory: 'warning',
+      radiology: 'danger',
+      procedure: 'success',
+      surgery: 'dark',
+      pharmacy: 'secondary',
+      emergency: 'danger',
+      other: 'light',
     };
-    return variants[category?.toLowerCase()] || "light";
+    return variants[category?.toLowerCase()] || 'light';
   };
 
   // Load services on component mount and filter changes
@@ -216,9 +194,7 @@ const ServicesPage = () => {
             <Card.Header className="d-flex justify-content-between align-items-center p-0">
               <div>
                 <h4 className="card-title mb-0">Services Management</h4>
-                <small className="text-muted">
-                  Manage hospital services and their pricing
-                </small>
+                <small className="text-muted">Manage hospital services and their pricing</small>
               </div>
               <Button
                 variant="primary"
@@ -242,7 +218,7 @@ const ServicesPage = () => {
                       type="text"
                       placeholder="Search services..."
                       value={filters.search}
-                      onChange={(e) => handleSearch(e.target.value)}
+                      onChange={e => handleSearch(e.target.value)}
                     />
                   </InputGroup>
                 </Col>
@@ -250,9 +226,7 @@ const ServicesPage = () => {
                 <Col md={3}>
                   <Form.Select
                     value={filters.category}
-                    onChange={(e) =>
-                      handleFilterChange("category", e.target.value)
-                    }
+                    onChange={e => handleFilterChange('category', e.target.value)}
                   >
                     <option value="">All Categories</option>
                     <option value="consultation">Consultation</option>
@@ -270,9 +244,7 @@ const ServicesPage = () => {
                 <Col md={3}>
                   <Form.Select
                     value={filters.status}
-                    onChange={(e) =>
-                      handleFilterChange("status", e.target.value)
-                    }
+                    onChange={e => handleFilterChange('status', e.target.value)}
                   >
                     <option value="">All Status</option>
                     <option value="active">Active</option>
@@ -307,13 +279,8 @@ const ServicesPage = () => {
                       <tr>
                         <td colSpan="6" className="text-center py-4">
                           <div className="d-flex justify-content-center align-items-center">
-                            <div
-                              className="spinner-border text-primary me-2"
-                              role="status"
-                            >
-                              <span className="visually-hidden">
-                                Loading...
-                              </span>
+                            <div className="spinner-border text-primary me-2" role="status">
+                              <span className="visually-hidden">Loading...</span>
                             </div>
                             Loading services...
                           </div>
@@ -326,11 +293,9 @@ const ServicesPage = () => {
                             <i className="fas fa-inbox fa-3x mb-3 d-block opacity-50"></i>
                             <h6>No services found</h6>
                             <p className="mb-0">
-                              {filters.search ||
-                              filters.category ||
-                              filters.status
-                                ? "Try adjusting your filters"
-                                : "Get started by adding your first service"}
+                              {filters.search || filters.category || filters.status
+                                ? 'Try adjusting your filters'
+                                : 'Get started by adding your first service'}
                             </p>
                           </div>
                         </td>
@@ -345,16 +310,11 @@ const ServicesPage = () => {
                           </td>
                           <td>
                             <div>
-                              <strong>
-                                {service.name || service.serviceName}
-                              </strong>
+                              <strong>{service.name || service.serviceName}</strong>
                               {service.description && (
                                 <small className="text-muted d-block">
                                   {service.description.length > 50
-                                    ? `${service.description.substring(
-                                        0,
-                                        50
-                                      )}...`
+                                    ? `${service.description.substring(0, 50)}...`
                                     : service.description}
                                 </small>
                               )}
@@ -365,22 +325,17 @@ const ServicesPage = () => {
                               bg={getCategoryVariant(service.category)}
                               className="text-capitalize"
                             >
-                              {service.category || "Other"}
+                              {service.category || 'Other'}
                             </Badge>
                           </td>
                           <td>
                             <strong className="text-success">
-                              ₹
-                              {(
-                                service.rate ||
-                                service.price ||
-                                0
-                              ).toLocaleString()}
+                              ₹{(service.rate || service.price || 0).toLocaleString()}
                             </strong>
                           </td>
                           <td>
                             <Badge bg={getStatusVariant(service.status)}>
-                              {service.status || "Active"}
+                              {service.status || 'Active'}
                             </Badge>
                           </td>
                           <td>

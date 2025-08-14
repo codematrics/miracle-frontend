@@ -1,68 +1,124 @@
 import React, { useState } from 'react';
-import {Link} from 'react-router-dom';
-import {Tab, Nav, Dropdown} from 'react-bootstrap';
-import DatePicker from "react-datepicker";
+import { Dropdown, Nav, Tab } from 'react-bootstrap';
+import DatePicker from 'react-datepicker';
+import { Link } from 'react-router-dom';
 
 //element
 import { IMAGES, SVGICON } from '../../../constant/theme';
+import CardWidget from '../Element/CardWidget';
 import PatientTab from '../Element/PatientTab';
 import RecoveredChart from '../Element/RecoveredChart';
-import VisitorsChart from '../Element/VisitorsChart';
 import RevenuChart from '../Element/RevenuChart';
-import CardWidget from '../Element/CardWidget';
-
+import VisitorsChart from '../Element/VisitorsChart';
 
 //Import Components
 const cardBlog = [
-	{svg: SVGICON.calander, number:'76', subtitle:'Appointment', progress:'50%' },
-	{svg: SVGICON.heart, number:'124,551', subtitle:'Total Patient', progress:'80%' },
-	{svg: SVGICON.stetho, number:'442', subtitle:'Total Doctor', progress:'38%' },
-	{svg: SVGICON.money, number:'₹5,034', subtitle:'Hospital Earning', progress:'70%' },
+  { svg: SVGICON.calander, number: '76', subtitle: 'Appointment', progress: '50%' },
+  { svg: SVGICON.heart, number: '124,551', subtitle: 'Total Patient', progress: '80%' },
+  { svg: SVGICON.stetho, number: '442', subtitle: 'Total Doctor', progress: '38%' },
+  { svg: SVGICON.money, number: '₹5,034', subtitle: 'Hospital Earning', progress: '70%' },
 ];
 
 const doctorList = [
-	{ image: IMAGES.User11, title:'Dr. Samantha Queque',  review:'315', subtitle:'Cardiologists'},
-	{ image: IMAGES.User12, title:'Dr. Samuel Jr.',  review:'221', subtitle:'Audiologists'},
-	{ image: IMAGES.User13, title:'Dr. Jennifer Ruby',  review:'181', subtitle:'Dentists'},
-	{ image: IMAGES.User14, title:'Dr. Abdul Aziz Lazis',  review:'315', subtitle:'Gynecologists'},
-	{ image: IMAGES.User15, title:'Dr. Alex Siauw',  review:'176', subtitle:'Pediatricians'},
-	// { image: IMAGES.User11, title:'Dr. Abdul Aziz Lazis',  review:'315', subtitle:'Psychiatrists'},
+  { image: IMAGES.User11, title: 'Dr. Samantha Queque', review: '315', subtitle: 'Cardiologists' },
+  { image: IMAGES.User12, title: 'Dr. Samuel Jr.', review: '221', subtitle: 'Audiologists' },
+  { image: IMAGES.User13, title: 'Dr. Jennifer Ruby', review: '181', subtitle: 'Dentists' },
+  { image: IMAGES.User14, title: 'Dr. Abdul Aziz Lazis', review: '315', subtitle: 'Gynecologists' },
+  { image: IMAGES.User15, title: 'Dr. Alex Siauw', review: '176', subtitle: 'Pediatricians' },
+  // { image: IMAGES.User11, title:'Dr. Abdul Aziz Lazis',  review:'315', subtitle:'Psychiatrists'},
 ];
 
 const activityTable = [
-	{ image: IMAGES.User16, title:'Roby Romeo' , year:'41' ,subtitle:'Allergies & Asthma', status:'Recovered'},
-	{ image: IMAGES.User17, title:'Angela Nurhayati' , year:'38' ,subtitle:'Sleep Problem', status:'New Patient'},
-	{ image: IMAGES.User18, title:'James Robinson' , year:'35' ,subtitle:'Dental Care', status:'In Treatment'},
-	{ image: IMAGES.User19, title:'Thomas Jaja' , year:'40' ,subtitle:'Diabetes', status:'New Patient'},
-	{ image: IMAGES.User20, title:'Cindy Brownle' , year:'39' ,subtitle:'Covid-19 Suspect', status:'In Treatment'},
-	{ image: IMAGES.User21, title:'Oconner Jr.' , year:'33' ,subtitle:'Dental Care', status:'Recovered'},
-	{ image:IMAGES.User15, title:'Angela Nurhayati' , year:'37' ,subtitle:'Sleep Problem', status:'New Patient'},
-	{ image:IMAGES.User16, title:'James Robinson' , year:'39' ,subtitle:'Dental Care', status:'In Treatment'},
-	{ image:IMAGES.User17, title:'Thomas Jaja' , year:'45' ,subtitle:'Diabetes', status:'New Patient'},
+  {
+    image: IMAGES.User16,
+    title: 'Roby Romeo',
+    year: '41',
+    subtitle: 'Allergies & Asthma',
+    status: 'Recovered',
+  },
+  {
+    image: IMAGES.User17,
+    title: 'Angela Nurhayati',
+    year: '38',
+    subtitle: 'Sleep Problem',
+    status: 'New Patient',
+  },
+  {
+    image: IMAGES.User18,
+    title: 'James Robinson',
+    year: '35',
+    subtitle: 'Dental Care',
+    status: 'In Treatment',
+  },
+  {
+    image: IMAGES.User19,
+    title: 'Thomas Jaja',
+    year: '40',
+    subtitle: 'Diabetes',
+    status: 'New Patient',
+  },
+  {
+    image: IMAGES.User20,
+    title: 'Cindy Brownle',
+    year: '39',
+    subtitle: 'Covid-19 Suspect',
+    status: 'In Treatment',
+  },
+  {
+    image: IMAGES.User21,
+    title: 'Oconner Jr.',
+    year: '33',
+    subtitle: 'Dental Care',
+    status: 'Recovered',
+  },
+  {
+    image: IMAGES.User15,
+    title: 'Angela Nurhayati',
+    year: '37',
+    subtitle: 'Sleep Problem',
+    status: 'New Patient',
+  },
+  {
+    image: IMAGES.User16,
+    title: 'James Robinson',
+    year: '39',
+    subtitle: 'Dental Care',
+    status: 'In Treatment',
+  },
+  {
+    image: IMAGES.User17,
+    title: 'Thomas Jaja',
+    year: '45',
+    subtitle: 'Diabetes',
+    status: 'New Patient',
+  },
 ];
 
-
-
-const Home = () => {	
-	const [startDate, setStartDate] = useState(new Date());
-	const [ selectYear, setSelectYear] = useState(2025);
-	return(
-		<>
-			<div className="form-head d-flex align-items-center mb-sm-4 mb-3">
-				<div className="me-auto">
-					<h2 className="text-black font-w600">Dashboard</h2>
-					<p className="mb-0">Miracle Hospital Admin Dashboard</p>
-				</div>
-				{/* <Link to={"#"} className="btn btn-outline-primary"><i className="las la-cog scale5 me-3"></i>Customize Layout</Link> */}
-			</div>
-			<div className="row">
-				{cardBlog.map((item, index)=>(
-					<div className="col-xl-3 col-sm-6" key={index}>						
-						<CardWidget number={item.number} subtitle={item.subtitle} svg={item.svg} progress={item.progress} />
-					</div>
-				))}				
-			</div>
-			{/* <div className="row">
+const Home = () => {
+  const [startDate, setStartDate] = useState(new Date());
+  const [selectYear, setSelectYear] = useState(2025);
+  return (
+    <>
+      <div className="form-head d-flex align-items-center mb-sm-4 mb-3">
+        <div className="me-auto">
+          <h2 className="text-black font-w600">Dashboard</h2>
+          <p className="mb-0">Miracle Hospital Admin Dashboard</p>
+        </div>
+        {/* <Link to={"#"} className="btn btn-outline-primary"><i className="las la-cog scale5 me-3"></i>Customize Layout</Link> */}
+      </div>
+      <div className="row">
+        {cardBlog.map((item, index) => (
+          <div className="col-xl-3 col-sm-6" key={index}>
+            <CardWidget
+              number={item.number}
+              subtitle={item.subtitle}
+              svg={item.svg}
+              progress={item.progress}
+            />
+          </div>
+        ))}
+      </div>
+      {/* <div className="row">
 				<div className="col-xl-6">
 					<div className="row">
 						<div className="col-xl-12">	
@@ -371,7 +427,7 @@ const Home = () => {
 					</div>
 				</div>
 			</div> */}
-		</>
-	)
-}
+    </>
+  );
+};
 export default Home;

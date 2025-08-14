@@ -1,9 +1,10 @@
-import axios from "axios";
-import Swal from "sweetalert2";
-import { loginConfirmedAction, Logout } from "../store/actions/AuthActions";
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-const TOKEN_KEY = "userDetails";
+import { Logout, loginConfirmedAction } from '../store/actions/AuthActions';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const TOKEN_KEY = 'userDetails';
 const TOKEN_EXPIRY_DAYS = 7;
 
 export function signUp(username, email, password) {
@@ -25,29 +26,27 @@ export function login(email, password) {
 }
 
 export function formatError(errorResponse) {
-  const message = errorResponse.message || "An error occurred";
+  const message = errorResponse.message || 'An error occurred';
   return message;
 }
 
 export function showErrorMessage(message) {
   Swal.fire({
-    icon: "error",
-    title: "Authentication Error",
+    icon: 'error',
+    title: 'Authentication Error',
     text: message,
-    confirmButtonText: "OK",
+    confirmButtonText: 'OK',
   });
 }
 
 export function saveTokenInLocalStorage(tokenDetails) {
   if (!tokenDetails.token || !tokenDetails.user) {
-    console.error("Invalid token details provided");
+    console.error('Invalid token details provided');
     return false;
   }
 
   try {
-    const expireDate = new Date(
-      Date.now() + TOKEN_EXPIRY_DAYS * 24 * 60 * 60 * 1000
-    );
+    const expireDate = new Date(Date.now() + TOKEN_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
     const userDetails = {
       token: tokenDetails.token,
       user: {
@@ -62,7 +61,7 @@ export function saveTokenInLocalStorage(tokenDetails) {
     localStorage.setItem(TOKEN_KEY, JSON.stringify(userDetails));
     return true;
   } catch (error) {
-    console.error("Failed to save token:", error);
+    console.error('Failed to save token:', error);
     return false;
   }
 }
@@ -74,7 +73,7 @@ export function runLogoutTimer(dispatch, timer, navigate) {
 
   if (timer > 0) {
     logoutTimer = setTimeout(() => {
-      console.log("Session expired - logging out");
+      console.log('Session expired - logging out');
       dispatch(Logout(navigate));
     }, timer);
   }
@@ -98,7 +97,7 @@ export function checkAutoLogin(dispatch, navigate) {
     const tokenDetails = JSON.parse(tokenDetailsString);
 
     if (!tokenDetails.token || !tokenDetails.user || !tokenDetails.expireDate) {
-      console.warn("Invalid token structure found");
+      console.warn('Invalid token structure found');
       clearAuthData();
       return false;
     }
@@ -107,7 +106,7 @@ export function checkAutoLogin(dispatch, navigate) {
     const currentDate = new Date();
 
     if (currentDate >= expireDate) {
-      console.log("Token expired");
+      console.log('Token expired');
       clearAuthData();
       return false;
     }
@@ -125,7 +124,7 @@ export function checkAutoLogin(dispatch, navigate) {
 
     return true;
   } catch (error) {
-    console.error("Error during auto-login check:", error);
+    console.error('Error during auto-login check:', error);
     clearAuthData();
     return false;
   }
@@ -150,7 +149,7 @@ export function isLogin() {
 
     return currentDate < expireDate;
   } catch (error) {
-    console.error("Error checking login status:", error);
+    console.error('Error checking login status:', error);
     return false;
   }
 }
@@ -166,7 +165,7 @@ export function getStoredUser() {
     const tokenDetails = JSON.parse(tokenDetailsString);
     return tokenDetails.user || null;
   } catch (error) {
-    console.error("Error getting stored user:", error);
+    console.error('Error getting stored user:', error);
     return null;
   }
 }
@@ -176,6 +175,6 @@ export function clearAuthData() {
     localStorage.removeItem(TOKEN_KEY);
     clearLogoutTimer();
   } catch (error) {
-    console.error("Error clearing auth data:", error);
+    console.error('Error clearing auth data:', error);
   }
 }

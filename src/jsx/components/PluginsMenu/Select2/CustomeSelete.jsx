@@ -1,6 +1,5 @@
-import React from "react";
-
-import Select from "react-select";
+import React from 'react';
+import Select from 'react-select';
 
 /* const groupStyles = {
    border: `0px dotted ${colourOptions[2].color}`,
@@ -10,18 +9,15 @@ import Select from "react-select";
 }; */
 
 const options = [
-   { value: "chocolate", label: "Chocolate" },
-   { value: "strawberry", label: "Strawberry" },
-   { value: "vanilla", label: "Vanilla" },
+  { value: 'chocolate', label: 'Chocolate' },
+  { value: 'strawberry', label: 'Strawberry' },
+  { value: 'vanilla', label: 'Vanilla' },
 ];
 
 export default function customGroup() {
-   return (
-      <div style={{ minHeight: "100px" }}>
-         <Select defaultValue={options[1]} 
-            className="plugins-select-feild"
-            options={options} 
-         />
-      </div>
-   );
+  return (
+    <div style={{ minHeight: '100px' }}>
+      <Select defaultValue={options[1]} className="plugins-select-feild" options={options} />
+    </div>
+  );
 }

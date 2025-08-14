@@ -1,18 +1,22 @@
-import React, { Fragment } from "react";
-import { ButtonGroup, Dropdown, SplitButton } from "react-bootstrap";
-import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
-import PageTItle from "../../../layouts/PageTitle";
+import React, { Fragment } from 'react';
+import { ButtonGroup, Dropdown, SplitButton } from 'react-bootstrap';
+import DropdownMultiselect from 'react-multiselect-dropdown-bootstrap';
+
+import PageTItle from '../../../layouts/PageTitle';
 
 const radiocheckBox = [
-  {title:'Checkbox 1', check: 'primary'}, {title:'Checkbox 2', check: 'secondary'}, 
-  {title:'Checkbox 3',check: 'info'}, {title:'Checkbox 4', check: 'success'}, 
-  {title:'Checkbox 5', check: 'warning'}, {title:'Checkbox 6', check: 'danger'}, 
+  { title: 'Checkbox 1', check: 'primary' },
+  { title: 'Checkbox 2', check: 'secondary' },
+  { title: 'Checkbox 3', check: 'info' },
+  { title: 'Checkbox 4', check: 'success' },
+  { title: 'Checkbox 5', check: 'warning' },
+  { title: 'Checkbox 6', check: 'danger' },
 ];
 
 const Element = () => {
   return (
     <Fragment>
-      <PageTItle activeMenu="Element" motherMenu="Form" pageContent="Element" />     
+      <PageTItle activeMenu="Element" motherMenu="Form" pageContent="Element" />
       <div className="row">
         <div className="col-xl-6 col-lg-6">
           <div className="card">
@@ -21,7 +25,7 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="form-group mb-3">
                     <input
                       type="text"
@@ -52,15 +56,11 @@ const Element = () => {
                   <div className="form-check custom-checkbox mb-3">
                     <input
                       type="checkbox"
-                      
                       className="form-check-input"
                       id="customCheckBox1"
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="customCheckBox1"
-                    >
+                    <label className="form-check-label" htmlFor="customCheckBox1">
                       Checkbox 1
                     </label>
                   </div>
@@ -74,10 +74,7 @@ const Element = () => {
                       id="customCheckBox2"
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="customCheckBox2"
-                    >
+                    <label className="form-check-label" htmlFor="customCheckBox2">
                       Checkbox 2
                     </label>
                   </div>
@@ -92,10 +89,7 @@ const Element = () => {
                       id="customCheckBox3"
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="customCheckBox3"
-                    >
+                    <label className="form-check-label" htmlFor="customCheckBox3">
                       Checkbox 3
                     </label>
                   </div>
@@ -109,10 +103,7 @@ const Element = () => {
                       id="customCheckBox4"
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="customCheckBox4"
-                    >
+                    <label className="form-check-label" htmlFor="customCheckBox4">
                       Checkbox 4
                     </label>
                   </div>
@@ -126,10 +117,7 @@ const Element = () => {
                       id="customCheckBox5"
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="customCheckBox5"
-                    >
+                    <label className="form-check-label" htmlFor="customCheckBox5">
                       Checkbox 5
                     </label>
                   </div>
@@ -145,10 +133,7 @@ const Element = () => {
                       id="customCheckBox6"
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="customCheckBox6"
-                    ></label>
+                    <label className="form-check-label" htmlFor="customCheckBox6"></label>
                   </div>
                 </div>
                 <div className="col">
@@ -160,10 +145,7 @@ const Element = () => {
                       id="customCheckBox7"
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="customCheckBox7"
-                    ></label>
+                    <label className="form-check-label" htmlFor="customCheckBox7"></label>
                   </div>
                 </div>
                 <div className="col">
@@ -175,10 +157,7 @@ const Element = () => {
                       id="customCheckBox8"
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="customCheckBox8"
-                    ></label>
+                    <label className="form-check-label" htmlFor="customCheckBox8"></label>
                   </div>
                 </div>
                 <div className="col">
@@ -190,10 +169,7 @@ const Element = () => {
                       id="customCheckBox9"
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="customCheckBox9"
-                    ></label>
+                    <label className="form-check-label" htmlFor="customCheckBox9"></label>
                   </div>
                 </div>
               </div>
@@ -207,7 +183,7 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="mb-3 ">
                     <textarea
                       className="form-txtarea form-control"
@@ -227,7 +203,7 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="form-group mb-3">
                     <input
                       className="form-control form-control-lg"
@@ -236,11 +212,7 @@ const Element = () => {
                     />
                   </div>
                   <div className="form-group mb-3">
-                    <input
-                      className="form-control"
-                      type="text"
-                      placeholder="Default input"
-                    />
+                    <input className="form-control" type="text" placeholder="Default input" />
                   </div>
                   <div className="form-group">
                     <input
@@ -261,29 +233,23 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="form-group mb-3">
-                    <select
-                      defaultValue={"option"}
-                      className="form-control form-control-lg"
-                    >
+                    <select defaultValue={'option'} className="form-control form-control-lg">
                       <option>Option 1</option>
                       <option>Option 2</option>
                       <option>Option 3</option>
                     </select>
                   </div>
                   <div className="form-group mb-3">
-                    <select defaultValue={"option"} className="form-control">
+                    <select defaultValue={'option'} className="form-control">
                       <option>Option 1</option>
                       <option>Option 2</option>
                       <option>Option 3</option>
                     </select>
                   </div>
                   <div className="form-group">
-                    <select
-                      defaultValue={"option"}
-                      className="form-control form-control-sm"
-                    >
+                    <select defaultValue={'option'} className="form-control form-control-sm">
                       <option>Option 1</option>
                       <option>Option 2</option>
                       <option>Option 3</option>
@@ -301,14 +267,10 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="form-group mb-3">
                     <label>Select list (select one):</label>
-                    <select
-                      defaultValue={"option"}
-                      className="form-control"
-                      id="sel1"
-                    >
+                    <select defaultValue={'option'} className="form-control" id="sel1">
                       <option>1</option>
                       <option>2</option>
                       <option>3</option>
@@ -316,11 +278,8 @@ const Element = () => {
                     </select>
                   </div>
                   <div className="form-group">
-                    
                     <div id="multiselect">
-                      <DropdownMultiselect
-                        options={["1", "2", "3", "4", "5", "6"]}
-                      />
+                      <DropdownMultiselect options={['1', '2', '3', '4', '5', '6']} />
                     </div>
                   </div>
                 </form>
@@ -335,31 +294,19 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="row">
                     <div className="form-group mb-3 col-md-6">
                       <label>First Name</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="1234 Main St"
-                      />
+                      <input type="text" className="form-control" placeholder="1234 Main St" />
                     </div>
                     <div className="form-group mb-3 col-md-6">
                       <label>Email</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="1234 Main St"
-                      />
+                      <input type="text" className="form-control" placeholder="1234 Main St" />
                     </div>
                     <div className="form-group mb-3 col-md-6">
                       <label>Password</label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        placeholder="Password"
-                      />
+                      <input type="password" className="form-control" placeholder="Password" />
                     </div>
                     <div className="form-group mb-3 col-md-6">
                       <label>City</label>
@@ -369,11 +316,7 @@ const Element = () => {
                   <div className="row">
                     <div className="form-group mb-3 col-md-4">
                       <label>State</label>
-                      <select
-                        defaultValue={"option"}
-                        id="inputState"
-                        className="form-control"
-                      >
+                      <select defaultValue={'option'} id="inputState" className="form-control">
                         <option value="option" disabled>
                           Choose...
                         </option>
@@ -408,32 +351,22 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="mb-3 row">
                     <label className="col-sm-3 col-form-label">Email</label>
                     <div className="col-sm-9">
-                      <input
-                        type="email"
-                        className="form-control"
-                        placeholder="Email"
-                      />
+                      <input type="email" className="form-control" placeholder="Email" />
                     </div>
                   </div>
                   <div className="mb-3 row">
                     <label className="col-sm-3 col-form-label">Password</label>
                     <div className="col-sm-9">
-                      <input
-                        type="password"
-                        className="form-control"
-                        placeholder="Password"
-                      />
+                      <input type="password" className="form-control" placeholder="Password" />
                     </div>
                   </div>
                   <fieldset className="form-group">
                     <div className="row mb-3">
-                      <label className="col-form-label col-sm-3 pt-0">
-                        Radios
-                      </label>
+                      <label className="col-form-label col-sm-3 pt-0">Radios</label>
                       <div className="col-sm-9">
                         <div className="form-check">
                           <input
@@ -443,9 +376,7 @@ const Element = () => {
                             value="option1"
                             defaultChecked
                           />
-                          <label className="form-check-label">
-                            First radio
-                          </label>
+                          <label className="form-check-label">First radio</label>
                         </div>
                         <div className="form-check">
                           <input
@@ -454,9 +385,7 @@ const Element = () => {
                             name="gridRadios"
                             value="option2"
                           />
-                          <label className="form-check-label">
-                            Second radio
-                          </label>
+                          <label className="form-check-label">Second radio</label>
                         </div>
                         <div className="form-check disabled">
                           <input
@@ -466,9 +395,7 @@ const Element = () => {
                             value="option3"
                             disabled
                           />
-                          <label className="form-check-label">
-                            Third disabled radio
-                          </label>
+                          <label className="form-check-label">Third disabled radio</label>
                         </div>
                       </div>
                     </div>
@@ -478,9 +405,7 @@ const Element = () => {
                     <div className="col-sm-9">
                       <div className="form-check">
                         <input className="form-check-input" type="checkbox" />
-                        <label className="form-check-label">
-                          Example checkbox
-                        </label>
+                        <label className="form-check-label">Example checkbox</label>
                       </div>
                     </div>
                   </div>
@@ -503,7 +428,7 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="form-group">
                     <div className="form-check mb-2">
                       <input
@@ -518,12 +443,7 @@ const Element = () => {
                       </label>
                     </div>
                     <div className="form-check mb-2">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="check2"
-                        value=""
-                      />
+                      <input type="checkbox" className="form-check-input" id="check2" value="" />
                       <label className="form-check-label" htmlFor="check2">
                         Option 2
                       </label>
@@ -553,7 +473,7 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="form-group">
                     <div className="form-check form-check-inline">
                       <label className="form-check-label">
@@ -568,22 +488,13 @@ const Element = () => {
                     </div>
                     <div className="form-check form-check-inline">
                       <label className="form-check-label">
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          value=""
-                        />
+                        <input type="checkbox" className="form-check-input" value="" />
                         Option 2
                       </label>
                     </div>
                     <div className="form-check form-check-inline disabled">
                       <label className="form-check-label">
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          value=""
-                          disabled
-                        />
+                        <input type="checkbox" className="form-check-input" value="" disabled />
                         Disabled
                       </label>
                     </div>
@@ -600,18 +511,27 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
-                    <div className="row">
-                      {radiocheckBox.map((item, ind)=>(
-                        <div className="col-xl-4 col-xxl-6 col-6" key={ind}>
-                            <div className={`form-check custom-checkbox mb-3 checkbox-${item.check}`}>
-                              <input type="radio" className="form-check-input" id={`customRadioBox${ind+111}`} name="optradioCustom" />
-                              <label className="form-check-label" htmlFor={`customRadioBox${ind+111}`}>{item.title}</label>
-                            </div>
+                <form onSubmit={e => e.preventDefault()}>
+                  <div className="row">
+                    {radiocheckBox.map((item, ind) => (
+                      <div className="col-xl-4 col-xxl-6 col-6" key={ind}>
+                        <div className={`form-check custom-checkbox mb-3 checkbox-${item.check}`}>
+                          <input
+                            type="radio"
+                            className="form-check-input"
+                            id={`customRadioBox${ind + 111}`}
+                            name="optradioCustom"
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor={`customRadioBox${ind + 111}`}
+                          >
+                            {item.title}
+                          </label>
                         </div>
-                      ))}
-                    </div>
-                    
+                      </div>
+                    ))}
+                  </div>
                 </form>
               </div>
             </div>
@@ -624,19 +544,40 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
-                    <div className="form-check custom-checkbox mb-2 form-check-inline">
-                      <input type="radio" className="form-check-input" id="customRadioBox987" name="optradioCustom1" />
-                      <label className="form-check-label" htmlFor="customRadioBox987">Checkbox 1</label>
-                    </div>
-                    <div className="form-check custom-checkbox mb-2 form-check-inline">
-                      <input type="radio" className="form-check-input" id="customRadioBox988" name="optradioCustom1" />
-                      <label className="form-check-label" htmlFor="customRadioBox988">Checkbox 1</label>
-                    </div>
-                    <div className="form-check custom-checkbox mb-2 form-check-inline" >
-                      <input type="radio" className="form-check-input" id="customRadioBox989" name="optradioCustom1" />
-                      <label className="form-check-label" htmlFor="customRadioBox989">Checkbox 1</label>
-                    </div>                    
+                <form onSubmit={e => e.preventDefault()}>
+                  <div className="form-check custom-checkbox mb-2 form-check-inline">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="customRadioBox987"
+                      name="optradioCustom1"
+                    />
+                    <label className="form-check-label" htmlFor="customRadioBox987">
+                      Checkbox 1
+                    </label>
+                  </div>
+                  <div className="form-check custom-checkbox mb-2 form-check-inline">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="customRadioBox988"
+                      name="optradioCustom1"
+                    />
+                    <label className="form-check-label" htmlFor="customRadioBox988">
+                      Checkbox 1
+                    </label>
+                  </div>
+                  <div className="form-check custom-checkbox mb-2 form-check-inline">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="customRadioBox989"
+                      name="optradioCustom1"
+                    />
+                    <label className="form-check-label" htmlFor="customRadioBox989">
+                      Checkbox 1
+                    </label>
+                  </div>
                 </form>
               </div>
             </div>
@@ -649,7 +590,7 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="mb-3">
                     <input
                       className="form-control"
@@ -672,11 +613,7 @@ const Element = () => {
                   <div className="form-group row">
                     <label className="col-sm-3 col-form-label">Password</label>
                     <div className="col-sm-9">
-                      <input
-                        type="password"
-                        className="form-control"
-                        placeholder="Password"
-                      />
+                      <input type="password" className="form-control" placeholder="Password" />
                     </div>
                   </div>
                 </form>
@@ -693,16 +630,20 @@ const Element = () => {
               <div className="basic-form">
                 <form
                   className="d-flex align-items-center flex-wrap"
-                  onSubmit={(e) => e.preventDefault()}
+                  onSubmit={e => e.preventDefault()}
                 >
                   <div className="mb-3 mb-2">
                     <label className="sr-only">Email</label>
-                    <input type="text" readOnly className="form-control-plaintext" value="email@example.com"/>
+                    <input
+                      type="text"
+                      readOnly
+                      className="form-control-plaintext"
+                      value="email@example.com"
+                    />
                   </div>
                   <div className="mb-2 mx-sm-3">
                     <label className="sr-only">Password</label>
-                    <input type="password" className="form-control" placeholder="Password"
-                    />
+                    <input type="password" className="form-control" placeholder="Password" />
                   </div>
                   <button type="submit" className="btn btn-primary mb-2">
                     Confirm identity
@@ -719,21 +660,13 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="row">
                     <div className="col-sm-6">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="First name"
-                      />
+                      <input type="text" className="form-control" placeholder="First name" />
                     </div>
                     <div className="col-sm-6 mt-2 mt-sm-0">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Last name"
-                      />
+                      <input type="text" className="form-control" placeholder="Last name" />
                     </div>
                   </div>
                 </form>
@@ -748,21 +681,13 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="row">
                     <div className="col-sm-6">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="First name"
-                      />
+                      <input type="text" className="form-control" placeholder="First name" />
                     </div>
                     <div className="col-sm-6 mt-2 mt-sm-0">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Last name"
-                      />
+                      <input type="text" className="form-control" placeholder="Last name" />
                     </div>
                   </div>
                 </form>
@@ -777,11 +702,9 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="mb-3 row">
-                    <label className="col-sm-2 col-form-label col-form-label-sm">
-                      Email
-                    </label>
+                    <label className="col-sm-2 col-form-label col-form-label-sm">Email</label>
                     <div className="col-sm-10">
                       <input
                         type="email"
@@ -793,17 +716,11 @@ const Element = () => {
                   <div className="mb-3 row">
                     <label className="col-sm-2 col-form-label">Email</label>
                     <div className="col-sm-10">
-                      <input
-                        type="email"
-                        className="form-control"
-                        placeholder="col-form-label"
-                      />
+                      <input type="email" className="form-control" placeholder="col-form-label" />
                     </div>
                   </div>
                   <div className="mb-3 row">
-                    <label className="col-sm-2 col-form-label col-form-label-lg">
-                      Email
-                    </label>
+                    <label className="col-sm-2 col-form-label col-form-label-lg">Email</label>
                     <div className="col-sm-10">
                       <input
                         type="email"
@@ -824,28 +741,16 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="row">
                     <div className="col-sm-7">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="City"
-                      />
+                      <input type="text" className="form-control" placeholder="City" />
                     </div>
                     <div className="col mt-2 mt-sm-0">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="State"
-                      />
+                      <input type="text" className="form-control" placeholder="State" />
                     </div>
                     <div className="col mt-2 mt-sm-0">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Zip"
-                      />
+                      <input type="text" className="form-control" placeholder="Zip" />
                     </div>
                   </div>
                 </form>
@@ -860,26 +765,18 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="row align-items-center">
                     <div className="col-auto">
                       <label className="sr-only">Name</label>
-                      <input
-                        type="text"
-                        className="form-control mb-2"
-                        placeholder="Jane Doe"
-                      />
+                      <input type="text" className="form-control mb-2" placeholder="Jane Doe" />
                     </div>
                     <div className="col-auto">
                       <label className="sr-only">Username</label>
                       <div className="input-group mb-2">
                         <div className="input-group-text">@</div>
-                        
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Username"
-                        />
+
+                        <input type="text" className="form-control" placeholder="Username" />
                       </div>
                     </div>
                     <div className="col-auto">
@@ -906,13 +803,13 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <div className="row align-items-center">
                     <div className="col-auto my-1">
                       <div className="form-group d-flex align-items-center">
                         <label className="me-sm-2">Preference</label>
                         <select
-                          defaultValue={"option"}
+                          defaultValue={'option'}
                           className="form-control form-control-lg"
                           id="inlineFormCustomSelect"
                         >
@@ -938,31 +835,21 @@ const Element = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={e => e.preventDefault()}>
                   <fieldset disabled>
                     <div className="mb-3">
                       <label>Disabled input</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Disabled input"
-                      />
+                      <input type="text" className="form-control" placeholder="Disabled input" />
                     </div>
                     <div className="mb-3">
                       <label>Disabled select menu</label>
-                      <select defaultValue={"option"} className="form-control">
+                      <select defaultValue={'option'} className="form-control">
                         <option>Disabled select</option>
                       </select>
                     </div>
                     <div className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        disabled
-                      />
-                      <label className="form-check-label">
-                        Can't check this
-                      </label>
+                      <input className="form-check-input" type="checkbox" disabled />
+                      <label className="form-check-label">Can't check this</label>
                     </div>
                     <button type="submit" className="btn btn-primary mt-3">
                       Submit
@@ -982,24 +869,14 @@ const Element = () => {
               <div className="basic-form">
                 <form action="#">
                   <div className="input-group mb-3 input-warning-o">
-                    
-                      <span className="input-group-text">@</span>
-                    
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Username"
-                    />
+                    <span className="input-group-text">@</span>
+
+                    <input type="text" className="form-control" placeholder="Username" />
                   </div>
                   <div className="input-group mb-3 input-success-o">
-                    
-                      <span className="input-group-text">@</span>
-                    
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Username"
-                    />
+                    <span className="input-group-text">@</span>
+
+                    <input type="text" className="form-control" placeholder="Username" />
                   </div>
                   <div className="input-group mb-3 input-primary">
                     <input
@@ -1007,35 +884,28 @@ const Element = () => {
                       className="form-control"
                       placeholder="Recipient's username"
                     />
-                  
-                      <span className="input-group-text">@example.com</span>
-                    
+
+                    <span className="input-group-text">@example.com</span>
                   </div>
 
                   <label>Your vanity URL</label>
                   <div className="input-group mb-3  input-success">
-                  
-                      <span className="input-group-text">
-                        https://example.com
-                      </span>
-                    
+                    <span className="input-group-text">https://example.com</span>
+
                     <input type="text" className="form-control" />
                   </div>
 
                   <div className="input-group mb-3  input-info">
-                    
-                      <span className="input-group-text">$</span>
-                    
+                    <span className="input-group-text">$</span>
+
                     <input type="text" className="form-control" />
-                  
-                      <span className="input-group-text">.00</span>
-                  
+
+                    <span className="input-group-text">.00</span>
                   </div>
 
                   <div className="input-group   input-danger">
-                  
-                      <span className="input-group-text">With textarea</span>
-                    
+                    <span className="input-group-text">With textarea</span>
+
                     <textarea className="form-control"></textarea>
                   </div>
                 </form>
@@ -1052,23 +922,20 @@ const Element = () => {
               <div className="basic-form">
                 <form action="#">
                   <div className="input-group input-group-sm mb-3">
-                
-                      <span className="input-group-text">Small</span>
-                  
+                    <span className="input-group-text">Small</span>
+
                     <input type="text" className="form-control form-control-sm " />
                   </div>
 
                   <div className="input-group mb-3">
-                    
-                      <span className="input-group-text">Default</span>
-                    
+                    <span className="input-group-text">Default</span>
+
                     <input type="text" className="form-control" />
                   </div>
 
                   <div className="input-group input-group-lg">
-                  
-                      <span className="input-group-text">Large</span>
-                    
+                    <span className="input-group-text">Large</span>
+
                     <input type="text" className="form-control form-control-lg" />
                   </div>
                 </form>
@@ -1085,20 +952,18 @@ const Element = () => {
               <div className="basic-form">
                 <form action="#">
                   <div className="input-group mb-3">
-                  
-                      <div className="input-group-text">
-                        <input type="checkbox" />
-                      </div>
-                  
+                    <div className="input-group-text">
+                      <input type="checkbox" />
+                    </div>
+
                     <input type="text" className="form-control" />
                   </div>
 
                   <div className="input-group">
-                  
-                      <div className="input-group-text">
-                        <input type="radio" />
-                      </div>
-                  
+                    <div className="input-group-text">
+                      <input type="radio" />
+                    </div>
+
                     <input type="text" className="form-control" />
                   </div>
                 </form>
@@ -1115,11 +980,8 @@ const Element = () => {
               <div className="basic-form">
                 <form action="#">
                   <div className="input-group">
-                  
-                      <span className="input-group-text">
-                        First and last name
-                      </span>
-                    
+                    <span className="input-group-text">First and last name</span>
+
                     <input type="text" className="form-control" />
                     <input type="text" className="form-control" />
                   </div>
@@ -1137,17 +999,16 @@ const Element = () => {
               <div className="basic-form">
                 <form action="#">
                   <div className="input-group mb-3">
-                
-                      <span className="input-group-text">$</span>
-                      <span className="input-group-text">0.00</span>
-                    
+                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">0.00</span>
+
                     <input type="text" className="form-control" />
                   </div>
 
                   <div className="input-group">
                     <input type="text" className="form-control" />
-                      <span className="input-group-text">$</span>
-                      <span className="input-group-text">0.00</span>
+                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">0.00</span>
                   </div>
                 </form>
               </div>
@@ -1163,43 +1024,41 @@ const Element = () => {
               <div className="basic-form">
                 <form action="#">
                   <div className="input-group mb-3">
-                      <button className="btn btn-primary" type="button">
-                        Button
-                      </button>
-                  
+                    <button className="btn btn-primary" type="button">
+                      Button
+                    </button>
+
                     <input type="text" className="form-control" />
                   </div>
 
                   <div className="input-group mb-3">
                     <input type="text" className="form-control" />
-                    
-                      <button className="btn btn-primary" type="button">
-                        Button
-                      </button>
-                    
+
+                    <button className="btn btn-primary" type="button">
+                      Button
+                    </button>
                   </div>
 
                   <div className="input-group mb-3">
-                      <button className="btn btn-primary" type="button">
-                        Button
-                      </button>
-                      <button className="btn btn-primary" type="button">
-                        Button
-                      </button>
-                    
+                    <button className="btn btn-primary" type="button">
+                      Button
+                    </button>
+                    <button className="btn btn-primary" type="button">
+                      Button
+                    </button>
+
                     <input type="text" className="form-control" />
                   </div>
 
                   <div className="input-group">
                     <input type="text" className="form-control" />
-                  
-                      <button className="btn btn-primary" type="button">
-                        Button
-                      </button>
-                      <button className="btn btn-primary" type="button">
-                        Button
-                      </button>
-                    
+
+                    <button className="btn btn-primary" type="button">
+                      Button
+                    </button>
+                    <button className="btn btn-primary" type="button">
+                      Button
+                    </button>
                   </div>
                 </form>
               </div>
@@ -1214,55 +1073,58 @@ const Element = () => {
             <div className="card-body">
               <div className="basic-form">
                 <form action="#">
-          
                   <Dropdown className="input-group mb-3">
-                    <Dropdown.Toggle variant="" className="btn btn-primary right-radius" type="button" data-toggle="dropdown">Dropdown</Dropdown.Toggle>
+                    <Dropdown.Toggle
+                      variant=""
+                      className="btn btn-primary right-radius"
+                      type="button"
+                      data-toggle="dropdown"
+                    >
+                      Dropdown
+                    </Dropdown.Toggle>
                     <Dropdown.Menu className="dropdown-menu">
-                      <Dropdown.Item className="dropdown-item" to="#">Action</Dropdown.Item>
-                      <Dropdown.Item className="dropdown-item" to="#">Another action</Dropdown.Item>
-                      <Dropdown.Item className="dropdown-item" to="#">Something else here</Dropdown.Item>
-                        <div
-                          role="separator"
-                          className="dropdown-divider"
-                        ></div>
-                      <Dropdown.Item className="dropdown-item" to="#">Separated link</Dropdown.Item>
+                      <Dropdown.Item className="dropdown-item" to="#">
+                        Action
+                      </Dropdown.Item>
+                      <Dropdown.Item className="dropdown-item" to="#">
+                        Another action
+                      </Dropdown.Item>
+                      <Dropdown.Item className="dropdown-item" to="#">
+                        Something else here
+                      </Dropdown.Item>
+                      <div role="separator" className="dropdown-divider"></div>
+                      <Dropdown.Item className="dropdown-item" to="#">
+                        Separated link
+                      </Dropdown.Item>
                     </Dropdown.Menu>
                     <input type="text" className="form-control left-radius" />
                   </Dropdown>
-            
-          
-
-                
-                    <Dropdown className="input-group">
-                      <input type="text" className="form-control left-radius-1" />
-                        <Dropdown.Toggle
-                          variant=""
-                          className="btn btn-primary dropdown-toggle left-radius"
-                          type="button"
-                          data-toggle="dropdown"
-                        >
-                          Dropdown
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu className="dropdown-menu">
-                          <Dropdown.Item className="dropdown-item" to="#">
-                            Action
-                          </Dropdown.Item>
-                          <Dropdown.Item className="dropdown-item" to="#">
-                            Another action
-                          </Dropdown.Item>
-                          <Dropdown.Item className="dropdown-item" to="#">
-                            Something else here
-                          </Dropdown.Item>
-                          <div
-                            role="separator"
-                            className="dropdown-divider"
-                          ></div>
-                          <Dropdown.Item className="dropdown-item" to="#">
-                            Separated link
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>{" "}
-                  
+                  <Dropdown className="input-group">
+                    <input type="text" className="form-control left-radius-1" />
+                    <Dropdown.Toggle
+                      variant=""
+                      className="btn btn-primary dropdown-toggle left-radius"
+                      type="button"
+                      data-toggle="dropdown"
+                    >
+                      Dropdown
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu className="dropdown-menu">
+                      <Dropdown.Item className="dropdown-item" to="#">
+                        Action
+                      </Dropdown.Item>
+                      <Dropdown.Item className="dropdown-item" to="#">
+                        Another action
+                      </Dropdown.Item>
+                      <Dropdown.Item className="dropdown-item" to="#">
+                        Something else here
+                      </Dropdown.Item>
+                      <div role="separator" className="dropdown-divider"></div>
+                      <Dropdown.Item className="dropdown-item" to="#">
+                        Separated link
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>{' '}
                 </form>
               </div>
             </div>
@@ -1327,7 +1189,7 @@ const Element = () => {
                       <Dropdown.Item className="dropdown-item" to="#">
                         Separated link
                       </Dropdown.Item>
-                    </SplitButton>{" "}
+                    </SplitButton>{' '}
                   </div>
                 </form>
               </div>
@@ -1342,12 +1204,9 @@ const Element = () => {
             <div className="card-body">
               <div className="basic-form">
                 <form action="#">
-                  <div className="input-group mb-3">                      
-                    <label className="input-group-text mb-0">Options</label>                      
-                    <select
-                      defaultValue={"option"}
-                      className="form-control wide"
-                    >
+                  <div className="input-group mb-3">
+                    <label className="input-group-text mb-0">Options</label>
+                    <select defaultValue={'option'} className="form-control wide">
                       <option value="option" disabled>
                         Choose...
                       </option>
@@ -1358,10 +1217,7 @@ const Element = () => {
                   </div>
 
                   <div className="input-group mb-3">
-                    <select
-                      defaultValue={"option"}
-                      className="form-control form-control-lg"
-                    >
+                    <select defaultValue={'option'} className="form-control form-control-lg">
                       <option value="option" disabled>
                         Choose...
                       </option>
@@ -1369,21 +1225,16 @@ const Element = () => {
                       <option value="2">Two</option>
                       <option value="3">Three</option>
                     </select>
-                    
-                      <label className="input-group-text mb-0">Options</label>
-                    
+
+                    <label className="input-group-text mb-0">Options</label>
                   </div>
 
                   <div className="input-group mb-3">
-                    
-                      <button className="btn btn-primary" type="button">
-                        Button
-                      </button>
-                  
-                    <select
-                      defaultValue={"option"}
-                      className="form-control form-control-lg"
-                    >
+                    <button className="btn btn-primary" type="button">
+                      Button
+                    </button>
+
+                    <select defaultValue={'option'} className="form-control form-control-lg">
                       <option value="option" disabled>
                         Choose...
                       </option>
@@ -1394,10 +1245,7 @@ const Element = () => {
                   </div>
 
                   <div className="input-group">
-                    <select
-                      defaultValue={"option"}
-                      className="form-control form-control-lg"
-                    >
+                    <select defaultValue={'option'} className="form-control form-control-lg">
                       <option value="option" disabled>
                         Choose...
                       </option>
@@ -1405,11 +1253,10 @@ const Element = () => {
                       <option value="2">Two</option>
                       <option value="3">Three</option>
                     </select>
-                  
-                      <button className="btn btn-primary" type="button">
-                        Button
-                      </button>
-                    
+
+                    <button className="btn btn-primary" type="button">
+                      Button
+                    </button>
                   </div>
                 </form>
               </div>
@@ -1422,30 +1269,40 @@ const Element = () => {
               <h4 className="card-title">Custom file input</h4>
             </div>
             <div className="card-body">
-        <div className="mb-3">
-          <label htmlFor="formFile" className="form-label">Default file input example</label>
-          <input className="form-control" type="file" id="formFile" />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="formFileMultiple" className="form-label">Multiple files input example</label>
-          <input className="form-control" type="file" id="formFileMultiple" multiple />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="formFileDisabled" className="form-label">Disabled file input example</label>
-          <input className="form-control" type="file" id="formFileDisabled" disabled />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="formFileSm" className="form-label">Small file input example</label>
-          <input className="form-control form-control-sm" id="formFileSm" type="file" />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="formFileLg" className="form-label">Large file input example</label>
-          <input className="form-control form-control-lg" id="formFileLg" type="file" />
-        </div>
+              <div className="mb-3">
+                <label htmlFor="formFile" className="form-label">
+                  Default file input example
+                </label>
+                <input className="form-control" type="file" id="formFile" />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="formFileMultiple" className="form-label">
+                  Multiple files input example
+                </label>
+                <input className="form-control" type="file" id="formFileMultiple" multiple />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="formFileDisabled" className="form-label">
+                  Disabled file input example
+                </label>
+                <input className="form-control" type="file" id="formFileDisabled" disabled />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="formFileSm" className="form-label">
+                  Small file input example
+                </label>
+                <input className="form-control form-control-sm" id="formFileSm" type="file" />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="formFileLg" className="form-label">
+                  Large file input example
+                </label>
+                <input className="form-control form-control-lg" id="formFileLg" type="file" />
+              </div>
             </div>
           </div>
         </div>
-      </div>      
+      </div>
     </Fragment>
   );
 };

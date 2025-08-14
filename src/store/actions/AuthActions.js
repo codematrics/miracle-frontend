@@ -6,17 +6,17 @@ import {
   saveTokenInLocalStorage,
   showErrorMessage,
   signUp,
-} from "../../services/AuthService";
+} from '../../services/AuthService';
 
-export const SIGNUP_CONFIRMED_ACTION = "[signup action] confirmed signup";
-export const SIGNUP_FAILED_ACTION = "[signup action] failed signup";
-export const LOGIN_CONFIRMED_ACTION = "[login action] confirmed login";
-export const LOGIN_FAILED_ACTION = "[login action] failed login";
-export const LOADING_TOGGLE_ACTION = "[Loading action] toggle loading";
-export const LOGOUT_ACTION = "[Logout action] logout action";
+export const SIGNUP_CONFIRMED_ACTION = '[signup action] confirmed signup';
+export const SIGNUP_FAILED_ACTION = '[signup action] failed signup';
+export const LOGIN_CONFIRMED_ACTION = '[login action] confirmed login';
+export const LOGIN_FAILED_ACTION = '[login action] failed login';
+export const LOADING_TOGGLE_ACTION = '[Loading action] toggle loading';
+export const LOGOUT_ACTION = '[Logout action] logout action';
 
 export function signupAction(username, email, password, navigate) {
-  return async (dispatch) => {
+  return async dispatch => {
     dispatch(loadingToggleAction(true));
 
     try {
@@ -28,21 +28,19 @@ export function signupAction(username, email, password, navigate) {
         if (tokenSaved) {
           runLogoutTimer(dispatch, 7 * 24 * 60 * 60 * 1000, navigate);
           dispatch(confirmedSignupAction(response.data));
-          navigate("/dashboard");
+          navigate('/dashboard');
         } else {
-          throw new Error("Failed to save authentication data");
+          throw new Error('Failed to save authentication data');
         }
       } else {
-        const errorMessage = formatError(
-          response.data || { message: "Signup failed" }
-        );
+        const errorMessage = formatError(response.data || { message: 'Signup failed' });
         showErrorMessage(errorMessage);
         dispatch(signupFailedAction(errorMessage));
       }
     } catch (error) {
       const errorMessage = formatError(
         error.response?.data || {
-          message: error.message || "Network error occurred",
+          message: error.message || 'Network error occurred',
         }
       );
       showErrorMessage(errorMessage);
@@ -54,21 +52,21 @@ export function signupAction(username, email, password, navigate) {
 }
 
 export function Logout(navigate) {
-  return (dispatch) => {
+  return dispatch => {
     try {
       clearAuthData();
       dispatch({ type: LOGOUT_ACTION });
-      navigate("/login");
+      navigate('/login');
     } catch (error) {
-      console.error("Error during logout:", error);
+      console.error('Error during logout:', error);
       dispatch({ type: LOGOUT_ACTION });
-      navigate("/login");
+      navigate('/login');
     }
   };
 }
 
 export function loginAction(email, password, navigate) {
-  return async (dispatch) => {
+  return async dispatch => {
     dispatch(loadingToggleAction(true));
 
     try {
@@ -80,21 +78,19 @@ export function loginAction(email, password, navigate) {
         if (tokenSaved) {
           runLogoutTimer(dispatch, 7 * 24 * 60 * 60 * 1000, navigate);
           dispatch(loginConfirmedAction(response.data));
-          navigate("/dashboard");
+          navigate('/dashboard');
         } else {
-          throw new Error("Failed to save authentication data");
+          throw new Error('Failed to save authentication data');
         }
       } else {
-        const errorMessage = formatError(
-          response.data || { message: "Login failed" }
-        );
+        const errorMessage = formatError(response.data || { message: 'Login failed' });
         showErrorMessage(errorMessage);
         dispatch(loginFailedAction(errorMessage));
       }
     } catch (error) {
       const errorMessage = formatError(
         error.response?.data || {
-          message: error.message || "Network error occurred",
+          message: error.message || 'Network error occurred',
         }
       );
       showErrorMessage(errorMessage);

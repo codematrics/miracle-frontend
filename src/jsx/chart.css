@@ -1,4 +1,3 @@
-
 .ct-double-octave:after,
 .ct-golden-section:after,
 .ct-major-eleventh:after,
@@ -165,7 +164,6 @@
 }
 .ct-point {
   stroke-width: 10px;
-  
 }
 .ct-line {
   fill: none;

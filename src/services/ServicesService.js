@@ -1,13 +1,13 @@
-import axios from "axios";
+import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 /**
  * Fetch all services from the API
  * @param {string} search - Optional search query
  * @returns {Promise} API response
  */
-export const fetchServices = async (search = "") => {
+export const fetchServices = async (search = '') => {
   try {
     const params = {
       all: true,
@@ -21,7 +21,7 @@ export const fetchServices = async (search = "") => {
     const response = await axios.get(`${API_URL}/services`, { params });
     return response.data;
   } catch (error) {
-    console.error("Error fetching services:", error);
+    console.error('Error fetching services:', error);
     throw error;
   }
 };
@@ -31,15 +31,15 @@ export const fetchServices = async (search = "") => {
  * @param {Array} services - Services array from API
  * @returns {Array} Transformed services for react-select
  */
-export const transformServicesForSelect = (services) => {
-  return services.map((service) => ({
+export const transformServicesForSelect = services => {
+  return services.map(service => ({
     id: service.id || service._id,
     value: service.id || service._id,
     label: service.name || service.serviceName || service.label,
     code: service.code || service.serviceCode,
     rate: service.rate || service.price || 0,
-    description: service.description || "",
-    category: service.category || "",
+    description: service.description || '',
+    category: service.category || '',
   }));
 };
 
@@ -48,7 +48,7 @@ export const transformServicesForSelect = (services) => {
  * @param {string} search - Search query
  * @returns {Promise} API response with filtered services
  */
-export const searchServices = async (search) => {
+export const searchServices = async search => {
   try {
     if (!search || search.trim().length < 2) {
       // Return all services if search is too short
@@ -57,7 +57,7 @@ export const searchServices = async (search) => {
 
     return await fetchServices(search);
   } catch (error) {
-    console.error("Error searching services:", error);
+    console.error('Error searching services:', error);
     throw error;
   }
 };
@@ -67,12 +67,12 @@ export const searchServices = async (search) => {
  * @param {string} serviceId - Service ID
  * @returns {Promise} API response
  */
-export const getServiceById = async (serviceId) => {
+export const getServiceById = async serviceId => {
   try {
     const response = await axios.get(`${API_URL}/services/${serviceId}`);
     return response.data;
   } catch (error) {
-    console.error("Error fetching service by ID:", error);
+    console.error('Error fetching service by ID:', error);
     throw error;
   }
 };
@@ -82,16 +82,16 @@ export const getServiceById = async (serviceId) => {
  * @param {Object} serviceData - Service data to create
  * @returns {Promise} API response
  */
-export const createService = async (serviceData) => {
+export const createService = async serviceData => {
   try {
     const response = await axios.post(`${API_URL}/services`, serviceData, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
     return response.data;
   } catch (error) {
-    console.error("Error creating service:", error);
+    console.error('Error creating service:', error);
     throw error;
   }
 };
@@ -106,12 +106,12 @@ export const updateService = async (serviceId, serviceData) => {
   try {
     const response = await axios.put(`${API_URL}/services/${serviceId}`, serviceData, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
     return response.data;
   } catch (error) {
-    console.error("Error updating service:", error);
+    console.error('Error updating service:', error);
     throw error;
   }
 };
@@ -121,12 +121,12 @@ export const updateService = async (serviceId, serviceData) => {
  * @param {string} serviceId - Service ID to delete
  * @returns {Promise} API response
  */
-export const deleteService = async (serviceId) => {
+export const deleteService = async serviceId => {
   try {
     const response = await axios.delete(`${API_URL}/services/${serviceId}`);
     return response.data;
   } catch (error) {
-    console.error("Error deleting service:", error);
+    console.error('Error deleting service:', error);
     throw error;
   }
 };
@@ -141,7 +141,7 @@ export const fetchServicesWithPagination = async (params = {}) => {
     const response = await axios.get(`${API_URL}/services`, { params });
     return response.data;
   } catch (error) {
-    console.error("Error fetching services with pagination:", error);
+    console.error('Error fetching services with pagination:', error);
     throw error;
   }
 };

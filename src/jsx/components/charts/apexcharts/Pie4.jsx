@@ -1,20 +1,20 @@
-import React from "react";
-import ReactApexChart from "react-apexcharts";
+import React from 'react';
+import ReactApexChart from 'react-apexcharts';
 
-const series= [42, 47, 52, 58]
+const series = [42, 47, 52, 58];
 
-const options= {
+const options = {
   chart: {
     // width: 300,
-    type: "polarArea",
+    type: 'polarArea',
     sparkline: {
       enabled: true,
     },
   },
-  labels: ["VIP", "Reguler", "Exclusive", "Economic"],
+  labels: ['VIP', 'Reguler', 'Exclusive', 'Economic'],
   fill: {
     opacity: 1,
-    colors: ["#ff5b21", "#00c562", "#ff2735", "#007a64"],
+    colors: ['#ff5b21', '#00c562', '#ff2735', '#007a64'],
   },
   stroke: {
     width: 0,
@@ -24,7 +24,7 @@ const options= {
     show: false,
   },
   legend: {
-    position: "bottom",
+    position: 'bottom',
   },
   plotOptions: {
     polarArea: {
@@ -36,23 +36,17 @@ const options= {
   theme: {
     monochrome: {
       enabled: true,
-      shadeTo: "light",
+      shadeTo: 'light',
       shadeIntensity: 0.6,
     },
   },
-}
+};
 const ApexPie4 = () => {
-    return (
-      <div id="chart">
-        <ReactApexChart
-          options={options}
-          series={series}
-          type="polarArea"
-          height={251}          
-        />
-      </div>
-    );
-  
-}
+  return (
+    <div id="chart">
+      <ReactApexChart options={options} series={series} type="polarArea" height={251} />
+    </div>
+  );
+};
 
 export default ApexPie4;
