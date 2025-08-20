@@ -14,7 +14,7 @@ export const patientsApi = api.injectEndpoints({
         url: '/patients',
         params: { page, limit, search, status, sortBy, sortOrder },
       }),
-      providesTags: (result, error, arg) =>
+      providesTags: result =>
         result
           ? [
               ...result.data.map(({ id }) => ({ type: 'Patient', id })),

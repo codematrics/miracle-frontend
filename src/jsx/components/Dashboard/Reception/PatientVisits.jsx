@@ -9,7 +9,7 @@ import {
   InputGroup,
   Table,
 } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import axios from 'axios';
@@ -139,7 +139,6 @@ const PatientVisits = () => {
 
   // Handle visit creation success
   const handleVisitCreated = newVisit => {
-    console.log('New visit created:', newVisit);
     loadVisits(1, true); // Refresh visits list
     toast.success('Visit created successfully!', {
       position: 'top-right',
@@ -149,7 +148,6 @@ const PatientVisits = () => {
 
   // Handle patient creation success
   const handlePatientCreated = newPatient => {
-    console.log('New patient created:', newPatient);
     toast.success('Patient created successfully!', {
       position: 'top-right',
       autoClose: 3000,

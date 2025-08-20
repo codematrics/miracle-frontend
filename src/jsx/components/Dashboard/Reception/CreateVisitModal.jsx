@@ -338,9 +338,6 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                   options={[
                     { value: '', label: 'Select Ref By' },
                     { value: '1', label: 'Self' },
-                    { value: '2', label: 'Dr. Kailash Garg' },
-                    { value: '3', label: 'Dr. Manohar Menariya' },
-                    { value: '4', label: 'Dr. Vishal Khutwal' },
                   ]}
                 />
 

@@ -169,6 +169,7 @@ const ServicesPage = () => {
       laboratory: 'warning',
       radiology: 'danger',
       procedure: 'success',
+      pathology: 'dark',
       surgery: 'dark',
       pharmacy: 'secondary',
       emergency: 'danger',
@@ -233,6 +234,7 @@ const ServicesPage = () => {
                     <option value="diagnostic">Diagnostic</option>
                     <option value="laboratory">Laboratory</option>
                     <option value="radiology">Radiology</option>
+                    <option value="pathology">pathology</option>
                     <option value="procedure">Procedure</option>
                     <option value="surgery">Surgery</option>
                     <option value="pharmacy">Pharmacy</option>
@@ -269,6 +271,7 @@ const ServicesPage = () => {
                       <th>Service Code</th>
                       <th>Service Name</th>
                       <th>Category</th>
+                      <th>Report Name</th>
                       <th>Rate (₹)</th>
                       <th>Status</th>
                       <th>Actions</th>
@@ -328,6 +331,7 @@ const ServicesPage = () => {
                               {service.category || 'Other'}
                             </Badge>
                           </td>
+                          <td>{service.reportName || '-'}</td>
                           <td>
                             <strong className="text-success">
                               ₹{(service.rate || service.price || 0).toLocaleString()}

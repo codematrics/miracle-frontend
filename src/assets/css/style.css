@@ -39289,10 +39289,6 @@ table.dataTable tfoot td {
   border-top: 0;
 }
 
-table.dataTable tbody td {
-  background: #fff !important;
-}
-
 table.dataTable thead th {
   color: #000;
   font-size: 16px;

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 /// React router dom
 import { Outlet, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -36,6 +36,8 @@ import CaseSheet from './components/Dashboard/Reception/pdf/CaseSheet.tsx';
 import Reviews from './components/Dashboard/Reviews';
 import ServicesPage from './components/Dashboard/Services/ServicesPage';
 import Task from './components/Dashboard/Task';
+// Widget
+import ParametersPage from './components/Dashboard/parameters/ParameterPage.jsx';
 import CkEditor from './components/Forms/CkEditor/CkEditor';
 /// Form
 import Element from './components/Forms/Element/Element';
@@ -91,7 +93,6 @@ import Error503 from './pages/Error503';
 import LockScreen from './pages/LockScreen';
 // Svg Icon
 import SvgIcon from './pages/SvgIcon';
-// Widget
 import Widget from './pages/Widget';
 import './step.css';
 
@@ -110,10 +111,13 @@ const Markup = () => {
     { url: 'task', component: <Task /> },
 
     // Pathology Dashboard
-    { url: 'lab-workflow', component: <WorkFlow /> },
+    { url: 'lab-workflow', component: <WorkFlow stage="collection" /> },
+    { url: 'lab-result-entry', component: <WorkFlow stage="result" /> },
+    { url: 'lab-authorization', component: <WorkFlow stage="authorization" /> },
 
     // Services Management
     { url: 'services', component: <ServicesPage /> },
+    { url: 'parameters', component: <ParametersPage /> },
 
     //Apps
     { url: 'app-profile', component: <AppProfile /> },

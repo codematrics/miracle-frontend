@@ -1,5 +1,5 @@
 /// Menu
-import React, { useContext, useEffect, useReducer, useState } from 'react';
+import { useContext, useEffect, useReducer, useState } from 'react';
 import Collapse from 'react-bootstrap/Collapse';
 /// Link
 import { Link } from 'react-router-dom';
@@ -20,7 +20,6 @@ const initialState = {
 };
 
 const SideBar = () => {
-  const date = new Date();
   const { iconHover, sidebarposition, headerposition, sidebarLayout, ChangeIconSidebar } =
     useContext(ThemeContext);
 
@@ -35,12 +34,6 @@ const SideBar = () => {
     },
     [hideOnScroll]
   );
-
-  const [heartBeat, setHeartBeat] = useState();
-
-  function heartBlast() {
-    setHeartBeat(!heartBeat);
-  }
 
   const handleMenuActive = status => {
     setState({ active: status });

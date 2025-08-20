@@ -1,7 +1,8 @@
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-import { Logout, loginConfirmedAction } from '../store/actions/AuthActions';
+import { Logout } from '../store/actions/AuthActions';
+import { loginConfirmed } from '../store/slices/authSlice';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const TOKEN_KEY = 'userDetails';
@@ -41,7 +42,7 @@ export function showErrorMessage(message) {
 
 export function saveTokenInLocalStorage(tokenDetails) {
   if (!tokenDetails.token || !tokenDetails.user) {
-    console.error('Invalid token details provided');
+    console.error('❌ Invalid token details provided:', tokenDetails);
     return false;
   }
 
@@ -59,9 +60,13 @@ export function saveTokenInLocalStorage(tokenDetails) {
     };
 
     localStorage.setItem(TOKEN_KEY, JSON.stringify(userDetails));
+
+    // Verify it was saved
+    const saved = localStorage.getItem(TOKEN_KEY);
+
     return true;
   } catch (error) {
-    console.error('Failed to save token:', error);
+    console.error('❌ Failed to save token:', error);
     return false;
   }
 }
@@ -73,7 +78,6 @@ export function runLogoutTimer(dispatch, timer, navigate) {
 
   if (timer > 0) {
     logoutTimer = setTimeout(() => {
-      console.log('Session expired - logging out');
       dispatch(Logout(navigate));
     }, timer);
   }
@@ -87,47 +91,53 @@ export function clearLogoutTimer() {
 }
 
 export function checkAutoLogin(dispatch, navigate) {
-  try {
-    const tokenDetailsString = localStorage.getItem(TOKEN_KEY);
+  return new Promise(resolve => {
+    try {
+      const tokenDetailsString = localStorage.getItem(TOKEN_KEY);
 
-    if (!tokenDetailsString) {
-      return false;
-    }
+      if (!tokenDetailsString) {
+        resolve(false);
+        return;
+      }
 
-    const tokenDetails = JSON.parse(tokenDetailsString);
+      const tokenDetails = JSON.parse(tokenDetailsString);
 
-    if (!tokenDetails.token || !tokenDetails.user || !tokenDetails.expireDate) {
-      console.warn('Invalid token structure found');
+      if (!tokenDetails.token || !tokenDetails.user || !tokenDetails.expireDate) {
+        clearAuthData();
+        resolve(false);
+        return;
+      }
+
+      const expireDate = new Date(tokenDetails.expireDate);
+      const currentDate = new Date();
+
+      if (currentDate >= expireDate) {
+        clearAuthData();
+        resolve(false);
+        return;
+      }
+
+      const authData = {
+        token: tokenDetails.token,
+        user: tokenDetails.user,
+        success: true,
+      };
+
+      // Dispatch the action and wait for it to be processed
+      dispatch(loginConfirmed(authData));
+
+      const remainingTime = expireDate.getTime() - currentDate.getTime();
+      runLogoutTimer(dispatch, remainingTime, navigate);
+
+      // Resolve with a slight delay to ensure Redux state is updated
+      setTimeout(() => {
+        resolve(true);
+      }, 100);
+    } catch (error) {
       clearAuthData();
-      return false;
+      resolve(false);
     }
-
-    const expireDate = new Date(tokenDetails.expireDate);
-    const currentDate = new Date();
-
-    if (currentDate >= expireDate) {
-      console.log('Token expired');
-      clearAuthData();
-      return false;
-    }
-
-    const authData = {
-      token: tokenDetails.token,
-      user: tokenDetails.user,
-      success: true,
-    };
-
-    dispatch(loginConfirmedAction(authData));
-
-    const remainingTime = expireDate.getTime() - currentDate.getTime();
-    runLogoutTimer(dispatch, remainingTime, navigate);
-
-    return true;
-  } catch (error) {
-    console.error('Error during auto-login check:', error);
-    clearAuthData();
-    return false;
-  }
+  });
 }
 
 export function isLogin() {

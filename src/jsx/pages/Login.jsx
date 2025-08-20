@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import login from '../../assets/images/login.jpg';
 import { loadingToggleAction, loginAction } from '../../store/actions/AuthActions';
@@ -34,6 +33,7 @@ function Login(props) {
     dispatch(loadingToggleAction(true));
     dispatch(loginAction(email, password, navigate));
   }
+
   return (
     <div className="page-wraper">
       <div className="authincation ">

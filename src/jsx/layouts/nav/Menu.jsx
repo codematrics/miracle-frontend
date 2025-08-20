@@ -47,10 +47,7 @@ export const MenuList = [
         title: 'Appointment',
         to: 'opd-appointment',
       },
-      {
-        title: 'Services',
-        to: 'services',
-      },
+
       // {
       //     title: 'Doctors',
       //     to: 'doctor',
@@ -85,6 +82,21 @@ export const MenuList = [
       {
         title: 'Authorization',
         to: 'lab-authorization',
+      },
+    ],
+  },
+  {
+    title: 'Master',
+    classsChange: 'mm-collapse',
+    iconStyle: <i className="fa fa-receipt" />,
+    content: [
+      {
+        title: 'Services',
+        to: 'services',
+      },
+      {
+        title: 'Parameters',
+        to: 'parameters',
       },
     ],
   },

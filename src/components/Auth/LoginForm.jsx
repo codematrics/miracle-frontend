@@ -96,9 +96,8 @@ const LoginForm = () => {
           navigate,
         })
       ).unwrap();
-    } catch (error) {
+    } catch {
       // Error is already handled by the slice and error handler
-      console.error('Login failed:', error);
     }
   };
 

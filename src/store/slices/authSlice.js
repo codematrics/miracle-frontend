@@ -142,6 +142,61 @@ const authSlice = createSlice({
       state.loading = action.payload;
       state.showLoading = action.payload;
     },
+    // Legacy login confirmed action for backward compatibility
+    loginConfirmed: (state, action) => {
+      state.loading = false;
+      state.showLoading = false;
+      state.isAuthenticated = true;
+      state.token = action.payload.token;
+      state.user = action.payload.user;
+      state.email = action.payload.user?.email || '';
+      state.successMessage = 'Login Successfully Completed';
+      state.error = null;
+      state.errorMessage = '';
+      // Legacy state for backward compatibility
+      state.auth = {
+        ...state.auth,
+        token: action.payload.token,
+        user: action.payload.user,
+        email: action.payload.user?.email || '',
+      };
+    },
+    // Legacy signup confirmed action for backward compatibility
+    signupConfirmed: (state, action) => {
+      state.loading = false;
+      state.showLoading = false;
+      state.isAuthenticated = true;
+      state.token = action.payload.token;
+      state.user = action.payload.user;
+      state.email = action.payload.user?.email || '';
+      state.successMessage = 'Signup Successfully Completed';
+      state.error = null;
+      state.errorMessage = '';
+      // Legacy state for backward compatibility
+      state.auth = {
+        ...state.auth,
+        token: action.payload.token,
+        user: action.payload.user,
+        email: action.payload.user?.email || '',
+      };
+    },
+    // Legacy failed actions for backward compatibility
+    loginFailed: (state, action) => {
+      state.loading = false;
+      state.showLoading = false;
+      state.isAuthenticated = false;
+      state.error = action.payload;
+      state.errorMessage = action.payload;
+      state.successMessage = '';
+    },
+    signupFailed: (state, action) => {
+      state.loading = false;
+      state.showLoading = false;
+      state.isAuthenticated = false;
+      state.error = action.payload;
+      state.errorMessage = action.payload;
+      state.successMessage = '';
+    },
   },
   extraReducers: builder => {
     builder
@@ -218,7 +273,17 @@ const authSlice = createSlice({
 });
 
 // Export actions
-export const { clearError, clearSuccess, setLoading, logout, loadingToggle } = authSlice.actions;
+export const { 
+  clearError, 
+  clearSuccess, 
+  setLoading, 
+  logout, 
+  loadingToggle,
+  loginConfirmed,
+  signupConfirmed,
+  loginFailed,
+  signupFailed 
+} = authSlice.actions;
 
 // Selectors
 export const selectAuth = state => state.auth;

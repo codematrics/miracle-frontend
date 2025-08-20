@@ -34,6 +34,7 @@ export const fetchServices = async (search = '') => {
 export const transformServicesForSelect = services => {
   return services.map(service => ({
     id: service.id || service._id,
+    serviceId: service.id || service._id,
     value: service.id || service._id,
     label: service.name || service.serviceName || service.label,
     code: service.code || service.serviceCode,
