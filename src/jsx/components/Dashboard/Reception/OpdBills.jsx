@@ -11,7 +11,6 @@ import { PATIENT_TYPES, PAYMENT_MODES, PRIORITY } from '../../../../constants/en
 import { fetchServices, transformServicesForSelect } from '../../../../services/ServicesService';
 import { useGetDoctorsDropdownQuery } from '../../../../store/api/doctorsApi';
 import FormField from './components/FormField';
-import FormRow from './components/FormRow';
 import { initialOpdBillValues, opdBillSchema } from './schemas/opdBillValidation';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -35,8 +34,8 @@ const OpdBills = () => {
 
   // Transform doctors data for select options
   const getDoctorOptions = () => {
-    if (!doctorsData?.data) return [{ value: '', label: 'Select Doctor' }];
-    
+    if (!doctorsData?.data) return [];
+
     const options = doctorsData.data.map(doctor => ({
       value: doctor.value,
       label: doctor.nameWithSpecialization || doctor.label,
@@ -44,14 +43,14 @@ const OpdBills = () => {
       employeeId: doctor.employeeId,
       specialization: doctor.specialization,
       department: doctor.department,
-      consultationFee: doctor.consultationFee
+      consultationFee: doctor.consultationFee,
     }));
-    
-    return [{ value: '', label: 'Select Doctor' }, ...options];
+
+    return [...options];
   };
 
   // Get selected doctor data
-  const getSelectedDoctor = (doctorValue) => {
+  const getSelectedDoctor = doctorValue => {
     if (!doctorValue || !doctorsData?.data) return null;
     return doctorsData.data.find(doctor => doctor.value === doctorValue);
   };
@@ -163,7 +162,7 @@ const OpdBills = () => {
       toast.error('Quantity must be a positive number greater than 0');
       return;
     }
-    
+
     const updatedServices = selectedServices.map(s => {
       if (s.id === service.id) {
         return { ...s, qty: numericQty };
@@ -180,7 +179,7 @@ const OpdBills = () => {
       toast.error('Rate must be a positive number');
       return;
     }
-    
+
     const updatedServices = selectedServices.map(s => {
       if (s.id === service.id) {
         return { ...s, rate: numericRate };
@@ -273,8 +272,11 @@ const OpdBills = () => {
       }
 
       // Calculate totals and validate billing
-      const servicesTotal = selectedServices.reduce((total, service) => total + (service.qty * service.rate), 0);
-      const discountAmount = discountValue || (servicesTotal * discountPercent / 100);
+      const servicesTotal = selectedServices.reduce(
+        (total, service) => total + service.qty * service.rate,
+        0
+      );
+      const discountAmount = discountValue || (servicesTotal * discountPercent) / 100;
       const calculatedGrandTotal = servicesTotal - discountAmount;
       const calculatedBalance = calculatedGrandTotal - paidAmount;
 
@@ -288,7 +290,12 @@ const OpdBills = () => {
           fatherOrHusbandName: selectedPatient.fathername || 'N/A',
           mobileNo: selectedPatient.mobileno,
           age: parseInt(selectedPatient.age) || 0,
-          gender: selectedPatient.gender === 'M' ? 'Male' : selectedPatient.gender === 'F' ? 'Female' : selectedPatient.gender || 'Other',
+          gender:
+            selectedPatient.gender === 'M'
+              ? 'Male'
+              : selectedPatient.gender === 'F'
+                ? 'Female'
+                : selectedPatient.gender || 'Other',
         },
         patientCategory: selectedPatient?.patientType?.toLowerCase() || 'general',
         refby: values.refby,
@@ -308,9 +315,10 @@ const OpdBills = () => {
           paidAmount: parseFloat(paidAmount) || 0,
           balanceAmount: parseFloat(calculatedBalance) || 0,
         },
-        
+
         // Optional fields (only include if not default values)
-        ...(values.priority && values.priority !== PRIORITY.NORMAL && { priority: values.priority.toLowerCase() }),
+        ...(values.priority &&
+          values.priority !== PRIORITY.NORMAL && { priority: values.priority.toLowerCase() }),
         ...(values.paymentMode && { paymentMode: values.paymentMode.toLowerCase() }),
       };
 
@@ -337,11 +345,11 @@ const OpdBills = () => {
       }
     } catch (error) {
       console.error('Error creating OPD bill:', error);
-      
+
       // Handle specific backend validation errors
       if (error.response?.status === 400) {
         const errorData = error.response.data;
-        
+
         // Handle validation errors array
         if (errorData.errors && Array.isArray(errorData.errors)) {
           const firstError = errorData.errors[0];
@@ -354,14 +362,16 @@ const OpdBills = () => {
         // Handle field-specific errors
         else if (errorData.error) {
           toast.error(errorData.error);
-        }
-        else {
+        } else {
           toast.error('Please check your input and try again');
         }
       }
       // Handle other HTTP errors
       else if (error.response) {
-        toast.error(error.response.data?.message || `Error ${error.response.status}: ${error.response.statusText}`);
+        toast.error(
+          error.response.data?.message ||
+            `Error ${error.response.status}: ${error.response.statusText}`
+        );
       }
       // Handle network errors
       else {
@@ -415,7 +425,7 @@ const OpdBills = () => {
                   value={searchPatientValue}
                   options={patientOptions}
                   onChange={handleSearchPatient}
-                  noOptionsMessage={() => "No patients found. Try adjusting your search."}
+                  noOptionsMessage={() => 'No patients found. Try adjusting your search.'}
                 />
               </div>
             </div>
@@ -446,17 +456,21 @@ const OpdBills = () => {
                     <h6 className="card-title mb-2">
                       <i className="fa fa-info-circle me-2 text-info"></i>Patient Information
                     </h6>
-                    <div className="row text-nowrap" style={{fontSize: '14px'}}>
+                    <div className="row text-nowrap" style={{ fontSize: '14px' }}>
                       <div className="col-lg-3 col-md-6 mb-2">
                         <div className="d-flex">
                           <strong className="me-1 text-nowrap">UHID:</strong>
-                          <span className="text-truncate">{selectedPatient.UHID || selectedPatient.value}</span>
+                          <span className="text-truncate">
+                            {selectedPatient.UHID || selectedPatient.value}
+                          </span>
                         </div>
                       </div>
                       <div className="col-lg-3 col-md-6 mb-2">
                         <div className="d-flex">
                           <strong className="me-1 text-nowrap">Name:</strong>
-                          <span className="text-truncate" title={selectedPatient.label}>{selectedPatient.label}</span>
+                          <span className="text-truncate" title={selectedPatient.label}>
+                            {selectedPatient.label}
+                          </span>
                         </div>
                       </div>
                       <div className="col-lg-2 col-md-6 mb-2">
@@ -468,13 +482,17 @@ const OpdBills = () => {
                       <div className="col-lg-2 col-md-6 mb-2">
                         <div className="d-flex">
                           <strong className="me-1 text-nowrap">Father/Husband:</strong>
-                          <span className="text-truncate" title={selectedPatient.fathername}>{selectedPatient.fathername}</span>
+                          <span className="text-truncate" title={selectedPatient.fathername}>
+                            {selectedPatient.fathername}
+                          </span>
                         </div>
                       </div>
                       <div className="col-lg-2 col-md-6 mb-2">
                         <div className="d-flex">
                           <strong className="me-1 text-nowrap">Age/Gender:</strong>
-                          <span>{selectedPatient.age}/{selectedPatient.gender}</span>
+                          <span>
+                            {selectedPatient.age}/{selectedPatient.gender}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -523,7 +541,8 @@ const OpdBills = () => {
               <div className="card border-0 shadow-sm">
                 <div className="card-body">
                   <h6 className="card-title mb-3">
-                    <i className="fa fa-medical-bag me-2 text-warning"></i>Services <span className="text-danger">*</span>
+                    <i className="fa fa-medical-bag me-2 text-warning"></i>Services{' '}
+                    <span className="text-danger">*</span>
                   </h6>
                   <div className="row">
                     <div className="col-md-9">
@@ -586,7 +605,8 @@ const OpdBills = () => {
                   {selectedServices.length === 0 ? (
                     <div className="alert alert-info" role="alert">
                       <i className="fa fa-info-circle me-2"></i>
-                      <strong>No services selected yet.</strong> Please search and add services from above.
+                      <strong>No services selected yet.</strong> Please search and add services from
+                      above.
                     </div>
                   ) : (
                     <Table responsive={true} className="text-black mb-0">
@@ -597,64 +617,68 @@ const OpdBills = () => {
                           <th width="80">Qty</th>
                           <th width="100">Price</th>
                           <th width="100">Amount</th>
-                          <th width="80" className="text-center">Action</th>
+                          <th width="80" className="text-center">
+                            Action
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
-                  {selectedServices.map((service, index) => (
-                    <tr key={index}>
-                      <td>{service.code}</td>
-                      <td>{service.label}</td>
-                      <td>
-                        <input
-                          type="number"
-                          className="form-control form-control-sm"
-                          style={{ width: '80px', color: 'black' }}
-                          min="1"
-                          step="1"
-                          value={service.qty}
-                          onChange={e => handleQtyChange(service, e.target.value)}
-                          onBlur={e => {
-                            // Ensure value is at least 1 on blur
-                            if (!e.target.value || parseInt(e.target.value) < 1) {
-                              handleQtyChange(service, '1');
-                            }
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          className="form-control form-control-sm"
-                          style={{ width: '100px', color: 'black' }}
-                          min="0"
-                          step="0.01"
-                          readOnly={!service.isEditable}
-                          value={service.rate}
-                          onChange={e => handleRateChange(service, e.target.value)}
-                          onBlur={e => {
-                            // Ensure value is not negative on blur
-                            if (parseFloat(e.target.value) < 0) {
-                              handleRateChange(service, '0');
-                            }
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <strong className="text-success">₹{(service.qty * service.rate).toLocaleString()}</strong>
-                      </td>
-                      <td className="text-center">
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveService(service)}
-                          className="btn btn-sm btn-outline-danger"
-                          title="Remove service"
-                        >
-                          <i className="fa fa-trash" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                        {selectedServices.map((service, index) => (
+                          <tr key={index}>
+                            <td>{service.code}</td>
+                            <td>{service.label}</td>
+                            <td>
+                              <input
+                                type="number"
+                                className="form-control form-control-sm"
+                                style={{ width: '80px', color: 'black' }}
+                                min="1"
+                                step="1"
+                                value={service.qty}
+                                onChange={e => handleQtyChange(service, e.target.value)}
+                                onBlur={e => {
+                                  // Ensure value is at least 1 on blur
+                                  if (!e.target.value || parseInt(e.target.value) < 1) {
+                                    handleQtyChange(service, '1');
+                                  }
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                className="form-control form-control-sm"
+                                style={{ width: '100px', color: 'black' }}
+                                min="0"
+                                step="0.01"
+                                readOnly={!service.isEditable}
+                                value={service.rate}
+                                onChange={e => handleRateChange(service, e.target.value)}
+                                onBlur={e => {
+                                  // Ensure value is not negative on blur
+                                  if (parseFloat(e.target.value) < 0) {
+                                    handleRateChange(service, '0');
+                                  }
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <strong className="text-success">
+                                ₹{(service.qty * service.rate).toLocaleString()}
+                              </strong>
+                            </td>
+                            <td className="text-center">
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveService(service)}
+                                className="btn btn-sm btn-outline-danger"
+                                title="Remove service"
+                              >
+                                <i className="fa fa-trash" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </Table>
                   )}
@@ -672,89 +696,92 @@ const OpdBills = () => {
                     <i className="fa fa-calculator me-2 text-info"></i>Billing Details
                   </h6>
                   <div className="row">
-            <div className="col-md-2">
-              <div className="form-group">
-                <label className="text-black font-w500">Grand Total</label>
-                <input
-                  type="text"
-                  style={{ width: '100px' }}
-                  readOnly
-                  className="form-control form-control-sm text-black"
-                  value={selectedServices.reduce((acc, curr) => acc + curr.qty * curr.rate, 0)}
-                />
-              </div>
-            </div>
+                    <div className="col-md-2">
+                      <div className="form-group">
+                        <label className="text-black font-w500">Grand Total</label>
+                        <input
+                          type="text"
+                          style={{ width: '100px' }}
+                          readOnly
+                          className="form-control form-control-sm text-black"
+                          value={selectedServices.reduce(
+                            (acc, curr) => acc + curr.qty * curr.rate,
+                            0
+                          )}
+                        />
+                      </div>
+                    </div>
 
-            <div className="col-md-3">
-              <div className="form-group">
-                <label className="text-black font-w500">Discount</label>
-                <div className="input-group">
-                  <input
-                    type="number"
-                    className="form-control form-control-sm text-black"
-                    style={{ width: '40px' }}
-                    value={discountPercent}
-                    onChange={e => handleDiscount(e.target.value, 1)}
-                  />
-                  <div className="input-group-append">
-                    <span className="input-group-text text-black">%</span>
-                  </div>
-                  <input
-                    type="number"
-                    className="form-control form-control-sm text-black"
-                    style={{ width: '40px' }}
-                    value={discountValue}
-                    onChange={e => handleDiscount(e.target.value, 2)}
-                  />
-                </div>
-              </div>
-            </div>
+                    <div className="col-md-3">
+                      <div className="form-group">
+                        <label className="text-black font-w500">Discount</label>
+                        <div className="input-group">
+                          <input
+                            type="number"
+                            className="form-control form-control-sm text-black"
+                            style={{ width: '40px' }}
+                            value={discountPercent}
+                            onChange={e => handleDiscount(e.target.value, 1)}
+                          />
+                          <div className="input-group-append">
+                            <span className="input-group-text text-black">%</span>
+                          </div>
+                          <input
+                            type="number"
+                            className="form-control form-control-sm text-black"
+                            style={{ width: '40px' }}
+                            value={discountValue}
+                            onChange={e => handleDiscount(e.target.value, 2)}
+                          />
+                        </div>
+                      </div>
+                    </div>
 
-            <div className="col-md-2">
-              <div className="form-group">
-                <label className="text-black font-w500">
-                  Paid<span className="danger">*</span>
-                </label>
-                <Field
-                  type="number"
-                  name="paidAmount"
-                  className="form-control form-control-sm text-black"
-                  style={{ width: '90px' }}
-                  value={paidAmount}
-                  onChange={e => {
-                    const value = e.target.value;
-                    setFieldValue('paidAmount', value);
-                    handlePaidAmount(value);
-                  }}
-                />
-                <ErrorMessage name="paidAmount" component="div" className="text-danger" />
-              </div>
-            </div>
-            <div className="col-md-2">
-              <div className="form-group">
-                <label className="text-black font-w500">Balance</label>
-                <input
-                  type="number"
-                  className="form-control form-control-sm text-black"
-                  style={{ width: '80px' }}
-                  readOnly
-                  value={balanceAmount}
-                />
-              </div>
-            </div>
-            <FormField
-              name="paymentMode"
-              label="Payment Mode"
-              type="select"
-              required
-              className="col-md-2"
-              options={[
-                { value: PAYMENT_MODES.CASH, label: 'Cash' },
-                { value: PAYMENT_MODES.CARD, label: 'Card' },
-                { value: PAYMENT_MODES.UPI, label: 'UPI' },
-              ]}
-              hideEmptyOption={true}
-            />
+                    <div className="col-md-2">
+                      <div className="form-group">
+                        <label className="text-black font-w500">
+                          Paid<span className="danger">*</span>
+                        </label>
+                        <Field
+                          type="number"
+                          name="paidAmount"
+                          className="form-control form-control-sm text-black"
+                          style={{ width: '90px' }}
+                          value={paidAmount}
+                          onChange={e => {
+                            const value = e.target.value;
+                            setFieldValue('paidAmount', value);
+                            handlePaidAmount(value);
+                          }}
+                        />
+                        <ErrorMessage name="paidAmount" component="div" className="text-danger" />
+                      </div>
+                    </div>
+                    <div className="col-md-2">
+                      <div className="form-group">
+                        <label className="text-black font-w500">Balance</label>
+                        <input
+                          type="number"
+                          className="form-control form-control-sm text-black"
+                          style={{ width: '80px' }}
+                          readOnly
+                          value={balanceAmount}
+                        />
+                      </div>
+                    </div>
+                    <FormField
+                      name="paymentMode"
+                      label="Payment Mode"
+                      type="select"
+                      required
+                      className="col-md-2"
+                      options={[
+                        { value: PAYMENT_MODES.CASH, label: 'Cash' },
+                        { value: PAYMENT_MODES.CARD, label: 'Card' },
+                        { value: PAYMENT_MODES.UPI, label: 'UPI' },
+                      ]}
+                      hideEmptyOption={true}
+                    />
                   </div>
                 </div>
               </div>
@@ -766,9 +793,9 @@ const OpdBills = () => {
             <div className="col-md-8"></div>
             <div className="col-md-4">
               <div className="form-group d-flex gap-2">
-                <Button 
-                  type="button" 
-                  variant="secondary btn-sm" 
+                <Button
+                  type="button"
+                  variant="secondary btn-sm"
                   onClick={resetFormData}
                   disabled={isSubmitting}
                 >
