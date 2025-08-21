@@ -93,7 +93,7 @@ const usePathologyAPI = () => {
         headers: getAuthHeaders(),
         body: JSON.stringify({
           reportIds: testIds,
-          status: 'COLLECTED',
+          status: 'collected',
         }),
       });
 
