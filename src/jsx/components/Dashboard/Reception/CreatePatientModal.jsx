@@ -1,15 +1,14 @@
-import axios from "axios";
-import { Form, Formik } from "formik";
-import { Button, Modal } from "react-bootstrap";
-import { toast } from "react-toastify";
-import Swal from "sweetalert2";
-import AgeField from "./components/AgeField";
-import FormField from "./components/FormField";
-import FormRow from "./components/FormRow";
-import {
-  initialPatientValues,
-  patientSchema,
-} from "./schemas/patientValidation";
+import { Button, Modal } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+
+import axios from 'axios';
+import { Form, Formik } from 'formik';
+import Swal from 'sweetalert2';
+
+import AgeField from './components/AgeField';
+import FormField from './components/FormField';
+import FormRow from './components/FormRow';
+import { initialPatientValues, patientSchema } from './schemas/patientValidation';
 
 const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
@@ -22,8 +21,8 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
 
       // Validate age is a valid number
       if (isNaN(submitData.age) || submitData.age <= 0) {
-        toast.error("Please enter a valid age", {
-          position: "top-right",
+        toast.error('Please enter a valid age', {
+          position: 'top-right',
           autoClose: 5000,
           hideProgressBar: false,
           closeOnClick: true,
@@ -34,34 +33,30 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
       }
 
       // Remove empty optional fields
-      if (!submitData.maritalStatus || submitData.maritalStatus === "") {
+      if (!submitData.maritalStatus || submitData.maritalStatus === '') {
         delete submitData.maritalStatus;
       }
-      if (!submitData.religion || submitData.religion === "") {
+      if (!submitData.religion || submitData.religion === '') {
         delete submitData.religion;
       }
-      if (!submitData.occupation || submitData.occupation === "") {
+      if (!submitData.occupation || submitData.occupation === '') {
         delete submitData.occupation;
       }
-      if (!submitData.emailId || submitData.emailId === "") {
+      if (!submitData.emailId || submitData.emailId === '') {
         delete submitData.emailId;
       }
 
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/patients`,
-        submitData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/patients`, submitData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
       if (response.data.success) {
         Swal.fire({
-          icon: "success",
-          title: "Success!",
-          text: response.data.message || "Patient created successfully",
+          icon: 'success',
+          title: 'Success!',
+          text: response.data.message || 'Patient created successfully',
           showConfirmButton: false,
           timer: 1500,
         });
@@ -76,7 +71,7 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
         }
       }
     } catch (error) {
-      console.error("Error creating patient:", error);
+      console.error('Error creating patient:', error);
 
       // Handle validation errors from backend
       if (error.response?.status === 400 && error.response?.data?.errors) {
@@ -86,7 +81,7 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
         if (validationErrors.length > 0) {
           const firstError = validationErrors[0];
           toast.error(`${firstError.message}`, {
-            position: "bottom-right",
+            position: 'bottom-right',
             autoClose: 5000,
             hideProgressBar: false,
             closeOnClick: true,
@@ -97,11 +92,10 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
       } else {
         // Handle other types of errors
         const errorMessage =
-          error.response?.data?.message ||
-          "Failed to create patient. Please try again.";
+          error.response?.data?.message || 'Failed to create patient. Please try again.';
 
         toast.error(errorMessage, {
-          position: "top-right",
+          position: 'top-right',
           autoClose: 5000,
           hideProgressBar: false,
           closeOnClick: true,
@@ -148,7 +142,7 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   type="select"
                   required
                   className="col-12 col-md-6 col-lg-3"
-                  options={["S/O", "W/O", "D/O", "Other"]}
+                  options={['S/O', 'W/O', 'D/O', 'Other']}
                 />
                 <FormField
                   name="fatherOrHusbandName"
@@ -169,7 +163,7 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   type="radio"
                   required
                   className="col-12 col-md-6 col-lg-6"
-                  options={["Male", "Female", "Other"]}
+                  options={['Male', 'Female', 'Other']}
                 />
                 <FormField
                   name="maritalStatus"
@@ -177,12 +171,12 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   type="select"
                   className="col-12 col-md-6 col-lg-6"
                   options={[
-                    { value: "", label: "Select Marital" },
-                    { value: "Divorced", label: "Divorced" },
-                    { value: "Married", label: "Married" },
-                    { value: "Separated", label: "Separated" },
-                    { value: "Unmarried", label: "Unmarried" },
-                    { value: "Widowed", label: "Widowed" },
+                    { value: '', label: 'Select Marital' },
+                    { value: 'Divorced', label: 'Divorced' },
+                    { value: 'Married', label: 'Married' },
+                    { value: 'Separated', label: 'Separated' },
+                    { value: 'Unmarried', label: 'Unmarried' },
+                    { value: 'Widowed', label: 'Widowed' },
                   ]}
                 />
                 <FormField
@@ -191,15 +185,15 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   type="select"
                   className="col-12 col-md-6 col-lg-6"
                   options={[
-                    { value: "", label: "Select Religion" },
-                    { value: "Hindu", label: "Hindu" },
-                    { value: "Buddhist", label: "Buddhist" },
-                    { value: "Christian", label: "Christian" },
-                    { value: "Jain", label: "Jain" },
-                    { value: "Muslim", label: "Muslim" },
-                    { value: "Parsi", label: "Parsi" },
-                    { value: "Sikh", label: "Sikh" },
-                    { value: "Other", label: "Other" },
+                    { value: '', label: 'Select Religion' },
+                    { value: 'Hindu', label: 'Hindu' },
+                    { value: 'Buddhist', label: 'Buddhist' },
+                    { value: 'Christian', label: 'Christian' },
+                    { value: 'Jain', label: 'Jain' },
+                    { value: 'Muslim', label: 'Muslim' },
+                    { value: 'Parsi', label: 'Parsi' },
+                    { value: 'Sikh', label: 'Sikh' },
+                    { value: 'Other', label: 'Other' },
                   ]}
                 />
                 <FormField
@@ -208,15 +202,15 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   type="select"
                   className="col-12 col-md-6 col-lg-6"
                   options={[
-                    { value: "", label: "Select Occupation" },
-                    { value: "SELF EMPLOYED", label: "SELF EMPLOYED" },
-                    { value: "GOVT. SERVICE", label: "GOVT. SERVICE" },
-                    { value: "PVT. SERVICE", label: "PVT. SERVICE" },
-                    { value: "BUSINESS", label: "BUSINESS" },
-                    { value: "HOUSE WORK", label: "HOUSE WORK" },
-                    { value: "STUDY", label: "STUDY" },
-                    { value: "UN-EMPLOYED", label: "UN-EMPLOYED" },
-                    { value: "OTHER", label: "OTHER" },
+                    { value: '', label: 'Select Occupation' },
+                    { value: 'SELF EMPLOYED', label: 'SELF EMPLOYED' },
+                    { value: 'GOVT. SERVICE', label: 'GOVT. SERVICE' },
+                    { value: 'PVT. SERVICE', label: 'PVT. SERVICE' },
+                    { value: 'BUSINESS', label: 'BUSINESS' },
+                    { value: 'HOUSE WORK', label: 'HOUSE WORK' },
+                    { value: 'STUDY', label: 'STUDY' },
+                    { value: 'UN-EMPLOYED', label: 'UN-EMPLOYED' },
+                    { value: 'OTHER', label: 'OTHER' },
                   ]}
                 />
               </FormRow>
@@ -243,20 +237,9 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   type="select"
                   required
                   className="col-6 col-sm-6 col-lg-6"
-                  options={[
-                    "Aadhar Card",
-                    "Pancard",
-                    "Driving license",
-                    "Voter ID",
-                    "Passport",
-                  ]}
+                  options={['Aadhar Card', 'Pancard', 'Driving license', 'Voter ID', 'Passport']}
                 />
-                <FormField
-                  name="idNo"
-                  label="ID No"
-                  required
-                  className="col-6 col-sm-6 col-lg-6"
-                />
+                <FormField name="idNo" label="ID No" required className="col-6 col-sm-6 col-lg-6" />
               </FormRow>
 
               {/* Patient Type and Address Row 1 */}
@@ -266,7 +249,7 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   label="Patient Type"
                   type="select"
                   className="col-6 col-sm-4 col-lg-3"
-                  options={["General", "VIP", "Staff"]}
+                  options={['General', 'VIP', 'Staff']}
                 />
                 <FormField
                   name="address.village"
@@ -338,7 +321,7 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                     Saving...
                   </>
                 ) : (
-                  "Save Patient"
+                  'Save Patient'
                 )}
               </Button>
             </Modal.Footer>

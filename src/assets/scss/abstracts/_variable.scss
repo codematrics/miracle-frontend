@@ -1,18 +1,17 @@
 //customize bootstrap
 @import './bs-custom';
 
-$strong:#646c9a;
+$strong: #646c9a;
 $border: #e6e6e6;
-$shadow: 0px 0Epx 40px 0px rgba(82,63,105,0.1);
-$body-bg: #F9F9F9;
-
+$shadow: 0px 0Epx 40px 0px rgba(82, 63, 105, 0.1);
+$body-bg: #f9f9f9;
 
 ///////////////
 // Solid Color
 ///////////////
 $white: #fff;
 $black: #000;
-$charade: #23252F;
+$charade: #23252f;
 
 /////////////////////////
 // Dark Version Color
@@ -22,7 +21,7 @@ $d-ctl: #828690;
 $d-border: #333a54;
 $d-bg: #181f39;
 $dark-card: #1e2746;
-$dark_bg_lighter: #1E2A4A;
+$dark_bg_lighter: #1e2a4a;
 
 /////////////////////////
 // Primary Light
@@ -36,7 +35,7 @@ $info-light: lighten($info, 35%);
 $dark-light: lighten($dark, 25%);
 
 /////////////////////////
-// Opacity 
+// Opacity
 /////////////////////////
 $primary-opacity: rgba($primary, 0.2);
 $secondary-opacity: rgba($secondary, 0.5);
@@ -59,17 +58,16 @@ $heading: #333;
 // Material Colors
 ///////////////////
 $dusty-gray: #999999;
-$gallery: #EEEEEE;
+$gallery: #eeeeee;
 $gray: #898989;
 $input-border-color: $border;
-
 
 ///////////////////
 // Social Colors
 ///////////////////
 $facebook: #3b5998;
 $twitter: #1da1f2;
-$youtube: #FF0000;
+$youtube: #ff0000;
 $google-plus: #db4439;
 $linkedin: #007bb6;
 $instagram: #c32aa3;
@@ -84,19 +82,17 @@ $yahoo: #430297;
 $dribbble: #ea4c89;
 $skype: #00aff0;
 $quora: #aa2200;
-$riverBed: #4C585C;
+$riverBed: #4c585c;
 $vimeo: #1ab7ea;
-
 
 ///////////////////
 // Misc Colors
 ///////////////////
-$iron: #DDDFE1;
-$grey: #D2D6DE;
+$iron: #dddfe1;
+$grey: #d2d6de;
 $pale-sky: #6a707e;
-$athensGray: #F0F0F2;
-$sky: #2290FF;
-
+$athensGray: #f0f0f2;
+$sky: #2290ff;
 
 //color for coller pallate
 $color_pallate_1: $white;
@@ -116,7 +112,4 @@ $color_pallate_14: #1367c8;
 $color_pallate_15: #ed0b4c;
 
 //utility variables
-$radius: 0; 
-
-
-
+$radius: 0;

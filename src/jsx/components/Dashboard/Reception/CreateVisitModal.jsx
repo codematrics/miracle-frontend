@@ -1,36 +1,35 @@
-import axios from "axios";
-import { Form, Formik } from "formik";
-import { useCallback, useEffect, useState } from "react";
-import { Button, Modal, Table } from "react-bootstrap";
-import Select from "react-select";
-import { toast } from "react-toastify";
-import Swal from "sweetalert2";
-import {
-  fetchServices,
-  transformServicesForSelect,
-} from "../../../../services/ServicesService";
-import FormField from "./components/FormField";
-import FormRow from "./components/FormRow";
-import { initialVisitValues, visitSchema } from "./schemas/visitValidation";
+import { useCallback, useEffect, useState } from 'react';
+import { Button, Modal, Table } from 'react-bootstrap';
+import Select from 'react-select';
+import { toast } from 'react-toastify';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import axios from 'axios';
+import { Form, Formik } from 'formik';
+import Swal from 'sweetalert2';
+
+import { fetchServices, transformServicesForSelect } from '../../../../services/ServicesService';
+import FormField from './components/FormField';
+import FormRow from './components/FormRow';
+import { initialVisitValues, visitSchema } from './schemas/visitValidation';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
   const [patientOptions, setPatientOptions] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [searchPatient, setSearchPatient] = useState("");
+  const [searchPatient, setSearchPatient] = useState('');
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedServices, setSelectedServices] = useState([]);
   const [servicesOptions, setServicesOptions] = useState([]);
   const [servicesLoading, setServicesLoading] = useState(false);
-  const [servicesSearch, setServicesSearch] = useState("");
+  const [servicesSearch, setServicesSearch] = useState('');
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       // Validate patient selection
       if (!selectedPatient) {
-        toast.error("Please select a patient", {
-          position: "top-right",
+        toast.error('Please select a patient', {
+          position: 'top-right',
           autoClose: 5000,
         });
         return;
@@ -38,8 +37,8 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
 
       // Validate services selection
       if (selectedServices.length === 0) {
-        toast.error("Please select at least one service", {
-          position: "top-right",
+        toast.error('Please select at least one service', {
+          position: 'top-right',
           autoClose: 5000,
         });
         return;
@@ -55,9 +54,14 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
           fatherOrHusbandName: selectedPatient.fathername,
           mobileNo: selectedPatient.mobileno,
           age: selectedPatient.age,
-          gender: selectedPatient.gender === 'M' ? 'Male' : selectedPatient.gender === 'F' ? 'Female' : 'Other',
+          gender:
+            selectedPatient.gender === 'M'
+              ? 'Male'
+              : selectedPatient.gender === 'F'
+                ? 'Female'
+                : 'Other',
         },
-        services: selectedServices.map((service) => ({
+        services: selectedServices.map(service => ({
           serviceId: service.id,
           serviceName: service.label,
           serviceCode: service.code,
@@ -68,23 +72,23 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
       };
 
       // Remove empty optional fields
-      Object.keys(submitData).forEach((key) => {
-        if (submitData[key] === "" || submitData[key] === null) {
+      Object.keys(submitData).forEach(key => {
+        if (submitData[key] === '' || submitData[key] === null) {
           delete submitData[key];
         }
       });
 
       const response = await axios.post(`${API_URL}/visits`, submitData, {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
 
       if (response.data.success) {
         Swal.fire({
-          icon: "success",
-          title: "Success!",
-          text: response.data.message || "Visit created successfully",
+          icon: 'success',
+          title: 'Success!',
+          text: response.data.message || 'Visit created successfully',
           showConfirmButton: false,
           timer: 1500,
         });
@@ -93,7 +97,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
         resetForm();
         setSelectedPatient(null);
         setSelectedServices([]);
-        setSearchPatient("");
+        setSearchPatient('');
         onHide();
 
         // Callback to parent component if needed
@@ -102,7 +106,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
         }
       }
     } catch (error) {
-      console.error("Error creating visit:", error);
+      console.error('Error creating visit:', error);
 
       // Handle validation errors from backend
       if (error.response?.status === 400 && error.response?.data?.errors) {
@@ -112,7 +116,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
         if (validationErrors.length > 0) {
           const firstError = validationErrors[0];
           toast.error(`${firstError.message}`, {
-            position: "bottom-right",
+            position: 'bottom-right',
             autoClose: 5000,
             hideProgressBar: false,
             closeOnClick: true,
@@ -123,11 +127,10 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
       } else {
         // Handle other types of errors
         const errorMessage =
-          error.response?.data?.message ||
-          "Failed to create visit. Please try again.";
+          error.response?.data?.message || 'Failed to create visit. Please try again.';
 
         toast.error(errorMessage, {
-          position: "top-right",
+          position: 'top-right',
           autoClose: 5000,
           hideProgressBar: false,
           closeOnClick: true,
@@ -142,40 +145,33 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
 
   const getPatientOptions = async () => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/patients/dropdown-data`
-      );
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/patients/dropdown-data`);
       if (response.data.success) {
         setPatientOptions(response.data.data);
       }
     } catch (error) {
-      console.error("Error fetching patient options:", error);
+      console.error('Error fetching patient options:', error);
     }
   };
 
-  const handleSearchPatient = (selectedOption) => {
+  const handleSearchPatient = selectedOption => {
     setSelectedPatient(selectedOption);
     setSearchPatient(selectedOption);
   };
 
-  const handleAddService = (aSelectedOption) => {
-    if (
-      aSelectedOption &&
-      !selectedServices.some((service) => service.id === aSelectedOption.id)
-    ) {
+  const handleAddService = aSelectedOption => {
+    if (aSelectedOption && !selectedServices.some(service => service.id === aSelectedOption.id)) {
       setSelectedServices([...selectedServices, aSelectedOption]);
     }
     setSelectedOption(null); // Clear the selected option
   };
 
-  const handleRemoveService = (serviceToRemove) => {
-    setSelectedServices(
-      selectedServices.filter((service) => service.id !== serviceToRemove.id)
-    );
+  const handleRemoveService = serviceToRemove => {
+    setSelectedServices(selectedServices.filter(service => service.id !== serviceToRemove.id));
   };
 
   // Fetch services from API
-  const loadServices = useCallback(async (searchQuery = "") => {
+  const loadServices = useCallback(async (searchQuery = '') => {
     setServicesLoading(true);
     try {
       const response = await fetchServices(searchQuery);
@@ -183,15 +179,15 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
         const transformedServices = transformServicesForSelect(response.data);
         setServicesOptions(transformedServices);
       } else {
-        toast.error("Failed to load services", {
-          position: "top-right",
+        toast.error('Failed to load services', {
+          position: 'top-right',
           autoClose: 3000,
         });
       }
     } catch (error) {
-      console.error("Error loading services:", error);
-      toast.error("Error loading services. Please try again.", {
-        position: "top-right",
+      console.error('Error loading services:', error);
+      toast.error('Error loading services. Please try again.', {
+        position: 'top-right',
         autoClose: 3000,
       });
     } finally {
@@ -201,7 +197,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
 
   // Handle services search with debouncing
   const handleServicesSearch = useCallback(
-    (inputValue) => {
+    inputValue => {
       setServicesSearch(inputValue);
 
       // Debounce search
@@ -216,10 +212,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
 
   // Calculate total amount
   const getTotalAmount = () => {
-    return selectedServices.reduce(
-      (total, service) => total + (service.rate || 0),
-      0
-    );
+    return selectedServices.reduce((total, service) => total + (service.rate || 0), 0);
   };
 
   useEffect(() => {
@@ -231,7 +224,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
   useEffect(() => {
     if (!show) {
       setServicesOptions([]);
-      setServicesSearch("");
+      setServicesSearch('');
       setSelectedServices([]);
       setSelectedOption(null);
     }
@@ -244,8 +237,8 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
       onHide={onHide}
       centered={true}
       size="xl"
-      backdropClassName={"role"}
-      backdrop={"static"}
+      backdropClassName={'role'}
+      backdrop={'static'}
     >
       <Modal.Header>
         <Modal.Title>Add New Visit</Modal.Title>
@@ -291,7 +284,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                     value={
                       selectedPatient
                         ? selectedPatient.uhid || selectedPatient.id || selectedPatient.value
-                        : ""
+                        : ''
                     }
                   />
                 </div>
@@ -301,7 +294,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                     type="text"
                     readOnly
                     className="form-control form-control-sm text-black"
-                    value={selectedPatient ? selectedPatient.label : ""}
+                    value={selectedPatient ? selectedPatient.label : ''}
                   />
                 </div>
                 <div className="col-12 col-md-6 col-lg-2 form-group">
@@ -310,7 +303,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                     type="text"
                     readOnly
                     className="form-control form-control-sm text-black"
-                    value={selectedPatient ? selectedPatient.fathername : ""}
+                    value={selectedPatient ? selectedPatient.fathername : ''}
                   />
                 </div>
                 <div className="col-12 col-md-6 col-lg-2 form-group">
@@ -319,7 +312,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                     type="text"
                     readOnly
                     className="form-control form-control-sm text-black"
-                    value={selectedPatient ? selectedPatient.mobileno : ""}
+                    value={selectedPatient ? selectedPatient.mobileno : ''}
                   />
                 </div>
                 <div className="col-12 col-md-6 col-lg-2 form-group">
@@ -329,9 +322,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                     readOnly
                     className="form-control form-control-sm text-black"
                     value={
-                      selectedPatient
-                        ? `${selectedPatient.gender}/${selectedPatient.age}`
-                        : ""
+                      selectedPatient ? `${selectedPatient.gender}/${selectedPatient.age}` : ''
                     }
                   />
                 </div>
@@ -345,11 +336,8 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                   required
                   className="col-12 col-md-6 col-lg-3"
                   options={[
-                    { value: "", label: "Select Ref By" },
-                    { value: "1", label: "Self" },
-                    { value: "2", label: "Dr. Kailash Garg" },
-                    { value: "3", label: "Dr. Manohar Menariya" },
-                    { value: "4", label: "Dr. Vishal Khutwal" },
+                    { value: '', label: 'Select Ref By' },
+                    { value: '1', label: 'Self' },
                   ]}
                 />
 
@@ -360,10 +348,10 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                   required
                   className="col-12 col-md-6 col-lg-3"
                   options={[
-                    { value: "", label: "Select Visiting Doctor" },
-                    { value: "1", label: "Dr. Kailash Garg" },
-                    { value: "2", label: "Dr. Manohar Menariya" },
-                    { value: "3", label: "Dr. Vishal Khutwal" },
+                    { value: '', label: 'Select Visiting Doctor' },
+                    { value: '1', label: 'Dr. Kailash Garg' },
+                    { value: '2', label: 'Dr. Manohar Menariya' },
+                    { value: '3', label: 'Dr. Vishal Khutwal' },
                   ]}
                 />
 
@@ -374,10 +362,10 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                   required
                   className="col-12 col-md-6 col-lg-3"
                   options={[
-                    { value: "", label: "Select Visit Type" },
-                    { value: "1", label: "OPD" },
-                    { value: "2", label: "IPD" },
-                    { value: "3", label: "Camp" },
+                    { value: '', label: 'Select Visit Type' },
+                    { value: '1', label: 'OPD' },
+                    { value: '2', label: 'IPD' },
+                    { value: '3', label: 'Camp' },
                   ]}
                 />
 
@@ -395,7 +383,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                   type="radio"
                   required
                   className="col-12 col-md-6 col-lg-4"
-                  options={["Yes", "No"]}
+                  options={['Yes', 'No']}
                 />
 
                 <FormField
@@ -405,11 +393,11 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                   required
                   className="col-12 col-md-6 col-lg-4"
                   options={[
-                    { value: "", label: "Select Mediclaim" },
-                    { value: "1", label: "Not Applicable" },
-                    { value: "2", label: "Ayushman" },
-                    { value: "3", label: "Healthcare" },
-                    { value: "4", label: "National Insurance" },
+                    { value: '', label: 'Select Mediclaim' },
+                    { value: '1', label: 'Not Applicable' },
+                    { value: '2', label: 'Ayushman' },
+                    { value: '3', label: 'Healthcare' },
+                    { value: '4', label: 'National Insurance' },
                   ]}
                 />
 
@@ -440,9 +428,9 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                       noOptionsMessage={({ inputValue }) =>
                         inputValue
                           ? `No services found for "${inputValue}"`
-                          : "Start typing to search services"
+                          : 'Start typing to search services'
                       }
-                      loadingMessage={() => "Loading services..."}
+                      loadingMessage={() => 'Loading services...'}
                     />
                   </div>
                 </div>
@@ -463,32 +451,25 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                       <tr>
                         <td colSpan="4" className="text-center text-muted py-4">
                           <i className="fas fa-info-circle me-2"></i>
-                          No services selected. Please search and add services
-                          above.
+                          No services selected. Please search and add services above.
                         </td>
                       </tr>
                     ) : (
                       selectedServices.map((service, index) => (
                         <tr key={service.id || index}>
                           <td>
-                            <strong className="text-primary">
-                              {service.code}
-                            </strong>
+                            <strong className="text-primary">{service.code}</strong>
                           </td>
                           <td>
                             <div>
                               <strong>{service.label}</strong>
                               {service.description && (
-                                <small className="text-muted d-block">
-                                  {service.description}
-                                </small>
+                                <small className="text-muted d-block">{service.description}</small>
                               )}
                             </div>
                           </td>
                           <td className="text-end">
-                            <strong>
-                              ₹{service.rate?.toLocaleString() || "0"}
-                            </strong>
+                            <strong>₹{service.rate?.toLocaleString() || '0'}</strong>
                           </td>
                           <td className="text-center">
                             <button
@@ -531,12 +512,8 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
               >
                 Close
               </Button>
-              <Button
-                type="submit"
-                className="btn btn-sm btn-primary"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Saving..." : "Save Visit"}
+              <Button type="submit" className="btn btn-sm btn-primary" disabled={isSubmitting}>
+                {isSubmitting ? 'Saving...' : 'Save Visit'}
               </Button>
             </Modal.Footer>
           </Form>

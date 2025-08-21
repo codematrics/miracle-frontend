@@ -1,314 +1,348 @@
 const mongoose = require('mongoose');
 
 // Visit Schema for MongoDB
-const visitSchema = new mongoose.Schema({
-  // Basic Visit Information
-  visitNo: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true,
-    // Auto-generate format: OPD-YYYYMMDD-001
-  },
-  
-  visitDate: {
-    type: Date,
-    default: Date.now,
-    required: true,
-    index: true
-  },
-  
-  visitType: {
-    type: String,
-    required: true,
-    enum: ['OPD', 'IPD', 'Emergency', 'Camp'],
-    default: 'OPD',
-    index: true
-  },
-  
-  visitDescription: {
-    type: String,
-    maxlength: 500,
-    trim: true
-  },
-  
-  status: {
-    type: String,
-    enum: ['scheduled', 'in_progress', 'completed', 'cancelled', 'no_show'],
-    default: 'scheduled',
-    index: true
-  },
-  
-  // Patient Reference
-  patientId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Patient',
-    required: true,
-    index: true
-  },
-  
-  // Patient snapshot data (for quick access without joins)
-  patientInfo: {
-    uhid: { type: String, required: true },
-    name: { type: String, required: true },
-    fatherOrHusbandName: { type: String },
-    mobileNo: { type: String, required: true },
-    age: { type: String, required: true },
-    gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
-    address: {
-      village: String,
-      district: String,
-      state: String,
-      pincode: String
-    }
-  },
-  
-  // Doctor Information
-  referredBy: {
-    doctorId: {
+const visitSchema = new mongoose.Schema(
+  {
+    // Basic Visit Information
+    visitNo: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+      // Auto-generate format: OPD-YYYYMMDD-001
+    },
+
+    visitDate: {
+      type: Date,
+      default: Date.now,
+      required: true,
+      index: true,
+    },
+
+    visitType: {
+      type: String,
+      required: true,
+      enum: ['OPD', 'IPD', 'Emergency', 'Camp'],
+      default: 'OPD',
+      index: true,
+    },
+
+    visitDescription: {
+      type: String,
+      maxlength: 500,
+      trim: true,
+    },
+
+    status: {
+      type: String,
+      enum: ['scheduled', 'in_progress', 'completed', 'cancelled', 'no_show'],
+      default: 'scheduled',
+      index: true,
+    },
+
+    // Patient Reference
+    patientId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Doctor'
+      ref: 'Patient',
+      required: true,
+      index: true,
     },
-    doctorName: String,
-    referenceType: {
-      type: String,
-      enum: ['self', 'doctor', 'other'],
-      default: 'self'
-    }
-  },
-  
-  visitingDoctor: {
-    doctorId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Doctor',
-      required: true
-    },
-    doctorName: { type: String, required: true },
-    department: String,
-    specialization: String
-  },
-  
-  // Medical Information
-  medicoLegal: {
-    type: Boolean,
-    default: false,
-    index: true
-  },
-  
-  mediclaim: {
-    type: {
-      type: String,
-      enum: ['Not Applicable', 'Ayushman', 'Healthcare', 'National Insurance', 'Other'],
-      default: 'Not Applicable'
-    },
-    policyNumber: String,
-    policyId: String
-  },
-  
-  // Services Information
-  services: [{
-    serviceId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Service',
-      required: true
-    },
-    serviceName: { type: String, required: true },
-    serviceCode: { type: String, required: true },
-    rate: { type: Number, required: true, min: 0 },
-    category: String,
-    quantity: { type: Number, default: 1, min: 1 },
-    discount: { type: Number, default: 0, min: 0 },
-    finalAmount: { type: Number, required: true }
-  }],
-  
-  // Billing Information
-  billing: {
-    totalAmount: { type: Number, required: true, default: 0 },
-    discountAmount: { type: Number, default: 0, min: 0 },
-    taxAmount: { type: Number, default: 0, min: 0 },
-    finalAmount: { type: Number, required: true },
-    paymentStatus: {
-      type: String,
-      enum: ['pending', 'partial', 'paid', 'refunded'],
-      default: 'pending',
-      index: true
-    },
-    paymentMethod: {
-      type: String,
-      enum: ['cash', 'card', 'upi', 'net_banking', 'cheque', 'other']
-    }
-  },
-  
-  // Clinical Data (will be filled during consultation)
-  clinical: {
-    // Chief Complaints
-    complaints: [{
-      complaint: String,
-      duration: String,
-      severity: {
-        type: String,
-        enum: ['mild', 'moderate', 'severe']
-      }
-    }],
-    
-    // Vital Signs
-    vitals: {
-      temperature: String,
-      bloodPressure: String,
-      pulse: String,
-      respiratoryRate: String,
-      oxygenSaturation: String,
-      height: String,
-      weight: String,
-      bmi: Number
-    },
-    
-    // History
-    presentHistory: String,
-    pastHistory: String,
-    familyHistory: String,
-    personalHistory: String,
-    allergies: String,
-    
-    // Examination
-    generalExamination: String,
-    systemicExamination: String,
-    
-    // Diagnosis
-    provisionalDiagnosis: String,
-    finalDiagnosis: String,
-    additionalDiagnosis: String,
-    
-    // Investigations
-    investigations: [{
-      name: String,
-      type: String,
-      status: {
-        type: String,
-        enum: ['ordered', 'in_progress', 'completed'],
-        default: 'ordered'
+
+    // Patient snapshot data (for quick access without joins)
+    patientInfo: {
+      uhid: { type: String, required: true },
+      name: { type: String, required: true },
+      fatherOrHusbandName: { type: String },
+      mobileNo: { type: String, required: true },
+      age: { type: String, required: true },
+      gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
+      address: {
+        village: String,
+        district: String,
+        state: String,
+        pincode: String,
       },
-      result: String,
-      reportDate: Date
-    }],
-    
-    // Treatment Plan
-    medications: [{
-      medicationType: String, // Tab, Cap, Syp, Inj, etc.
-      medicineName: String,
-      route: String, // Oral, IV, IM, etc.
-      dosage: String,
-      frequency: String,
-      duration: String,
-      instructions: String,
-      remark: String
-    }],
-    
-    // Advice and Follow-up
-    advice: String,
-    followUpDate: Date,
-    followUpInstructions: String
-  },
-  
-  // Workflow Status
-  workflow: {
-    registration: {
-      status: { type: String, enum: ['pending', 'completed'], default: 'completed' },
-      timestamp: { type: Date, default: Date.now },
-      userId: mongoose.Schema.Types.ObjectId
     },
-    consultation: {
-      status: { type: String, enum: ['pending', 'in_progress', 'completed'], default: 'pending' },
-      timestamp: Date,
-      userId: mongoose.Schema.Types.ObjectId
+
+    // Doctor Information
+    referredBy: {
+      doctorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Doctor',
+      },
+      doctorName: String,
+      referenceType: {
+        type: String,
+        enum: ['self', 'doctor', 'other'],
+        default: 'self',
+      },
     },
-    investigation: {
-      status: { type: String, enum: ['pending', 'in_progress', 'completed', 'not_required'], default: 'not_required' },
-      timestamp: Date,
-      userId: mongoose.Schema.Types.ObjectId
+
+    visitingDoctor: {
+      doctorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Doctor',
+        required: true,
+      },
+      doctorName: { type: String, required: true },
+      department: String,
+      specialization: String,
     },
-    pharmacy: {
-      status: { type: String, enum: ['pending', 'dispensed', 'not_required'], default: 'not_required' },
-      timestamp: Date,
-      userId: mongoose.Schema.Types.ObjectId
+
+    // Medical Information
+    medicoLegal: {
+      type: Boolean,
+      default: false,
+      index: true,
     },
+
+    mediclaim: {
+      type: {
+        type: String,
+        enum: ['Not Applicable', 'Ayushman', 'Healthcare', 'National Insurance', 'Other'],
+        default: 'Not Applicable',
+      },
+      policyNumber: String,
+      policyId: String,
+    },
+
+    // Services Information
+    services: [
+      {
+        serviceId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Service',
+          required: true,
+        },
+        serviceName: { type: String, required: true },
+        serviceCode: { type: String, required: true },
+        rate: { type: Number, required: true, min: 0 },
+        category: String,
+        quantity: { type: Number, default: 1, min: 1 },
+        discount: { type: Number, default: 0, min: 0 },
+        finalAmount: { type: Number, required: true },
+      },
+    ],
+
+    // Billing Information
     billing: {
-      status: { type: String, enum: ['pending', 'completed'], default: 'pending' },
-      timestamp: Date,
-      userId: mongoose.Schema.Types.ObjectId
+      totalAmount: { type: Number, required: true, default: 0 },
+      discountAmount: { type: Number, default: 0, min: 0 },
+      taxAmount: { type: Number, default: 0, min: 0 },
+      finalAmount: { type: Number, required: true },
+      paymentStatus: {
+        type: String,
+        enum: ['pending', 'partial', 'paid', 'refunded'],
+        default: 'pending',
+        index: true,
+      },
+      paymentMethod: {
+        type: String,
+        enum: ['cash', 'card', 'upi', 'net_banking', 'cheque', 'other'],
+      },
     },
-    discharge: {
-      status: { type: String, enum: ['pending', 'completed', 'not_applicable'], default: 'not_applicable' },
-      timestamp: Date,
-      userId: mongoose.Schema.Types.ObjectId
-    }
-  },
-  
-  // Additional Information
-  priority: {
-    type: String,
-    enum: ['low', 'normal', 'high', 'urgent'],
-    default: 'normal',
-    index: true
-  },
-  
-  source: {
-    type: String,
-    enum: ['walk_in', 'appointment', 'emergency', 'referral', 'camp'],
-    default: 'walk_in'
-  },
-  
-  appointmentId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Appointment'
-  },
-  
-  // Notes and Comments
-  notes: [{
-    note: String,
-    addedBy: {
+
+    // Clinical Data (will be filled during consultation)
+    clinical: {
+      // Chief Complaints
+      complaints: [
+        {
+          complaint: String,
+          duration: String,
+          severity: {
+            type: String,
+            enum: ['mild', 'moderate', 'severe'],
+          },
+        },
+      ],
+
+      // Vital Signs
+      vitals: {
+        temperature: String,
+        bloodPressure: String,
+        pulse: String,
+        respiratoryRate: String,
+        oxygenSaturation: String,
+        height: String,
+        weight: String,
+        bmi: Number,
+      },
+
+      // History
+      presentHistory: String,
+      pastHistory: String,
+      familyHistory: String,
+      personalHistory: String,
+      allergies: String,
+
+      // Examination
+      generalExamination: String,
+      systemicExamination: String,
+
+      // Diagnosis
+      provisionalDiagnosis: String,
+      finalDiagnosis: String,
+      additionalDiagnosis: String,
+
+      // Investigations
+      investigations: [
+        {
+          name: String,
+          type: String,
+          status: {
+            type: String,
+            enum: ['ordered', 'in_progress', 'completed'],
+            default: 'ordered',
+          },
+          result: String,
+          reportDate: Date,
+        },
+      ],
+
+      // Treatment Plan
+      medications: [
+        {
+          medicationType: String, // Tab, Cap, Syp, Inj, etc.
+          medicineName: String,
+          route: String, // Oral, IV, IM, etc.
+          dosage: String,
+          frequency: String,
+          duration: String,
+          instructions: String,
+          remark: String,
+        },
+      ],
+
+      // Advice and Follow-up
+      advice: String,
+      followUpDate: Date,
+      followUpInstructions: String,
+    },
+
+    // Workflow Status
+    workflow: {
+      registration: {
+        status: { type: String, enum: ['pending', 'completed'], default: 'completed' },
+        timestamp: { type: Date, default: Date.now },
+        userId: mongoose.Schema.Types.ObjectId,
+      },
+      consultation: {
+        status: { type: String, enum: ['pending', 'in_progress', 'completed'], default: 'pending' },
+        timestamp: Date,
+        userId: mongoose.Schema.Types.ObjectId,
+      },
+      investigation: {
+        status: {
+          type: String,
+          enum: ['pending', 'in_progress', 'completed', 'not_required'],
+          default: 'not_required',
+        },
+        timestamp: Date,
+        userId: mongoose.Schema.Types.ObjectId,
+      },
+      pharmacy: {
+        status: {
+          type: String,
+          enum: ['pending', 'dispensed', 'not_required'],
+          default: 'not_required',
+        },
+        timestamp: Date,
+        userId: mongoose.Schema.Types.ObjectId,
+      },
+      billing: {
+        status: { type: String, enum: ['pending', 'completed'], default: 'pending' },
+        timestamp: Date,
+        userId: mongoose.Schema.Types.ObjectId,
+      },
+      discharge: {
+        status: {
+          type: String,
+          enum: ['pending', 'completed', 'not_applicable'],
+          default: 'not_applicable',
+        },
+        timestamp: Date,
+        userId: mongoose.Schema.Types.ObjectId,
+      },
+    },
+
+    // Additional Information
+    priority: {
+      type: String,
+      enum: ['low', 'normal', 'high', 'urgent'],
+      default: 'normal',
+      index: true,
+    },
+
+    source: {
+      type: String,
+      enum: ['walk_in', 'appointment', 'emergency', 'referral', 'camp'],
+      default: 'walk_in',
+    },
+
+    appointmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Appointment',
+    },
+
+    // Notes and Comments
+    notes: [
+      {
+        note: String,
+        addedBy: {
+          userId: mongoose.Schema.Types.ObjectId,
+          userName: String,
+          role: String,
+        },
+        timestamp: { type: Date, default: Date.now },
+      },
+    ],
+
+    // Document References
+    documents: [
+      {
+        documentType: {
+          type: String,
+          enum: [
+            'prescription',
+            'lab_report',
+            'imaging',
+            'discharge_summary',
+            'consent_form',
+            'other',
+          ],
+        },
+        fileName: String,
+        filePath: String,
+        uploadedBy: {
+          userId: mongoose.Schema.Types.ObjectId,
+          userName: String,
+        },
+        uploadedAt: { type: Date, default: Date.now },
+      },
+    ],
+
+    // Audit Trail
+    createdBy: {
+      userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+      userName: { type: String, required: true },
+      role: String,
+    },
+
+    updatedBy: {
       userId: mongoose.Schema.Types.ObjectId,
       userName: String,
-      role: String
+      role: String,
     },
-    timestamp: { type: Date, default: Date.now }
-  }],
-  
-  // Document References
-  documents: [{
-    documentType: {
-      type: String,
-      enum: ['prescription', 'lab_report', 'imaging', 'discharge_summary', 'consent_form', 'other']
-    },
-    fileName: String,
-    filePath: String,
-    uploadedBy: {
-      userId: mongoose.Schema.Types.ObjectId,
-      userName: String
-    },
-    uploadedAt: { type: Date, default: Date.now }
-  }],
-  
-  // Audit Trail
-  createdBy: {
-    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
-    userName: { type: String, required: true },
-    role: String
+
+    // Timestamps
+    createdAt: { type: Date, default: Date.now, index: true },
+    updatedAt: { type: Date, default: Date.now },
   },
-  
-  updatedBy: {
-    userId: mongoose.Schema.Types.ObjectId,
-    userName: String,
-    role: String
-  },
-  
-  // Timestamps
-  createdAt: { type: Date, default: Date.now, index: true },
-  updatedAt: { type: Date, default: Date.now }
-}, {
-  timestamps: true, // Automatically manages createdAt and updatedAt
-  versionKey: true // Keeps version key for optimistic locking
-});
+  {
+    timestamps: true, // Automatically manages createdAt and updatedAt
+    versionKey: true, // Keeps version key for optimistic locking
+  }
+);
 
 // Indexes for Performance
 visitSchema.index({ visitDate: -1, patientId: 1 });
@@ -329,53 +363,53 @@ visitSchema.index({
   'patientInfo.name': 'text',
   'patientInfo.uhid': 'text',
   'patientInfo.mobileNo': 'text',
-  visitNo: 'text'
+  visitNo: 'text',
 });
 
 // Pre-save middleware to calculate billing amounts
-visitSchema.pre('save', function(next) {
+visitSchema.pre('save', function (next) {
   if (this.isModified('services')) {
     let totalAmount = 0;
-    
+
     this.services.forEach(service => {
-      const serviceTotal = (service.rate * service.quantity) - service.discount;
+      const serviceTotal = service.rate * service.quantity - service.discount;
       service.finalAmount = Math.max(0, serviceTotal);
       totalAmount += service.finalAmount;
     });
-    
+
     this.billing.totalAmount = totalAmount;
     this.billing.finalAmount = totalAmount - this.billing.discountAmount + this.billing.taxAmount;
   }
-  
+
   this.updatedAt = new Date();
   next();
 });
 
 // Virtual for visit age (days since visit)
-visitSchema.virtual('visitAge').get(function() {
+visitSchema.virtual('visitAge').get(function () {
   return Math.floor((Date.now() - this.visitDate) / (1000 * 60 * 60 * 24));
 });
 
 // Virtual for total services count
-visitSchema.virtual('totalServices').get(function() {
+visitSchema.virtual('totalServices').get(function () {
   return this.services ? this.services.length : 0;
 });
 
 // Instance method to add a note
-visitSchema.methods.addNote = function(noteText, userId, userName, role) {
+visitSchema.methods.addNote = function (noteText, userId, userName, role) {
   this.notes.push({
     note: noteText,
     addedBy: {
       userId,
       userName,
-      role
-    }
+      role,
+    },
   });
   return this.save();
 };
 
 // Instance method to update workflow status
-visitSchema.methods.updateWorkflowStatus = function(stage, status, userId) {
+visitSchema.methods.updateWorkflowStatus = function (stage, status, userId) {
   if (this.workflow[stage]) {
     this.workflow[stage].status = status;
     this.workflow[stage].timestamp = new Date();
@@ -385,46 +419,46 @@ visitSchema.methods.updateWorkflowStatus = function(stage, status, userId) {
 };
 
 // Static method to generate visit number
-visitSchema.statics.generateVisitNumber = async function() {
+visitSchema.statics.generateVisitNumber = async function () {
   const today = new Date();
   const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
-  
+
   // Find the last visit number for today
   const lastVisit = await this.findOne({
-    visitNo: { $regex: `^OPD-${dateStr}-` }
+    visitNo: { $regex: `^OPD-${dateStr}-` },
   }).sort({ visitNo: -1 });
-  
+
   let sequence = 1;
   if (lastVisit) {
     const lastSequence = parseInt(lastVisit.visitNo.split('-')[2]);
     sequence = lastSequence + 1;
   }
-  
+
   return `OPD-${dateStr}-${sequence.toString().padStart(3, '0')}`;
 };
 
 // Static method to get visit statistics
-visitSchema.statics.getVisitStats = function(startDate, endDate) {
+visitSchema.statics.getVisitStats = function (startDate, endDate) {
   return this.aggregate([
     {
       $match: {
         visitDate: {
           $gte: startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-          $lte: endDate || new Date()
-        }
-      }
+          $lte: endDate || new Date(),
+        },
+      },
     },
     {
       $group: {
         _id: null,
         totalVisits: { $sum: 1 },
         completedVisits: {
-          $sum: { $cond: [{ $eq: ['$status', 'completed'] }, 1, 0] }
+          $sum: { $cond: [{ $eq: ['$status', 'completed'] }, 1, 0] },
         },
         totalRevenue: { $sum: '$billing.finalAmount' },
-        averageAmount: { $avg: '$billing.finalAmount' }
-      }
-    }
+        averageAmount: { $avg: '$billing.finalAmount' },
+      },
+    },
   ]);
 };
 

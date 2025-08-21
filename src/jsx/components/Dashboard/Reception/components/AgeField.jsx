@@ -1,16 +1,17 @@
-import { Field, useFormikContext } from "formik";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+
+import { Field, useFormikContext } from 'formik';
 
 const AgeField = ({
-  name = "age",
-  unitName = "ageUnit",
-  label = "Age",
+  name = 'age',
+  unitName = 'ageUnit',
+  label = 'Age',
   required = true,
-  className = "",
+  className = '',
   ageOptions = [
-    { value: "Year", label: "Year" },
-    { value: "Month", label: "Month" },
-    { value: "Day", label: "Day" },
+    { value: 'Year', label: 'Year' },
+    { value: 'Month', label: 'Month' },
+    { value: 'Day', label: 'Day' },
   ],
 }) => {
   const { errors, touched } = useFormikContext();
@@ -23,7 +24,7 @@ const AgeField = ({
         name={name}
         type="number"
         className={`form-control text-black `}
-        style={{ height: "40px", width: "40%" }}
+        style={{ height: '40px', width: '40%' }}
         min="0"
         max="150"
       />
@@ -31,7 +32,7 @@ const AgeField = ({
         as="select"
         name={unitName}
         className="form-control text-black"
-        style={{ height: "40px", width: "60%" }}
+        style={{ height: '40px', width: '60%' }}
       >
         {ageOptions.map((option, index) => (
           <option key={index} value={option.value}>
@@ -51,18 +52,15 @@ const AgeField = ({
         {hasError ? (
           <div className="position-relative">
             {ageInput}
-            <OverlayTrigger
-              placement="top"
-              overlay={<Tooltip>{errorMessage}</Tooltip>}
-            >
+            <OverlayTrigger placement="top" overlay={<Tooltip>{errorMessage}</Tooltip>}>
               <span
                 className="position-absolute"
                 style={{
-                  right: "60%",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  color: "#dc3545",
-                  cursor: "pointer",
+                  right: '60%',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#dc3545',
+                  cursor: 'pointer',
                   zIndex: 10,
                 }}
               >

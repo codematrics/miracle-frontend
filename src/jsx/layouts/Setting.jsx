@@ -1,12 +1,10 @@
-import React, { useState, useContext } from "react";
+import React, { useContext, useState } from 'react';
 
-const Setting = () => {  
+const Setting = () => {
   return (
-	<>
-		<h3>blank page</h3>		
-	</>
+    <>
+      <h3>blank page</h3>
+    </>
   );
 };
 export default Setting;
-
-

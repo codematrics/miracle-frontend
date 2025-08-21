@@ -1,14 +1,14 @@
-import { lazy, Suspense, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Route, Routes, useNavigate } from "react-router-dom";
-import { checkAutoLogin } from "./services/AuthService";
-import { isAuthenticated } from "./store/selectors/AuthSelectors";
-import "./assets/css/style.css";
+import { Suspense, lazy, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
-const SignUp = lazy(() => import("./jsx/pages/Registration"));
-const Login = lazy(() => import("./jsx/pages/Login"));
-const Index = lazy(() => import("./jsx"));
+import './assets/css/style.css';
+import { checkAutoLogin } from './services/AuthService';
+import { isAuthenticated } from './store/selectors/AuthSelectors';
 
+const SignUp = lazy(() => import('./jsx/pages/Registration'));
+const Login = lazy(() => import('./jsx/pages/Login'));
+const Index = lazy(() => import('./jsx'));
 
 const LoadingSpinner = () => (
   <div id="preloader">
@@ -20,17 +20,33 @@ const LoadingSpinner = () => (
   </div>
 );
 
-const AuthRoutes = () => (
-  <div className="vh-100">
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/page-register" element={<SignUp />} />
-      <Route path="/register" element={<SignUp />} />
-      <Route path="/" element={<Login />} />
-      <Route path="*" element={<Login />} />
-    </Routes>
-  </div>
-);
+const AuthRoutes = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Redirect to login if on any other path
+    if (
+      location.pathname !== '/login' &&
+      location.pathname !== '/page-register' &&
+      location.pathname !== '/register'
+    ) {
+      navigate('/login', { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
+  return (
+    <div className="vh-100">
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/page-register" element={<SignUp />} />
+        <Route path="/register" element={<SignUp />} />
+        <Route path="/" element={<Login />} />
+        <Route path="*" element={<Login />} />
+      </Routes>
+    </div>
+  );
+};
 
 const AppRoutes = () => (
   <Routes>
@@ -41,11 +57,33 @@ const AppRoutes = () => (
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const authenticated = useSelector(isAuthenticated);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
-    checkAutoLogin(dispatch, navigate);
-  }, [dispatch, navigate]);
+    const initializeAuth = async () => {
+      try {
+        const isLoggedIn = await checkAutoLogin(dispatch, navigate);
+
+        // Only redirect if we're on login page and user is authenticated
+        if (isLoggedIn && (location.pathname === '/login' || location.pathname === '/')) {
+          navigate('/dashboard', { replace: true });
+        }
+      } catch {
+        return;
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+
+    initializeAuth();
+  }, [dispatch, navigate, location.pathname]);
+
+  // Show loading spinner while initializing authentication
+  if (isInitializing) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <Suspense fallback={<LoadingSpinner />}>

@@ -1,154 +1,116 @@
-import { Field, useFormikContext } from "formik";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+
+import { Field, useFormikContext } from 'formik';
 
 const FormField = ({
   name,
   label,
-  type = "text",
+  type = 'text',
   required = false,
-  placeholder = "",
+  placeholder = '',
   maxLength,
   options = [],
-  className = "col-md-4",
-  fieldClassName = "",
-  style = { height: "40px", fontSize: "16px" },
+  className = 'col-md-4',
+  fieldClassName = '',
+  style = { height: '40px', fontSize: '16px' },
   ...props
 }) => {
   const { errors, touched } = useFormikContext();
 
-  // Get nested error for address fields
-  const getError = (fieldName) => {
-    if (fieldName.includes(".")) {
-      const keys = fieldName.split(".");
-      let error = errors;
-      let touch = touched;
+  // ✅ Helper to safely get nested errors (e.g. address.city)
+  const getError = fieldName => {
+    const keys = fieldName.split('.');
+    let error = errors;
+    let touch = touched;
 
-      for (const key of keys) {
-        error = error?.[key];
-        touch = touch?.[key];
-      }
-
-      return { hasError: error && touch, errorMessage: error };
+    for (const key of keys) {
+      error = error?.[key];
+      touch = touch?.[key];
     }
 
-    return {
-      hasError: errors[fieldName] && touched[fieldName],
-      errorMessage: errors[fieldName],
-    };
+    return { hasError: !!(error && touch), errorMessage: error };
+  };
+
+  const { hasError, errorMessage } = getError(name);
+
+  const renderWithErrorIcon = fieldElement => {
+    if (!hasError) return fieldElement;
+
+    return (
+      <div className="position-relative">
+        {fieldElement}
+        <OverlayTrigger
+          placement="top"
+          overlay={<Tooltip id={`tooltip-${name}`}>{errorMessage}</Tooltip>}
+        >
+          <span
+            className="position-absolute"
+            style={{
+              right: '10px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#dc3545',
+              cursor: 'pointer',
+              zIndex: 10,
+            }}
+          >
+            ⓘ
+          </span>
+        </OverlayTrigger>
+      </div>
+    );
   };
 
   const renderField = () => {
-    const { hasError, errorMessage } = getError(name);
-    const errorClass = hasError ? "" : "";
-
-    const renderFieldWithIcon = (fieldElement) => {
-      if (!hasError) return fieldElement;
-
-      return (
-        <div className="position-relative">
-          {fieldElement}
-          <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip>{errorMessage}</Tooltip>}
-          >
-            <span
-              className="position-absolute"
-              style={{
-                right: "10px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: "#dc3545",
-                cursor: "pointer",
-                zIndex: 10,
-              }}
-            >
-              ⓘ
-            </span>
-          </OverlayTrigger>
-        </div>
-      );
-    };
-
     switch (type) {
-      case "select":
-        return renderFieldWithIcon(
+      case 'select':
+        return renderWithErrorIcon(
           <Field
             as="select"
             name={name}
-            className={`form-control text-black ${errorClass} ${fieldClassName}`}
+            className={`form-control text-black ${fieldClassName}`}
             style={style}
             {...props}
           >
+            <option value="">Select {label}</option>
             {options.map((option, index) => (
-              <option
-                key={index}
-                value={typeof option === "string" ? option : option.value}
-              >
-                {typeof option === "string" ? option : option.label}
+              <option key={index} value={typeof option === 'string' ? option : option.value}>
+                {typeof option === 'string' ? option : option.label}
               </option>
             ))}
           </Field>
         );
 
-      case "radio":
+      case 'radio': {
         const radioElement = (
-          <div className={`form-control ${errorClass}`} style={style}>
+          <div className="form-control" style={style}>
             {options.map((option, index) => (
-              <div
-                key={index}
-                className="form-check custom-checkbox form-check-inline text-black"
-              >
+              <div key={index} className="form-check custom-checkbox form-check-inline text-black">
                 <Field
                   type="radio"
                   name={name}
-                  value={typeof option === "string" ? option : option.value}
+                  value={typeof option === 'string' ? option : option.value}
                   className="form-check-input"
                   id={`${name}-${index}`}
                 />
-                <label
-                  className="form-check-label"
-                  htmlFor={`${name}-${index}`}
-                >
-                  {typeof option === "string" ? option : option.label}
+                <label className="form-check-label" htmlFor={`${name}-${index}`}>
+                  {typeof option === 'string' ? option : option.label}
                 </label>
               </div>
             ))}
           </div>
         );
 
-        return hasError ? (
-          <div className="position-relative">
-            {radioElement}
-            <OverlayTrigger
-              placement="top"
-              overlay={<Tooltip>{errorMessage}</Tooltip>}
-            >
-              <span
-                className="position-absolute"
-                style={{
-                  right: "10px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  color: "#dc3545",
-                  cursor: "pointer",
-                  zIndex: 10,
-                }}
-              >
-                ⓘ
-              </span>
-            </OverlayTrigger>
-          </div>
-        ) : (
-          radioElement
-        );
+        return renderWithErrorIcon(radioElement);
+      }
 
-      case "textarea":
-        return renderFieldWithIcon(
+      case 'textarea':
+        return renderWithErrorIcon(
           <Field
             as="textarea"
             name={name}
             placeholder={placeholder}
-            className={`form-control text-black ${errorClass} ${fieldClassName}`}
+            className={`form-control text-black ${fieldClassName}`}
             style={style}
             maxLength={maxLength}
             {...props}
@@ -156,12 +118,12 @@ const FormField = ({
         );
 
       default:
-        return renderFieldWithIcon(
+        return renderWithErrorIcon(
           <Field
             name={name}
             type={type}
             placeholder={placeholder}
-            className={`form-control text-black ${errorClass} ${fieldClassName}`}
+            className={`form-control text-black ${fieldClassName}`}
             style={style}
             maxLength={maxLength}
             {...props}

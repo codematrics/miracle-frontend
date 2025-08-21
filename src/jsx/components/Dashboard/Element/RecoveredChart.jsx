@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import ReactApexChart from "react-apexcharts";
+import React, { Component } from 'react';
+import ReactApexChart from 'react-apexcharts';
 
 {
   /* Recovered Chart Start */
@@ -10,17 +10,17 @@ class RecoveredChart extends Component {
     this.state = {
       series: [
         {
-          name: "New",
+          name: 'New',
           data: [20, 40, 60, 35, 50, 70, 30],
         },
         {
-          name: "Recovered",
+          name: 'Recovered',
           data: [-28, -32, -12, -24, -35, -18, -30],
         },
       ],
       options: {
         chart: {
-          type: "bar",
+          type: 'bar',
           height: 300,
           stacked: true,
           toolbar: {
@@ -33,18 +33,26 @@ class RecoveredChart extends Component {
         },
         plotOptions: {
           bar: {
-            columnWidth: "30%",
+            columnWidth: '30%',
             // endingShape: "rounded",
             colors: {
-              backgroundBarColors: ['#F0F0F0', '#F0F0F0', '#F0F0F0', '#F0F0F0', '#F0F0F0', '#F0F0F0', '#F0F0F0'],
+              backgroundBarColors: [
+                '#F0F0F0',
+                '#F0F0F0',
+                '#F0F0F0',
+                '#F0F0F0',
+                '#F0F0F0',
+                '#F0F0F0',
+                '#F0F0F0',
+              ],
               backgroundBarOpacity: 1,
               // backgroundBarRadius: 5,
-              opacity:0
+              opacity: 0,
             },
           },
           distributed: true,
         },
-        colors:['#BDA25C', '#209F84'],
+        colors: ['#BDA25C', '#209F84'],
         grid: {
           show: false,
         },
@@ -56,7 +64,7 @@ class RecoveredChart extends Component {
         },
         dataLabels: {
           enabled: false,
-          colors:['#BDA25C', '#209F84'],
+          colors: ['#BDA25C', '#209F84'],
           dropShadow: {
             enabled: true,
             top: 1,
@@ -66,12 +74,12 @@ class RecoveredChart extends Component {
           },
         },
         xaxis: {
-          categories: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+          categories: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
           labels: {
             style: {
-              colors: "#787878",
-              fontSize: "13px",
-              fontFamily: "poppins",
+              colors: '#787878',
+              fontSize: '13px',
+              fontFamily: 'poppins',
               fontWeight: 400,
               // cssClass: "apexcharts-xaxis-label",
             },

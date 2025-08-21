@@ -1,49 +1,45 @@
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import {
-  loadingToggleAction,
-  signupAction,
-} from "../../store/actions/AuthActions";
-import logo from "../../assets/images/logo-full.png";
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { ErrorMessage, Field, Form, Formik } from 'formik';
+import * as Yup from 'yup';
+
+import logo from '../../assets/images/logo-full.png';
+import { loadingToggleAction, signupAction } from '../../store/actions/AuthActions';
 
 const validationSchema = Yup.object({
   username: Yup.string()
-    .min(3, "Username must be at least 3 characters")
-    .max(30, "Username must not exceed 30 characters")
-    .matches(
-      /^[a-zA-Z0-9_]+$/,
-      "Username can only contain letters, numbers, and underscores"
-    )
-    .required("Username is required")
+    .min(3, 'Username must be at least 3 characters')
+    .max(30, 'Username must not exceed 30 characters')
+    .matches(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
+    .required('Username is required')
     .trim(),
   email: Yup.string()
-    .min(1, "Email is required")
-    .email("Invalid email format")
-    .max(255, "Email too long")
-    .required("Email is required")
+    .min(1, 'Email is required')
+    .email('Invalid email format')
+    .max(255, 'Email too long')
+    .required('Email is required')
     .lowercase(),
   password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
-    .max(128, "Password too long")
+    .min(6, 'Password must be at least 6 characters')
+    .max(128, 'Password too long')
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      'Password must contain at least one uppercase letter, one lowercase letter, and one number'
     )
-    .required("Password is required"),
+    .required('Password is required'),
 });
 
 const initialValues = {
-  username: "",
-  email: "",
-  password: "",
+  username: '',
+  email: '',
+  password: '',
 };
 
 function Register() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { errorMessage, successMessage, showLoading } = useSelector((state) => ({
+  const { errorMessage, successMessage, showLoading } = useSelector(state => ({
     errorMessage: state.auth.errorMessage,
     successMessage: state.auth.successMessage,
     showLoading: state.auth.showLoading,
@@ -70,9 +66,7 @@ function Register() {
                           <img src={logo} alt="" className="" />
                         </Link>
                       </div>
-                      <h4 className="text-center text-white mb-4">
-                        Sign up your account
-                      </h4>
+                      <h4 className="text-center text-white mb-4">Sign up your account</h4>
                       {errorMessage && (
                         <div className="alert alert-danger" role="alert">
                           {errorMessage}
@@ -99,7 +93,7 @@ function Register() {
                                 name="username"
                                 type="text"
                                 className={`form-control ${
-                                  errors.username && touched.username ? "is-invalid" : ""
+                                  errors.username && touched.username ? 'is-invalid' : ''
                                 }`}
                                 placeholder="Enter username"
                               />
@@ -118,7 +112,7 @@ function Register() {
                                 name="email"
                                 type="email"
                                 className={`form-control ${
-                                  errors.email && touched.email ? "is-invalid" : ""
+                                  errors.email && touched.email ? 'is-invalid' : ''
                                 }`}
                                 placeholder="hello@example.com"
                               />
@@ -137,7 +131,7 @@ function Register() {
                                 name="password"
                                 type="password"
                                 className={`form-control ${
-                                  errors.password && touched.password ? "is-invalid" : ""
+                                  errors.password && touched.password ? 'is-invalid' : ''
                                 }`}
                                 placeholder="Enter password"
                               />
@@ -163,7 +157,7 @@ function Register() {
                                     Signing up...
                                   </>
                                 ) : (
-                                  "Sign me up"
+                                  'Sign me up'
                                 )}
                               </button>
                             </div>
@@ -172,8 +166,8 @@ function Register() {
                       </Formik>
                       <div className="new-account mt-3">
                         <p className="text-white">
-                          Already have an account?{" "}
-                          <Link to={"/login"} className="text-secondary">
+                          Already have an account?{' '}
+                          <Link to={'/login'} className="text-secondary">
                             Sign in
                           </Link>
                         </p>

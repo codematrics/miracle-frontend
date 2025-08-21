@@ -38,7 +38,7 @@
 
   > .list-group-item::before {
     // Increments only this instance of the section counter
-    content: counters(section, ".") ". ";
+    content: counters(section, '.') '. ';
     counter-increment: section;
   }
 }
@@ -109,7 +109,9 @@
     border-top-width: 0;
 
     &.active {
-      margin-top: calc(-1 * var(--#{$prefix}list-group-border-width)); // stylelint-disable-line function-disallowed-list
+      margin-top: calc(
+        -1 * var(--#{$prefix}list-group-border-width)
+      ); // stylelint-disable-line function-disallowed-list
       border-top-width: var(--#{$prefix}list-group-border-width);
     }
   }
@@ -146,7 +148,9 @@
           border-left-width: 0;
 
           &.active {
-            margin-left: calc(-1 * var(--#{$prefix}list-group-border-width)); // stylelint-disable-line function-disallowed-list
+            margin-left: calc(
+              -1 * var(--#{$prefix}list-group-border-width)
+            ); // stylelint-disable-line function-disallowed-list
             border-left-width: var(--#{$prefix}list-group-border-width);
           }
         }
@@ -154,7 +158,6 @@
     }
   }
 }
-
 
 // Flush list items
 //
@@ -173,7 +176,6 @@
   }
 }
 
-
 // scss-docs-start list-group-modifiers
 // List group contextual variants
 //
@@ -184,7 +186,11 @@
   $list-group-variant-bg: shift-color($value, $list-group-item-bg-scale);
   $list-group-variant-color: shift-color($value, $list-group-item-color-scale);
   @if (contrast-ratio($list-group-variant-bg, $list-group-variant-color) < $min-contrast-ratio) {
-    $list-group-variant-color: mix($value, color-contrast($list-group-variant-bg), abs($list-group-item-color-scale));
+    $list-group-variant-color: mix(
+      $value,
+      color-contrast($list-group-variant-bg),
+      abs($list-group-item-color-scale)
+    );
   }
 
   @include list-group-item-variant($state, $list-group-variant-bg, $list-group-variant-color);

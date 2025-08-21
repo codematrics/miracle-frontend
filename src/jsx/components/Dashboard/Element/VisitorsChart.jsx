@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import ReactApexChart from "react-apexcharts";
+import React, { Component } from 'react';
+import ReactApexChart from 'react-apexcharts';
 
 {
   /** Patients Status Chart Start */
@@ -11,25 +11,25 @@ class VisitorsChart extends Component {
     this.state = {
       series: [
         {
-            name: "Desktops",
-            data: [10, 41, 35, 51, 49, 62]
+          name: 'Desktops',
+          data: [10, 41, 35, 51, 49, 62],
         },
       ],
       options: {
         chart: {
-            height: 250,
-            toolbar: {
-                show: false,
-            },          
-            type: "line",
+          height: 250,
+          toolbar: {
+            show: false,
+          },
+          type: 'line',
         },
         dataLabels: {
-            enabled: false
+          enabled: false,
         },
         stroke: {
           width: 4,
-          curve: "smooth",
-        //   colors: ["#23a287"],
+          curve: 'smooth',
+          //   colors: ["#23a287"],
         },
 
         // legend: {
@@ -44,19 +44,19 @@ class VisitorsChart extends Component {
         // },
 
         title: {
-			show:false,
-            align: 'left'
+          show: false,
+          align: 'left',
         },
         grid: {
-			show:false,
+          show: false,
         },
-		colors:['#007A64'],
-		yaxis: {
-			show:false,
-		},
+        colors: ['#007A64'],
+        yaxis: {
+          show: false,
+        },
         xaxis: {
           categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        }
+        },
       },
     };
   }

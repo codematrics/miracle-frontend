@@ -1,17 +1,16 @@
-import React, { Fragment, useState } from "react";
-import { Link } from "react-router-dom";
-import { Modal } from "react-bootstrap";
-
-import PageTitle from "../../../../layouts/PageTitle";
+import React, { Fragment, useState } from 'react';
+import { Modal } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 // images
-import avatar1 from "../../../../../assets/images/avatar/1.jpg";
-import product2 from "../../../../../assets/images/product/2.jpg";
-import product3 from "../../../../../assets/images/product/3.jpg";
-import product4 from "../../../../../assets/images/product/4.jpg";
-import product5 from "../../../../../assets/images/product/5.jpg";
-import product6 from "../../../../../assets/images/product/6.jpg";
-import product7 from "../../../../../assets/images/product/7.jpg";
+import avatar1 from '../../../../../assets/images/avatar/1.jpg';
+import product2 from '../../../../../assets/images/product/2.jpg';
+import product3 from '../../../../../assets/images/product/3.jpg';
+import product4 from '../../../../../assets/images/product/4.jpg';
+import product5 from '../../../../../assets/images/product/5.jpg';
+import product6 from '../../../../../assets/images/product/6.jpg';
+import product7 from '../../../../../assets/images/product/7.jpg';
+import PageTitle from '../../../../layouts/PageTitle';
 
 const ProductList = () => {
   const [reviewModal, setReviewModal] = useState(false);
@@ -34,25 +33,23 @@ const ProductList = () => {
                 <div className="col-md-7 col-xxl-12">
                   <div className="new-arrival-content position-relative">
                     <h4>
-                      <Link to="ecom-product-detail">
-                          RadiantGlow Serum
-                      </Link>
+                      <Link to="ecom-product-detail">RadiantGlow Serum</Link>
                     </h4>
                     <div className="comment-review star-rating">
                       <ul>
-                        {" "}
+                        {' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa-solid fa-star-half-stroke" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa-solid fa-star-half-stroke" />
                         </li>
@@ -61,7 +58,6 @@ const ProductList = () => {
                       <Link
                         className="product-review"
                         to="#"
-                        
                         onClick={() => setReviewModal(true)}
                         data-target="#reviewModal"
                       >
@@ -70,23 +66,22 @@ const ProductList = () => {
                       <p className="price mt-2">$320.00</p>
                     </div>
                     <p>
-                      Availability:{" "}
+                      Availability:{' '}
                       <span className="item">
-                        {" "}
-                        In stock{" "}
-                        <i className="fa fa-check-circle text-success" />
+                        {' '}
+                        In stock <i className="fa fa-check-circle text-success" />
                       </span>
                     </p>
                     <p>
-                      Product code: <span className="item">0405689</span>{" "}
+                      Product code: <span className="item">0405689</span>{' '}
                     </p>
                     <p>
                       Brand: <span className="item">Lee</span>
                     </p>
                     <p className="text-content">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form, by injected humour, or randomised words.
+                      There are many variations of passages of Lorem Ipsum available, but the
+                      majority have suffered alteration in some form, by injected humour, or
+                      randomised words.
                     </p>
                   </div>
                 </div>
@@ -108,25 +103,23 @@ const ProductList = () => {
                 <div className="col-md-7 col-xxl-12">
                   <div className="new-arrival-content position-relative">
                     <h4>
-                      <Link to="ecom-product-detail">
-                          CrystalClear Cleanser
-                      </Link>
+                      <Link to="ecom-product-detail">CrystalClear Cleanser</Link>
                     </h4>
                     <div className="comment-review star-rating">
                       <ul>
-                        {" "}
+                        {' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa-solid fa-star-half-stroke" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa-solid fa-star-half-stroke" />
                         </li>
@@ -135,7 +128,6 @@ const ProductList = () => {
                       <Link
                         className="product-review"
                         to="#"
-                        
                         onClick={() => setReviewModal(true)}
                         data-target="#reviewModal"
                       >
@@ -144,23 +136,22 @@ const ProductList = () => {
                       <p className="price mt-2">$325.00</p>
                     </div>
                     <p>
-                      Availability:{" "}
+                      Availability:{' '}
                       <span className="item">
-                        {" "}
-                        In stock{" "}
-                        <i className="fa fa-check-circle text-success" />
+                        {' '}
+                        In stock <i className="fa fa-check-circle text-success" />
                       </span>
                     </p>
                     <p>
-                      Product code: <span className="item">0405689</span>{" "}
+                      Product code: <span className="item">0405689</span>{' '}
                     </p>
                     <p>
                       Brand: <span className="item">Lee</span>
                     </p>
                     <p className="text-content">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form, by injected humour, or randomised words.
+                      There are many variations of passages of Lorem Ipsum available, but the
+                      majority have suffered alteration in some form, by injected humour, or
+                      randomised words.
                     </p>
                   </div>
                 </div>
@@ -182,25 +173,23 @@ const ProductList = () => {
                 <div className="col-md-7 col-xxl-12">
                   <div className="new-arrival-content position-relative">
                     <h4>
-                      <Link to="ecom-product-detail">
-                        YouthRenew Cream
-                      </Link>
+                      <Link to="ecom-product-detail">YouthRenew Cream</Link>
                     </h4>
                     <div className="comment-review star-rating">
                       <ul>
-                        {" "}
+                        {' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
                         </li>
@@ -209,7 +198,6 @@ const ProductList = () => {
                       <Link
                         className="product-review "
                         to="#"
-                        
                         onClick={() => setReviewModal(true)}
                         data-target="#reviewModal"
                       >
@@ -218,23 +206,22 @@ const ProductList = () => {
                       <p className="price mt-2">$480.00</p>
                     </div>
                     <p>
-                      Availability:{" "}
+                      Availability:{' '}
                       <span className="item">
-                        {" "}
-                        In stock{" "}
-                        <i className="fa fa-check-circle text-success" />
+                        {' '}
+                        In stock <i className="fa fa-check-circle text-success" />
                       </span>
                     </p>
                     <p>
-                      Product code: <span className="item">0405689</span>{" "}
+                      Product code: <span className="item">0405689</span>{' '}
                     </p>
                     <p>
                       Brand: <span className="item">Lee</span>
                     </p>
                     <p className="text-content">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form, by injected humour, or randomised words.
+                      There are many variations of passages of Lorem Ipsum available, but the
+                      majority have suffered alteration in some form, by injected humour, or
+                      randomised words.
                     </p>
                   </div>
                 </div>
@@ -256,25 +243,23 @@ const ProductList = () => {
                 <div className="col-md-7 col-xxl-12">
                   <div className="new-arrival-content position-relative">
                     <h4>
-                      <Link to="ecom-product-detail">
-                          HydraQuench Moisturizer
-                      </Link>
+                      <Link to="ecom-product-detail">HydraQuench Moisturizer</Link>
                     </h4>
                     <div className="comment-review star-rating">
                       <ul>
-                        {" "}
+                        {' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
                         </li>
@@ -283,7 +268,6 @@ const ProductList = () => {
                       <Link
                         className="product-review "
                         to="#"
-                        
                         onClick={() => setReviewModal(true)}
                         data-target="#reviewModal"
                       >
@@ -292,23 +276,22 @@ const ProductList = () => {
                       <p className="price mt-2">$658.00</p>
                     </div>
                     <p>
-                      Availability:{" "}
+                      Availability:{' '}
                       <span className="item">
-                        {" "}
-                        In stock{" "}
-                        <i className="fa fa-check-circle text-success" />
+                        {' '}
+                        In stock <i className="fa fa-check-circle text-success" />
                       </span>
                     </p>
                     <p>
-                      Product code: <span className="item">0405689</span>{" "}
+                      Product code: <span className="item">0405689</span>{' '}
                     </p>
                     <p>
                       Brand: <span className="item">Lee</span>
                     </p>
                     <p className="text-content">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form, by injected humour, or randomised words.
+                      There are many variations of passages of Lorem Ipsum available, but the
+                      majority have suffered alteration in some form, by injected humour, or
+                      randomised words.
                     </p>
                   </div>
                 </div>
@@ -330,25 +313,23 @@ const ProductList = () => {
                 <div className="col-md-7 col-xxl-12">
                   <div className="new-arrival-content position-relative">
                     <h4>
-                      <Link to="ecom-product-detail">
-                          PureRevive Face Oil
-                      </Link>
+                      <Link to="ecom-product-detail">PureRevive Face Oil</Link>
                     </h4>
                     <div className="comment-review star-rating">
                       <ul>
-                        {" "}
+                        {' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
                         </li>
@@ -357,7 +338,6 @@ const ProductList = () => {
                       <Link
                         className="product-review"
                         to="#"
-                        
                         onClick={() => setReviewModal(true)}
                         data-target="#reviewModal"
                       >
@@ -366,23 +346,22 @@ const ProductList = () => {
                       <p className="price mt-2">$280.00</p>
                     </div>
                     <p>
-                      Availability:{" "}
+                      Availability:{' '}
                       <span className="item">
-                        {" "}
-                        In stock{" "}
-                        <i className="fa fa-check-circle text-success" />
+                        {' '}
+                        In stock <i className="fa fa-check-circle text-success" />
                       </span>
                     </p>
                     <p>
-                      Product code: <span className="item">0405689</span>{" "}
+                      Product code: <span className="item">0405689</span>{' '}
                     </p>
                     <p>
                       Brand: <span className="item">Lee</span>
                     </p>
                     <p className="text-content">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form, by injected humour, or randomised words.
+                      There are many variations of passages of Lorem Ipsum available, but the
+                      majority have suffered alteration in some form, by injected humour, or
+                      randomised words.
                     </p>
                   </div>
                 </div>
@@ -404,25 +383,23 @@ const ProductList = () => {
                 <div className="col-md-7 col-xxl-12">
                   <div className="new-arrival-content position-relative">
                     <h4>
-                      <Link to="ecom-product-detail">
-                          LuminousLuxe Foundation
-                      </Link>
+                      <Link to="ecom-product-detail">LuminousLuxe Foundation</Link>
                     </h4>
                     <div className="comment-review star-rating">
                       <ul>
-                        {" "}
+                        {' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
-                        </li>{" "}
+                        </li>{' '}
                         <li>
                           <i className="fa fa-star" />
                         </li>
@@ -431,7 +408,6 @@ const ProductList = () => {
                       <Link
                         className="product-review"
                         to="#"
-                        
                         onClick={() => setReviewModal(true)}
                         data-target="#reviewModal"
                       >
@@ -440,23 +416,22 @@ const ProductList = () => {
                       <p className="price mt-2">$600.00</p>
                     </div>
                     <p>
-                      Availability:{" "}
+                      Availability:{' '}
                       <span className="item">
-                        {" "}
-                        In stock{" "}
-                        <i className="fa fa-check-circle text-success" />
+                        {' '}
+                        In stock <i className="fa fa-check-circle text-success" />
                       </span>
                     </p>
                     <p>
-                      Product code: <span className="item">0405689</span>{" "}
+                      Product code: <span className="item">0405689</span>{' '}
                     </p>
                     <p>
                       Brand: <span className="item">Lee</span>
                     </p>
                     <p className="text-content">
-                      There are many variations of passages of Lorem Ipsum
-                      available, but the majority have suffered alteration in
-                      some form, by injected humour, or randomised words.
+                      There are many variations of passages of Lorem Ipsum available, but the
+                      majority have suffered alteration in some form, by injected humour, or
+                      randomised words.
                     </p>
                   </div>
                 </div>
@@ -470,44 +445,36 @@ const ProductList = () => {
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Review</h5>
-                <button
-                  type="button"
-                  className="btn-close"                  
-                  onClick={() => setReviewModal(false)}
-                >
+                <button type="button" className="btn-close" onClick={() => setReviewModal(false)}>
                   {/* <span>×</span> */}
                 </button>
               </div>
               <div className="modal-body">
                 <form
-                  onSubmit={(e) => {
+                  onSubmit={e => {
                     e.preventDefault();
                     setReviewModal(false);
                   }}
                 >
                   <div className="text-center mb-4">
-                    <img
-                      className="img-fluid rounded"
-                      width={78}
-                      src={avatar1}
-                      alt="DexignZone"
-                    />
+                    <img className="img-fluid rounded" width={78} src={avatar1} alt="DexignZone" />
                   </div>
                   <div className="form-group">
                     <div className="rating-widget mb-4 text-center">
                       <div className="rating-stars">
-                        <ul
-                          id="stars"
-                          className="d-flex justify-content-center align-items-center"
-                        >
-                          
+                        <ul id="stars" className="d-flex justify-content-center align-items-center">
                           {[1, 2, 3, 4, 5].map((numb, i) => (
-                            <li className={`star ${numb <= star && "selected"}`} key={i}
-                              onClick={() => { alert(`Thanks! You rated this ${numb} stars.`); setStar(numb); }}
+                            <li
+                              className={`star ${numb <= star && 'selected'}`}
+                              key={i}
+                              onClick={() => {
+                                alert(`Thanks! You rated this ${numb} stars.`);
+                                setStar(numb);
+                              }}
                             >
                               <i className="fa fa-star me-1" />
                             </li>
-                          ))} 
+                          ))}
                         </ul>
                       </div>
                     </div>
@@ -517,7 +484,7 @@ const ProductList = () => {
                       className="form-control"
                       placeholder="Comment"
                       rows={5}
-                      defaultValue={""}
+                      defaultValue={''}
                     />
                   </div>
                   <button className="btn btn-success btn-block">RATE</button>

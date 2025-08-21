@@ -7,9 +7,11 @@
 ---
 
 ## 📋 **1. CREATE VISIT**
+
 ### `POST /api/visits`
 
 **Request Body:**
+
 ```json
 {
   "patientId": "patient_mongodb_id",
@@ -21,7 +23,7 @@
     "referenceType": "doctor"
   },
   "visitingDoctor": {
-    "doctorId": "visiting_doctor_id", 
+    "doctorId": "visiting_doctor_id",
     "doctorName": "Dr. Johnson",
     "department": "Cardiology",
     "specialization": "MD Cardiology"
@@ -49,6 +51,7 @@
 ```
 
 **Success Response (201):**
+
 ```json
 {
   "success": true,
@@ -76,14 +79,17 @@
 ---
 
 ## 📖 **2. GET ALL VISITS**
+
 ### `GET /api/visits`
 
 **Query Parameters:**
+
 ```
 ?page=1&limit=10&patientId=xxx&doctorId=xxx&status=scheduled&visitType=OPD&startDate=2025-01-01&endDate=2025-01-31&search=john
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -119,9 +125,11 @@
 ---
 
 ## 🔍 **3. GET SINGLE VISIT**
+
 ### `GET /api/visits/:id`
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -169,9 +177,11 @@
 ---
 
 ## ✏️ **4. UPDATE VISIT**
+
 ### `PUT /api/visits/:id`
 
 **Request Body:**
+
 ```json
 {
   "status": "in_progress",
@@ -195,6 +205,7 @@
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -218,9 +229,11 @@
 ---
 
 ## 🗑️ **5. DELETE VISIT**
+
 ### `DELETE /api/visits/:id`
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -231,14 +244,17 @@
 ---
 
 ## 📊 **6. VISIT STATISTICS**
+
 ### `GET /api/visits/statistics`
 
 **Query Parameters:**
+
 ```
 ?startDate=2025-01-01&endDate=2025-01-31&doctorId=xxx
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -266,14 +282,17 @@
 ---
 
 ## 👤 **7. GET PATIENT VISITS**
+
 ### `GET /api/visits/patient/:patientId`
 
 **Query Parameters:**
+
 ```
 ?page=1&limit=10&status=completed
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -302,14 +321,17 @@
 ---
 
 ## 👨‍⚕️ **8. GET DOCTOR VISITS**
+
 ### `GET /api/visits/doctor/:doctorId`
 
 **Query Parameters:**
+
 ```
 ?page=1&limit=10&date=2025-01-13&status=scheduled
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -332,9 +354,11 @@
 ---
 
 ## 🔄 **9. UPDATE WORKFLOW STATUS**
+
 ### `PATCH /api/visits/:id/workflow`
 
 **Request Body:**
+
 ```json
 {
   "stage": "consultation",
@@ -343,6 +367,7 @@
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -361,9 +386,11 @@
 ---
 
 ## 💰 **10. UPDATE BILLING STATUS**
+
 ### `PATCH /api/visits/:id/billing`
 
 **Request Body:**
+
 ```json
 {
   "paymentStatus": "paid",
@@ -374,6 +401,7 @@
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -394,9 +422,11 @@
 ---
 
 ## 📝 **11. ADD VISIT NOTE**
+
 ### `POST /api/visits/:id/notes`
 
 **Request Body:**
+
 ```json
 {
   "note": "Patient responded well to treatment"
@@ -404,6 +434,7 @@
 ```
 
 **Success Response (201):**
+
 ```json
 {
   "success": true,
@@ -422,14 +453,17 @@
 ---
 
 ## 🔍 **12. SEARCH VISITS**
+
 ### `GET /api/visits/search`
 
 **Query Parameters:**
+
 ```
 ?q=john&type=patient_name&limit=10
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -452,6 +486,7 @@
 ## 🚨 **Error Responses**
 
 ### Validation Error (400):
+
 ```json
 {
   "success": false,
@@ -466,6 +501,7 @@
 ```
 
 ### Not Found (404):
+
 ```json
 {
   "success": false,
@@ -474,6 +510,7 @@
 ```
 
 ### Server Error (500):
+
 ```json
 {
   "success": false,
@@ -486,11 +523,13 @@
 ## 🔐 **Authentication & Authorization**
 
 All endpoints require authentication. Include JWT token in header:
+
 ```
 Authorization: Bearer <jwt_token>
 ```
 
 **Role-based Access:**
+
 - **Reception**: Create, Read, Update visits
 - **Doctor**: Read, Update clinical data
 - **Admin**: Full access
@@ -502,16 +541,16 @@ Authorization: Bearer <jwt_token>
 
 ```javascript
 // Performance indexes
-db.visits.createIndex({ "visitDate": -1, "patientId": 1 })
-db.visits.createIndex({ "patientInfo.uhid": 1 })
-db.visits.createIndex({ "visitNo": 1 }, { unique: true })
-db.visits.createIndex({ "status": 1, "visitDate": -1 })
-db.visits.createIndex({ "visitingDoctor.doctorId": 1, "visitDate": -1 })
+db.visits.createIndex({ visitDate: -1, patientId: 1 });
+db.visits.createIndex({ 'patientInfo.uhid': 1 });
+db.visits.createIndex({ visitNo: 1 }, { unique: true });
+db.visits.createIndex({ status: 1, visitDate: -1 });
+db.visits.createIndex({ 'visitingDoctor.doctorId': 1, visitDate: -1 });
 
 // Text search index
 db.visits.createIndex({
-  "patientInfo.name": "text",
-  "patientInfo.uhid": "text",
-  "visitNo": "text"
-})
+  'patientInfo.name': 'text',
+  'patientInfo.uhid': 'text',
+  visitNo: 'text',
+});
 ```

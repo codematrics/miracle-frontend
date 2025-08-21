@@ -45,7 +45,7 @@
     $remainder: $remainder - $divisor;
   }
   @if $remainder > 0 and $precision > 0 {
-    $remainder: fa-divide($remainder * 10, $divisor, $precision - 1) * .1;
+    $remainder: fa-divide($remainder * 10, $divisor, $precision - 1) * 0.1;
   }
   @return ($quotient + $remainder) * $sign;
 }

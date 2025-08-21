@@ -1,32 +1,28 @@
-import { useState } from "react";
-import { connect, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import {
-  loadingToggleAction,
-  loginAction,
-} from "../../store/actions/AuthActions";
+import { useState } from 'react';
+import { connect, useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { Link } from "react-router-dom";
-import login from "../../assets/images/login.jpg";
+import login from '../../assets/images/login.jpg';
+import { loadingToggleAction, loginAction } from '../../store/actions/AuthActions';
 
 function Login(props) {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("demo@example.com");
-  let errorsObj = { email: "", password: "" };
+  const [email, setEmail] = useState('demo@example.com');
+  let errorsObj = { email: '', password: '' };
   const [errors, setErrors] = useState(errorsObj);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState('');
   const dispatch = useDispatch();
 
   function onLogin(e) {
     e.preventDefault();
     let error = false;
     const errorObj = { ...errorsObj };
-    if (email === "") {
-      errorObj.email = "Email is Required";
+    if (email === '') {
+      errorObj.email = 'Email is Required';
       error = true;
     }
-    if (password === "") {
-      errorObj.password = "Password is Required";
+    if (password === '') {
+      errorObj.password = 'Password is Required';
       error = true;
     }
     setErrors(errorObj);
@@ -37,6 +33,7 @@ function Login(props) {
     dispatch(loadingToggleAction(true));
     dispatch(loginAction(email, password, navigate));
   }
+
   return (
     <div className="page-wraper">
       <div className="authincation ">
@@ -71,13 +68,9 @@ function Login(props) {
                             type="email"
                             className="form-control solid"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={e => setEmail(e.target.value)}
                           />
-                          {errors.email && (
-                            <div className="text-danger fs-12">
-                              {errors.email}
-                            </div>
-                          )}
+                          {errors.email && <div className="text-danger fs-12">{errors.email}</div>}
                         </div>
                         <div className="form-group mb-3 pb-3">
                           <label className="font-w600">Password</label>
@@ -86,27 +79,19 @@ function Login(props) {
                             type="password"
                             className="form-control solid"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={e => setPassword(e.target.value)}
                           />
                           {errors.password && (
-                            <div className="text-danger fs-12">
-                              {errors.password}
-                            </div>
+                            <div className="text-danger fs-12">{errors.password}</div>
                           )}
                         </div>
                         <div className="text-center">
-                          <button
-                            type="submit"
-                            className="btn btn-primary btn-block rounded"
-                          >
+                          <button type="submit" className="btn btn-primary btn-block rounded">
                             Sign Me In
                           </button>
                         </div>
                       </form>
-                      <Link
-                        to={"/page-register"}
-                        className="text-primary d-block text-center mt-3"
-                      >
+                      <Link to={'/page-register'} className="text-primary d-block text-center mt-3">
                         Don't have an account? Sign up
                       </Link>
                     </div>
@@ -121,7 +106,7 @@ function Login(props) {
   );
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     errorMessage: state.auth.errorMessage,
     successMessage: state.auth.successMessage,

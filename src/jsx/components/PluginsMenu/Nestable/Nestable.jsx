@@ -1,18 +1,14 @@
-import React, { Component } from "react";
-import NTable from "./NTable";
-import NTable2 from "./NTable2";
+import React, { Component } from 'react';
 
-import PageTitle from "../../../layouts/PageTitle";
+import PageTitle from '../../../layouts/PageTitle';
+import NTable from './NTable';
+import NTable2 from './NTable2';
 
 class Nestable extends Component {
   render() {
     return (
       <div className="h-80">
-        <PageTitle
-          activeMenu="Advanced"
-          motherMenu="Nestable"
-          pageContent="Nestable"
-        />
+        <PageTitle activeMenu="Advanced" motherMenu="Nestable" pageContent="Nestable" />
         <div className="row">
           <div className="col-12">
             <div className="card">

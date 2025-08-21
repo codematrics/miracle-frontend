@@ -1,24 +1,30 @@
-import React, { Fragment } from "react";
-import PageTitle from "../../../../layouts/PageTitle";
-import { Link } from "react-router-dom";
-import { Dropdown } from "react-bootstrap";
+import React, { Fragment } from 'react';
+import { Dropdown } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
+import avartar1 from '../../../../../assets/images/avatar/1.png';
 /// images
-import avartar5 from "../../../../../assets/images/avatar/5.png";
-import avartar1 from "../../../../../assets/images/avatar/1.png";
+import avartar5 from '../../../../../assets/images/avatar/5.png';
+import PageTitle from '../../../../layouts/PageTitle';
 
 const Customers = () => {
   const drop = (
     <Dropdown>
       <Dropdown.Toggle variant="" className="table-dropdown i-false">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 24 24" version="1.1">
-              <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                <rect x="0" y="0" width="24" height="24"></rect>
-                <circle fill="#000000" cx="5" cy="12" r="2"></circle>
-                <circle fill="#000000" cx="12" cy="12" r="2"></circle>
-                <circle fill="#000000" cx="19" cy="12" r="2"></circle>
-              </g>
-            </svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18px"
+          height="18px"
+          viewBox="0 0 24 24"
+          version="1.1"
+        >
+          <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+            <rect x="0" y="0" width="24" height="24"></rect>
+            <circle fill="#000000" cx="5" cy="12" r="2"></circle>
+            <circle fill="#000000" cx="12" cy="12" r="2"></circle>
+            <circle fill="#000000" cx="19" cy="12" r="2"></circle>
+          </g>
+        </svg>
       </Dropdown.Toggle>
       <Dropdown.Menu>
         <Dropdown.Item>Edit</Dropdown.Item>
@@ -27,13 +33,13 @@ const Customers = () => {
     </Dropdown>
   );
 
-  const chackboxFun = (type) => {
-    setTimeout(() => {   
-      const chackbox = document.querySelectorAll(".customer_shop_single input");
-      const motherChackBox = document.querySelector(".customer_shop input");
+  const chackboxFun = type => {
+    setTimeout(() => {
+      const chackbox = document.querySelectorAll('.customer_shop_single input');
+      const motherChackBox = document.querySelector('.customer_shop input');
       for (let i = 0; i < chackbox.length; i++) {
         const element = chackbox[i];
-        if (type === "all") {
+        if (type === 'all') {
           if (motherChackBox.checked) {
             element.checked = true;
           } else {
@@ -51,7 +57,7 @@ const Customers = () => {
     }, 100);
   };
 
-  const chack = (i) => (
+  const chack = i => (
     <div className={`form-check custom-checkbox ms-2`}>
       <input
         type="checkbox"
@@ -66,7 +72,7 @@ const Customers = () => {
 
   return (
     <Fragment>
-      <PageTitle pageContent={'Customers'}  activeMenu="Customers" motherMenu="Shop" />
+      <PageTitle pageContent={'Customers'} activeMenu="Customers" motherMenu="Shop" />
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
@@ -81,12 +87,9 @@ const Customers = () => {
                             type="checkbox"
                             className="form-check-input"
                             id="checkAll"
-                            onClick={() => chackboxFun("all")}
+                            onClick={() => chackboxFun('all')}
                           />
-                          <label
-                            className="form-check-label"
-                            htmlFor="checkAll"
-                          ></label>
+                          <label className="form-check-label" htmlFor="checkAll"></label>
                         </div>
                       </th>
                       <th>Name</th>
@@ -123,12 +126,10 @@ const Customers = () => {
                         <a href="mailto:ricky@example.com">info@example.com</a>
                       </td>
                       <td className="py-2">
-                        {" "}
+                        {' '}
                         <a href="tel:2012001851">(201) 200-1851</a>
                       </td>
-                      <td className="py-2 pl-5 wspace-no">
-                        2392 Main Avenue, Penasauka
-                      </td>
+                      <td className="py-2 pl-5 wspace-no">2392 Main Avenue, Penasauka</td>
                       <td className="py-2">30/03/2018</td>
                       <td className="py-2 text-end">{drop}</td>
                     </tr>
@@ -155,12 +156,10 @@ const Customers = () => {
                         <a href="mailto:emma@example.com">info@example.com</a>
                       </td>
                       <td className="py-2">
-                        {" "}
+                        {' '}
                         <a href="tel:2122288403">(212) 228-8403</a>
                       </td>
-                      <td className="py-2 pl-5 wspace-no">
-                        2289 5th Avenue, New York
-                      </td>
+                      <td className="py-2 pl-5 wspace-no">2289 5th Avenue, New York</td>
                       <td className="py-2">11/07/2017</td>
                       <td className="py-2 text-end">{drop}</td>
                     </tr>
@@ -189,12 +188,10 @@ const Customers = () => {
                         <a href="mailto:rown@example.com">info@example.com</a>
                       </td>
                       <td className="py-2">
-                        {" "}
+                        {' '}
                         <a href="tel:2012001851">(201) 200-1851</a>
                       </td>
-                      <td className="py-2 pl-5 wspace-no">
-                        112 Bostwick Avenue, Jersey City
-                      </td>
+                      <td className="py-2 pl-5 wspace-no">112 Bostwick Avenue, Jersey City</td>
                       <td className="py-2">05/04/2016</td>
                       <td className="py-2 text-end">{drop}</td>
                     </tr>
@@ -221,12 +218,10 @@ const Customers = () => {
                         <a href="mailto:antony@example.com">info@example.com</a>
                       </td>
                       <td className="py-2">
-                        {" "}
+                        {' '}
                         <a href="tel:9013243127">(901) 324-3127</a>
                       </td>
-                      <td className="py-2 pl-5 wspace-no">
-                        3448 Ile De France St #242,{" "}
-                      </td>
+                      <td className="py-2 pl-5 wspace-no">3448 Ile De France St #242, </td>
                       <td className="py-2">05/04/2018</td>
                       <td className="py-2 text-end">{drop}</td>
                     </tr>
@@ -250,17 +245,13 @@ const Customers = () => {
                         </Link>
                       </td>
                       <td className="py-2">
-                        <a href="mailto:jennifer@example.com">
-                          info@example.com
-                        </a>
+                        <a href="mailto:jennifer@example.com">info@example.com</a>
                       </td>
                       <td className="py-2">
-                        {" "}
+                        {' '}
                         <a href="tel:8283829631">(828) 382-9631</a>
                       </td>
-                      <td className="py-2 pl-5 wspace-no">
-                        659 Hannah Street, Charlotte
-                      </td>
+                      <td className="py-2 pl-5 wspace-no">659 Hannah Street, Charlotte</td>
                       <td className="py-2">17/03/2016</td>
                       <td className="py-2 text-end">{drop}</td>
                     </tr>
@@ -286,17 +277,13 @@ const Customers = () => {
                         </Link>
                       </td>
                       <td className="py-2">
-                        <a href="mailto:raymond@example.com">
-                          info@example.com
-                        </a>
+                        <a href="mailto:raymond@example.com">info@example.com</a>
                       </td>
                       <td className="py-2">
-                        {" "}
+                        {' '}
                         <a href="tel:5624685646">(562) 468-5646</a>
                       </td>
-                      <td className="py-2 pl-5 wspace-no">
-                        2298 Locust Court, Artesia
-                      </td>
+                      <td className="py-2 pl-5 wspace-no">2298 Locust Court, Artesia</td>
                       <td className="py-2">12/07/2014</td>
                       <td className="py-2 text-end">{drop}</td>
                     </tr>
@@ -320,17 +307,13 @@ const Customers = () => {
                         </Link>
                       </td>
                       <td className="py-2">
-                        <a href="mailto:jenkins@example.com">
-                          info@example.com
-                        </a>
+                        <a href="mailto:jenkins@example.com">info@example.com</a>
                       </td>
                       <td className="py-2">
-                        {" "}
+                        {' '}
                         <a href="tel:3026138829">(302) 613-8829</a>
                       </td>
-                      <td className="py-2 pl-5 wspace-no">
-                        4678 Maud Street, Philadelphia
-                      </td>
+                      <td className="py-2 pl-5 wspace-no">4678 Maud Street, Philadelphia</td>
                       <td className="py-2">15/06/2014</td>
                       <td className="py-2 text-end">{drop}</td>
                     </tr>
@@ -357,12 +340,10 @@ const Customers = () => {
                         <a href="mailto:cadena@example.com">info@example.com</a>
                       </td>
                       <td className="py-2">
-                        {" "}
+                        {' '}
                         <a href="tel:3172737814">(317) 273-7814</a>
                       </td>
-                      <td className="py-2 pl-5 wspace-no">
-                        3412 Crestview Manor, Indianapolis
-                      </td>
+                      <td className="py-2 pl-5 wspace-no">3412 Crestview Manor, Indianapolis</td>
                       <td className="py-2">15/04/2015</td>
                       <td className="py-2 text-end">{drop}</td>
                     </tr>
@@ -391,12 +372,10 @@ const Customers = () => {
                         <a href="mailto:ricky@example.com">info@example.com</a>
                       </td>
                       <td className="py-2">
-                        {" "}
+                        {' '}
                         <a href="tel:2012001851">(201) 200-1851</a>
                       </td>
-                      <td className="py-2 pl-5 wspace-no">
-                        2392 Main Avenue, Penasauka
-                      </td>
+                      <td className="py-2 pl-5 wspace-no">2392 Main Avenue, Penasauka</td>
                       <td className="py-2">30/03/2018</td>
                       <td className="py-2 text-end">{drop}</td>
                     </tr>
@@ -423,12 +402,10 @@ const Customers = () => {
                         <a href="mailto:emma@example.com">info@example.com</a>
                       </td>
                       <td className="py-2">
-                        {" "}
+                        {' '}
                         <a href="tel:2122288403">(212) 228-8403</a>
                       </td>
-                      <td className="py-2 pl-5 wspace-no">
-                        2289 5th Avenue, New York
-                      </td>
+                      <td className="py-2 pl-5 wspace-no">2289 5th Avenue, New York</td>
                       <td className="py-2">11/07/2017</td>
                       <td className="py-2 text-end">{drop}</td>
                     </tr>
@@ -457,12 +434,10 @@ const Customers = () => {
                         <a href="mailto:rown@example.com">info@example.com</a>
                       </td>
                       <td className="py-2">
-                        {" "}
+                        {' '}
                         <a href="tel:2012001851">(201) 200-1851</a>
                       </td>
-                      <td className="py-2 pl-5 wspace-no">
-                        112 Bostwick Avenue, Jersey City
-                      </td>
+                      <td className="py-2 pl-5 wspace-no">112 Bostwick Avenue, Jersey City</td>
                       <td className="py-2">05/04/2016</td>
                       <td className="py-2 text-end">{drop}</td>
                     </tr>
@@ -489,12 +464,10 @@ const Customers = () => {
                         <a href="mailto:antony@example.com">info@example.com</a>
                       </td>
                       <td className="py-2">
-                        {" "}
+                        {' '}
                         <a href="tel:9013243127">(901) 324-3127</a>
                       </td>
-                      <td className="py-2 pl-5 wspace-no">
-                        3448 Ile De France St #242
-                      </td>
+                      <td className="py-2 pl-5 wspace-no">3448 Ile De France St #242</td>
                       <td className="py-2">05/04/2018</td>
                       <td className="py-2 text-end">{drop}</td>
                     </tr>
@@ -518,17 +491,13 @@ const Customers = () => {
                         </Link>
                       </td>
                       <td className="py-2">
-                        <a href="mailto:jennifer@example.com">
-                          info@example.com
-                        </a>
+                        <a href="mailto:jennifer@example.com">info@example.com</a>
                       </td>
                       <td className="py-2">
-                        {" "}
+                        {' '}
                         <a href="tel:8283829631">(828) 382-9631</a>
                       </td>
-                      <td className="py-2 pl-5 wspace-no">
-                        659 Hannah Street, Charlotte
-                      </td>
+                      <td className="py-2 pl-5 wspace-no">659 Hannah Street, Charlotte</td>
                       <td className="py-2">17/03/2016</td>
                       <td className="py-2 text-end">{drop}</td>
                     </tr>
@@ -554,17 +523,13 @@ const Customers = () => {
                         </Link>
                       </td>
                       <td className="py-2">
-                        <a href="mailto:raymond@example.com">
-                          info@example.com
-                        </a>
+                        <a href="mailto:raymond@example.com">info@example.com</a>
                       </td>
                       <td className="py-2">
-                        {" "}
+                        {' '}
                         <a href="tel:5624685646">(562) 468-5646</a>
                       </td>
-                      <td className="py-2 pl-5 wspace-no">
-                        2298 Locust Court, Artesia
-                      </td>
+                      <td className="py-2 pl-5 wspace-no">2298 Locust Court, Artesia</td>
                       <td className="py-2">12/07/2014</td>
                       <td className="py-2 text-end">{drop}</td>
                     </tr>

@@ -1,8 +1,8 @@
-import React, { Fragment } from "react";
-import Nouislider from "nouislider-react";
+import React, { Fragment } from 'react';
 
+import Nouislider from 'nouislider-react';
 
-import PageTitle from "../../../layouts/PageTitle";
+import PageTitle from '../../../layouts/PageTitle';
 
 const MainNouiSlider = () => {
   return (
@@ -24,14 +24,11 @@ const MainNouiSlider = () => {
                     min: 0,
                     max: 100,
                   }}
-                  
                 />
-                
               </div>
             </div>
-          </div> 
+          </div>
         </div>
-        
       </div>
     </Fragment>
   );
