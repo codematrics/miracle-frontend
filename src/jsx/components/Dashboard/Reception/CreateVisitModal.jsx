@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useRef } from 'react';
 import { Button, Modal, Table } from 'react-bootstrap';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
@@ -8,8 +9,8 @@ import { Form, Formik } from 'formik';
 import Swal from 'sweetalert2';
 
 import { fetchServices, transformServicesForSelect } from '../../../../services/ServicesService';
+import { useGetDoctorsDropdownQuery } from '../../../../store/api/doctorsApi';
 import FormField from './components/FormField';
-import FormRow from './components/FormRow';
 import { initialVisitValues, visitSchema } from './schemas/visitValidation';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -24,59 +25,90 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
   const [servicesLoading, setServicesLoading] = useState(false);
   const [servicesSearch, setServicesSearch] = useState('');
 
+  // Fetch doctors dropdown data
+  const {
+    data: doctorsData,
+    isLoading: doctorsLoading,
+    error: doctorsError,
+  } = useGetDoctorsDropdownQuery();
+
+  // Form reference for reset
+  const formikRef = useRef(null);
+
+  // Transform doctors data for select options
+  const getDoctorOptions = () => {
+    if (!doctorsData?.data) return [{ value: '', label: 'Select Doctor' }];
+
+    const options = doctorsData.data.map(doctor => ({
+      value: doctor.value,
+      label: doctor.nameWithSpecialization || doctor.label,
+      name: doctor.name,
+      employeeId: doctor.employeeId,
+      specialization: doctor.specialization,
+      department: doctor.department,
+      consultationFee: doctor.consultationFee,
+    }));
+
+    return [{ value: '', label: 'Select Doctor' }, ...options];
+  };
+
+  // Get selected doctor data
+  const getSelectedDoctor = doctorValue => {
+    if (!doctorValue || !doctorsData?.data) return null;
+    return doctorsData.data.find(doctor => doctor.value === doctorValue);
+  };
+
+  const getRefByOptions = () => {
+    return [{ value: 'Self', label: 'Self' }];
+  };
+
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       // Validate patient selection
       if (!selectedPatient) {
-        toast.error('Please select a patient', {
-          position: 'top-right',
-          autoClose: 5000,
-        });
+        toast.error('Please select a patient');
         return;
       }
 
-      // Validate services selection
+      // Validate services selection (minimum 1, maximum 20)
       if (selectedServices.length === 0) {
-        toast.error('Please select at least one service', {
-          position: 'top-right',
-          autoClose: 5000,
-        });
+        toast.error('Please select at least one service');
+        return;
+      }
+      if (selectedServices.length > 20) {
+        toast.error('Maximum 20 services allowed per visit');
         return;
       }
 
-      // Prepare visit data
+      // Get selected doctor details and validate
+      const selectedDoctor = getSelectedDoctor(values.visitingdoctor);
+      if (!selectedDoctor?.employeeId) {
+        toast.error('Please select a valid doctor');
+        return;
+      }
+
+      // Prepare visit data according to backend API requirements
       const submitData = {
-        ...values,
-        patientId: selectedPatient.id || selectedPatient.value,
-        patientInfo: {
-          uhid: selectedPatient.uhid || selectedPatient.value,
-          name: selectedPatient.label,
-          fatherOrHusbandName: selectedPatient.fathername,
-          mobileNo: selectedPatient.mobileno,
-          age: selectedPatient.age,
-          gender:
-            selectedPatient.gender === 'M'
-              ? 'Male'
-              : selectedPatient.gender === 'F'
-                ? 'Female'
-                : 'Other',
-        },
+        // Required fields
+        doctorId: selectedDoctor.employeeId, // Doctor's employeeId (1-20 chars)
+        refby: values.refby, // Referral source (1-100 chars)
+        visittype: values.visittype, // Visit type (1-50 chars)
+        mediclaim_type: values.mediclaim_type, // Mediclaim type (1-50 chars)
         services: selectedServices.map(service => ({
-          serviceId: service.id,
-          serviceName: service.label,
-          serviceCode: service.code,
-          rate: service.rate,
-          quantity: 1,
-          discount: 0,
+          serviceId: service.id, // Valid MongoDB ObjectId
+          serviceName: service.label, // 1-100 characters
+          serviceCode: service.code, // 1-20 characters
+          rate: Number(service.rate) || 0, // Number (0-999999, cannot be negative)
         })),
+
+        // Optional fields
+        ...(selectedPatient && { patientId: selectedPatient.id || selectedPatient.value }),
+        ...(values.medicolegal && { medicolegal: values.medicolegal }),
+        ...(values.visitdetail && { visitdetail: values.visitdetail }),
+        ...(values.mediclaim_id && { mediclaim_id: values.mediclaim_id }),
       };
 
-      // Remove empty optional fields
-      Object.keys(submitData).forEach(key => {
-        if (submitData[key] === '' || submitData[key] === null) {
-          delete submitData[key];
-        }
-      });
+      console.log('Submitting visit data:', submitData); // Debug log
 
       const response = await axios.post(`${API_URL}/visits`, submitData, {
         headers: {
@@ -100,7 +132,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
         setSearchPatient('');
         onHide();
 
-        // Callback to parent component if needed
+        // Callback to parent component
         if (onVisitCreated) {
           onVisitCreated(response.data.data);
         }
@@ -108,35 +140,36 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
     } catch (error) {
       console.error('Error creating visit:', error);
 
-      // Handle validation errors from backend
-      if (error.response?.status === 400 && error.response?.data?.errors) {
-        const validationErrors = error.response.data.errors;
+      // Handle specific backend validation errors
+      if (error.response?.status === 400) {
+        const errorData = error.response.data;
 
-        // Show only the first validation error as a toast
-        if (validationErrors.length > 0) {
-          const firstError = validationErrors[0];
-          toast.error(`${firstError.message}`, {
-            position: 'bottom-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
+        // Handle validation errors array
+        if (errorData.errors && Array.isArray(errorData.errors)) {
+          const firstError = errorData.errors[0];
+          toast.error(firstError.message || firstError.msg || 'Validation error');
         }
-      } else {
-        // Handle other types of errors
-        const errorMessage =
-          error.response?.data?.message || 'Failed to create visit. Please try again.';
-
-        toast.error(errorMessage, {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        // Handle single error message
+        else if (errorData.message) {
+          toast.error(errorData.message);
+        }
+        // Handle field-specific errors
+        else if (errorData.error) {
+          toast.error(errorData.error);
+        } else {
+          toast.error('Please check your input and try again');
+        }
+      }
+      // Handle other HTTP errors
+      else if (error.response) {
+        toast.error(
+          error.response.data?.message ||
+            `Error ${error.response.status}: ${error.response.statusText}`
+        );
+      }
+      // Handle network errors
+      else {
+        toast.error('Network error. Please check your connection and try again.');
       }
     } finally {
       setSubmitting(false);
@@ -220,13 +253,30 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
     loadServices(); // Load services when modal opens
   }, [loadServices]);
 
-  // Reset services when modal closes
+  // Reset form completely when modal closes
+  const resetFormData = () => {
+    setSelectedPatient(null);
+    setSearchPatient('');
+    setSelectedServices([]);
+    setSelectedOption(null);
+    setServicesOptions([]);
+    setServicesSearch('');
+    // Reset Formik form
+    if (formikRef.current) {
+      formikRef.current.resetForm();
+    }
+  };
+
+  // Handle modal close with form reset
+  const handleModalClose = () => {
+    resetFormData();
+    onHide();
+  };
+
+  // Reset form when modal closes
   useEffect(() => {
     if (!show) {
-      setServicesOptions([]);
-      setServicesSearch('');
-      setSelectedServices([]);
-      setSelectedOption(null);
+      resetFormData();
     }
   }, [show]);
 
@@ -234,7 +284,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
     <Modal
       className="fade"
       show={show}
-      onHide={onHide}
+      onHide={handleModalClose}
       centered={true}
       size="xl"
       backdropClassName={'role'}
@@ -242,117 +292,108 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
     >
       <Modal.Header>
         <Modal.Title>Add New Visit</Modal.Title>
-        <Button variant="" className="btn-close" onClick={onHide}></Button>
+        <Button variant="" className="btn-close" onClick={handleModalClose}></Button>
       </Modal.Header>
       <Formik
+        ref={formikRef}
         initialValues={initialVisitValues}
         validationSchema={visitSchema}
         onSubmit={handleSubmit}
+        enableReinitialize={true}
       >
         {({ isSubmitting }) => (
           <Form>
             <Modal.Body>
-              <FormRow className="row">
-                <div className="col-md-12">
+              {/* Patient Selection */}
+              <div className="row mb-4">
+                <div className="col-12">
                   <div className="form-group">
-                    <label className="text-black font-w500">
-                      Search Patient <span className="text-danger">*</span>
+                    <label className="text-black font-w500 mb-2">
+                      <i className="fa fa-user me-2"></i>Select Patient{' '}
+                      <span className="text-danger">*</span>
                     </label>
                     <Select
                       isClearable
-                      // components={{ NoOptionsMessage }}
-                      // styles={{ NoOptionsMessage: base => ({ ...base, ...msgStyles }) }}
                       className="plugins-select-feild"
                       isSearchable
                       name="searchPatient"
-                      id="searchPatient"
+                      placeholder="Search and select a patient..."
                       value={searchPatient}
                       options={patientOptions}
                       onChange={handleSearchPatient}
+                      noOptionsMessage={() => 'No patients found. Try adjusting your search.'}
                     />
                   </div>
                 </div>
-              </FormRow>
+              </div>
 
-              <FormRow className="row">
-                <div className="col-12 col-md-6 col-lg-3 form-group">
-                  <label className="text-black">UHID No</label>
-                  <input
-                    type="text"
-                    readOnly
-                    className="form-control form-control-sm text-black"
-                    value={
-                      selectedPatient
-                        ? selectedPatient.uhid || selectedPatient.id || selectedPatient.value
-                        : ''
-                    }
-                  />
+              {/* Patient Information Display */}
+              {selectedPatient && (
+                <div className="row mb-4">
+                  <div className="col-12">
+                    <div className="card bg-light">
+                      <div className="card-body py-3">
+                        <h6 className="card-title mb-2">
+                          <i className="fa fa-info-circle me-2 text-info"></i>Patient Information
+                        </h6>
+                        <div className="row text-nowrap" style={{ fontSize: '14px' }}>
+                          <div className="col-lg-3 col-md-6 mb-2">
+                            <div className="d-flex">
+                              <strong className="me-1 text-nowrap">UHID:</strong>
+                              <span className="text-truncate">
+                                {selectedPatient.uhid || selectedPatient.value}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="col-lg-3 col-md-6 mb-2">
+                            <div className="d-flex">
+                              <strong className="me-1 text-nowrap">Name:</strong>
+                              <span className="text-truncate" title={selectedPatient.label}>
+                                {selectedPatient.label}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="col-lg-3 col-md-6 mb-2">
+                            <div className="d-flex">
+                              <strong className="me-1 text-nowrap">Mobile:</strong>
+                              <span className="text-nowrap">{selectedPatient.mobileno}</span>
+                            </div>
+                          </div>
+                          <div className="col-lg-1 col-md-3 mb-2">
+                            <div className="d-flex">
+                              <strong className="me-1 text-nowrap">Age:</strong>
+                              <span>{selectedPatient.age}</span>
+                            </div>
+                          </div>
+                          <div className="col-lg-2 col-md-3 mb-2">
+                            <div className="d-flex">
+                              <strong className="me-1 text-nowrap">Gender:</strong>
+                              <span>{selectedPatient.gender}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="col-12 col-md-6 col-lg-3 form-group">
-                  <label className="text-black">Patient Name </label>
-                  <input
-                    type="text"
-                    readOnly
-                    className="form-control form-control-sm text-black"
-                    value={selectedPatient ? selectedPatient.label : ''}
-                  />
-                </div>
-                <div className="col-12 col-md-6 col-lg-2 form-group">
-                  <label className="text-black">Father/Husband</label>
-                  <input
-                    type="text"
-                    readOnly
-                    className="form-control form-control-sm text-black"
-                    value={selectedPatient ? selectedPatient.fathername : ''}
-                  />
-                </div>
-                <div className="col-12 col-md-6 col-lg-2 form-group">
-                  <label className="text-black">Mobile No </label>
-                  <input
-                    type="text"
-                    readOnly
-                    className="form-control form-control-sm text-black"
-                    value={selectedPatient ? selectedPatient.mobileno : ''}
-                  />
-                </div>
-                <div className="col-12 col-md-6 col-lg-2 form-group">
-                  <label className="text-black">Sex/Age</label>
-                  <input
-                    type="text"
-                    readOnly
-                    className="form-control form-control-sm text-black"
-                    value={
-                      selectedPatient ? `${selectedPatient.gender}/${selectedPatient.age}` : ''
-                    }
-                  />
-                </div>
-              </FormRow>
+              )}
 
-              <FormRow className="row">
-                <FormField
-                  name="refby"
-                  label="Ref By"
-                  type="select"
-                  required
-                  className="col-12 col-md-6 col-lg-3"
-                  options={[
-                    { value: '', label: 'Select Ref By' },
-                    { value: '1', label: 'Self' },
-                  ]}
-                />
+              {/* Visit Details */}
+              <div className="row mb-4">
+                <div className="col-12">
+                  <h6 className="mb-3">
+                    <i className="fa fa-clipboard me-2 text-primary"></i>Visit Details
+                  </h6>
+                </div>
 
                 <FormField
                   name="visitingdoctor"
                   label="Visiting Doctor"
                   type="select"
                   required
-                  className="col-12 col-md-6 col-lg-3"
-                  options={[
-                    { value: '', label: 'Select Visiting Doctor' },
-                    { value: '1', label: 'Dr. Kailash Garg' },
-                    { value: '2', label: 'Dr. Manohar Menariya' },
-                    { value: '3', label: 'Dr. Vishal Khutwal' },
-                  ]}
+                  className="col-md-4"
+                  options={getDoctorOptions()}
+                  disabled={doctorsLoading}
                 />
 
                 <FormField
@@ -360,67 +401,90 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                   label="Visit Type"
                   type="select"
                   required
-                  className="col-12 col-md-6 col-lg-3"
+                  className="col-md-4"
                   options={[
                     { value: '', label: 'Select Visit Type' },
-                    { value: '1', label: 'OPD' },
-                    { value: '2', label: 'IPD' },
-                    { value: '3', label: 'Camp' },
+                    { value: 'OPD', label: 'OPD' },
+                    { value: 'IPD', label: 'IPD' },
+                    { value: 'Emergency', label: 'Emergency' },
+                    { value: 'Consultation', label: 'Consultation' },
                   ]}
                 />
 
                 <FormField
-                  name="visitdetail"
-                  label="Visit Description"
-                  className="col-12 col-md-6 col-lg-3"
+                  name="refby"
+                  label="Referred By"
+                  type="select"
+                  required
+                  className="col-md-4"
+                  options={getRefByOptions()}
+                  disabled={doctorsLoading}
+                  hideEmptyOption={true}
                 />
-              </FormRow>
 
-              <FormRow className="row">
+                <FormField
+                  name="visitdetail"
+                  label="Visit Notes (Optional)"
+                  className="col-12"
+                  placeholder="Enter any additional notes about this visit..."
+                />
+              </div>
+
+              {/* Medical & Insurance Details */}
+              <div className="row mb-4">
+                <div className="col-12">
+                  <h6 className="mb-3">
+                    <i className="fa fa-shield-alt me-2 text-success"></i>Medical & Insurance
+                  </h6>
+                </div>
+
                 <FormField
                   name="medicolegal"
-                  label="Medico Legal(MLC)"
+                  label="Medico Legal (MLC)"
                   type="radio"
                   required
-                  className="col-12 col-md-6 col-lg-4"
-                  options={['Yes', 'No']}
+                  className="col-md-4"
+                  options={['No', 'Yes']}
                 />
 
                 <FormField
                   name="mediclaim_type"
-                  label="Mediclaim"
+                  label="Insurance Type"
                   type="select"
                   required
-                  className="col-12 col-md-6 col-lg-4"
+                  className="col-md-4"
                   options={[
-                    { value: '', label: 'Select Mediclaim' },
-                    { value: '1', label: 'Not Applicable' },
-                    { value: '2', label: 'Ayushman' },
-                    { value: '3', label: 'Healthcare' },
-                    { value: '4', label: 'National Insurance' },
+                    { value: '', label: 'Select Insurance Type' },
+                    { value: 'Self', label: 'Self Payment' },
+                    { value: 'Ayushman', label: 'Ayushman Bharat' },
+                    { value: 'Insurance', label: 'Private Insurance' },
+                    { value: 'Corporate', label: 'Corporate Insurance' },
                   ]}
                 />
 
                 <FormField
                   name="mediclaim_id"
-                  label="Mediclaim ID / Policy No"
-                  className="col-12 col-md-6 col-lg-4"
+                  label="Policy/Card Number"
+                  className="col-md-4"
+                  placeholder="Enter policy or card number"
                 />
-              </FormRow>
+              </div>
 
-              <FormRow className="row">
-                <div className="col-md-12">
+              {/* Services Selection */}
+              <div className="row mb-4">
+                <div className="col-12">
+                  <h6 className="mb-3">
+                    <i className="fa fa-medical-bag me-2 text-warning"></i>Services{' '}
+                    <span className="text-danger">*</span>
+                  </h6>
                   <div className="form-group">
-                    <label className="text-black font-w500">
-                      Search Service <span className="text-danger">*</span>
-                    </label>
                     <Select
                       isClearable
                       className="plugins-select-feild"
                       isSearchable
                       isLoading={servicesLoading}
                       name="searchservices"
-                      placeholder="Type to search services..."
+                      placeholder="Search and add services for this visit..."
                       options={servicesOptions}
                       value={selectedOption}
                       onChange={handleAddService}
@@ -432,82 +496,83 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                       }
                       loadingMessage={() => 'Loading services...'}
                     />
+                    <small className="text-muted mt-1">
+                      <i className="fa fa-info-circle me-1"></i>
+                      Search and select services to add to this visit
+                    </small>
                   </div>
                 </div>
-              </FormRow>
+              </div>
 
+              {/* Selected Services */}
               <div className="selected-services">
-                <Table responsive className="table-striped">
-                  <thead className="table-dark">
-                    <tr>
-                      <th>Service Code</th>
-                      <th>Service Name</th>
-                      <th className="text-end">Price (₹)</th>
-                      <th className="text-center">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedServices.length === 0 ? (
-                      <tr>
-                        <td colSpan="4" className="text-center text-muted py-4">
-                          <i className="fas fa-info-circle me-2"></i>
-                          No services selected. Please search and add services above.
-                        </td>
-                      </tr>
-                    ) : (
-                      selectedServices.map((service, index) => (
-                        <tr key={service.id || index}>
-                          <td>
-                            <strong className="text-primary">{service.code}</strong>
-                          </td>
-                          <td>
-                            <div>
-                              <strong>{service.label}</strong>
-                              {service.description && (
-                                <small className="text-muted d-block">{service.description}</small>
-                              )}
-                            </div>
-                          </td>
-                          <td className="text-end">
-                            <strong>₹{service.rate?.toLocaleString() || '0'}</strong>
-                          </td>
-                          <td className="text-center">
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveService(service)}
-                              className="btn btn-sm btn-outline-danger"
-                              title="Remove service"
-                            >
-                              <i className="fas fa-trash" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                  {selectedServices.length > 0 && (
-                    <tfoot className="table-secondary">
-                      <tr>
-                        <td colSpan="2" className="text-end">
-                          <strong>Total Amount:</strong>
-                        </td>
-                        <td className="text-end">
-                          <strong className="text-success fs-5">
-                            ₹{getTotalAmount().toLocaleString()}
-                          </strong>
-                        </td>
-                        <td></td>
-                      </tr>
-                    </tfoot>
-                  )}
-                </Table>
+                {selectedServices.length === 0 ? (
+                  <div className="alert alert-info" role="alert">
+                    <i className="fa fa-info-circle me-2"></i>
+                    <strong>No services selected yet.</strong> Please search and add services from
+                    above.
+                  </div>
+                ) : (
+                  <div className="card">
+                    <div className="card-header d-flex justify-content-between align-items-center">
+                      <h6 className="mb-0">
+                        <i className="fa fa-list me-2"></i>Selected Services (
+                        {selectedServices.length})
+                      </h6>
+                      <div className="text-success">
+                        <strong>Total: ₹{getTotalAmount().toLocaleString()}</strong>
+                      </div>
+                    </div>
+                    <div className="card-body p-0">
+                      <Table responsive className="mb-0">
+                        <thead className="table-light">
+                          <tr>
+                            <th>Service</th>
+                            <th className="text-end">Price</th>
+                            <th className="text-center" width="80">
+                              Action
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedServices.map((service, index) => (
+                            <tr key={service.id || index}>
+                              <td>
+                                <div>
+                                  <strong>{service.label}</strong>
+                                  <br />
+                                  <small className="text-muted">{service.code}</small>
+                                </div>
+                              </td>
+                              <td className="text-end">
+                                <strong className="text-success">
+                                  ₹{service.rate?.toLocaleString() || '0'}
+                                </strong>
+                              </td>
+                              <td className="text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveService(service)}
+                                  className="btn btn-sm btn-outline-danger"
+                                  title="Remove service"
+                                >
+                                  <i className="fa fa-times" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    </div>
+                  </div>
+                )}
               </div>
             </Modal.Body>
             <Modal.Footer>
               <Button
                 type="button"
                 className="btn btn-danger btn-sm light"
-                onClick={onHide}
+                onClick={handleModalClose}
                 disabled={isSubmitting}
               >
                 Close
