@@ -13,6 +13,7 @@ const FormField = ({
   className = 'col-md-4',
   fieldClassName = '',
   style = { height: '40px', fontSize: '16px' },
+  hideEmptyOption = false,
   ...props
 }) => {
   const { errors, touched } = useFormikContext();
@@ -72,7 +73,7 @@ const FormField = ({
             style={style}
             {...props}
           >
-            <option value="">Select {label}</option>
+            {!hideEmptyOption && <option value="">Select {label}</option>}
             {options.map((option, index) => (
               <option key={index} value={typeof option === 'string' ? option : option.value}>
                 {typeof option === 'string' ? option : option.label}

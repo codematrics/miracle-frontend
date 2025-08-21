@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Badge,
   Button,
@@ -9,7 +9,7 @@ import {
   InputGroup,
   Table,
 } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import axios from 'axios';
@@ -52,6 +52,10 @@ const PatientVisits = () => {
     limit: 10,
   });
 
+  // Pagination state
+  const sort = 10;
+  const activePag = useRef(0);
+
   // Modal States
   const [showPatientModal, setShowPatientModal] = useState(false);
   const [showVisitModal, setShowVisitModal] = useState(false);
@@ -72,7 +76,7 @@ const PatientVisits = () => {
       try {
         const params = {
           page,
-          limit: pagination.limit,
+          limit: sort,
           ...filters,
         };
 
@@ -86,10 +90,11 @@ const PatientVisits = () => {
         const response = await axios.get(`${API_URL}/visits`, { params });
 
         if (response.data.success) {
-          if (resetData) {
+          if (resetData || page === 1) {
             setVisits(response.data.data);
+            activePag.current = 0;
           } else {
-            setVisits(prev => (page === 1 ? response.data.data : [...prev, ...response.data.data]));
+            setVisits(prev => [...prev, ...response.data.data]);
           }
 
           setPagination({
@@ -97,7 +102,7 @@ const PatientVisits = () => {
             totalPages: response.data.pagination?.totalPages || 1,
             total:
               response.data.pagination?.total || response.data.total || response.data.data.length,
-            limit: response.data.pagination?.limit || pagination.limit,
+            limit: response.data.pagination?.limit || sort,
           });
         } else {
           throw new Error(response.data.message || 'Failed to load visits');
@@ -112,8 +117,26 @@ const PatientVisits = () => {
         setLoading(false);
       }
     },
-    [filters, pagination.limit]
+    [filters]
   );
+
+  // Handle pagination click
+  const onClickPage = i => {
+    activePag.current = i;
+    if (
+      i + 1 > Math.ceil(visits.length / sort) &&
+      pagination.currentPage < pagination.totalPages
+    ) {
+      // Load more data if needed
+      const nextPage = Math.ceil(visits.length / sort) + 1;
+      loadVisits(nextPage, false);
+    }
+  };
+
+  // Generate pagination array
+  const paggination = Array(Math.ceil(visits.length / sort))
+    .fill()
+    .map((_, i) => i + 1);
 
   // Handle filter changes
   const handleFilterChange = (filterName, value) => {
@@ -302,7 +325,9 @@ const PatientVisits = () => {
                         </td>
                       </tr>
                     ) : (
-                      visits.map((visit, index) => (
+                      visits
+                        .slice(activePag.current * sort, (activePag.current + 1) * sort)
+                        .map((visit, index) => (
                         <tr key={visit.id || visit._id || index}>
                           <td>
                             <code className="text-primary fw-bold">{visit.visitId}</code>
@@ -402,31 +427,42 @@ const PatientVisits = () => {
                 </Table>
               </div>
 
-              {/* Load More Button */}
-              {pagination.currentPage < pagination.totalPages && (
-                <div className="text-center mt-4">
-                  <Button
-                    variant="outline-primary"
-                    onClick={() => loadVisits(pagination.currentPage + 1)}
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <>
-                        <span
-                          className="spinner-border spinner-border-sm me-2"
-                          role="status"
-                        ></span>
-                        Loading...
-                      </>
-                    ) : (
-                      <>
-                        <i className="fa fa-chevron-down me-2"></i>
-                        Load More Visits ({pagination.total - visits.length} remaining)
-                      </>
-                    )}
-                  </Button>
+              {/* Pagination */}
+              <div className="d-sm-flex text-center justify-content-between align-items-center">
+                <div>
+                  Showing {activePag.current * sort + 1} to{' '}
+                  {visits.length > (activePag.current + 1) * sort
+                    ? (activePag.current + 1) * sort
+                    : visits.length}{' '}
+                  of {pagination.total} entries
                 </div>
-              )}
+                <div className="dataTables_paginate paging_simple_numbers d-flex justify-content-center align-items-center pb-3">
+                  <Link
+                    to="#"
+                    onClick={() => activePag.current > 0 && onClickPage(activePag.current - 1)}
+                  >
+                    Previous
+                  </Link>
+                  {paggination.map((num, i) => (
+                    <Link
+                      key={i}
+                      to="#"
+                      className={activePag.current === i ? 'current ms-1' : 'ms-1'}
+                      onClick={() => onClickPage(i)}
+                    >
+                      {num}
+                    </Link>
+                  ))}
+                  <Link
+                    to="#"
+                    onClick={() =>
+                      activePag.current + 1 < paggination.length && onClickPage(activePag.current + 1)
+                    }
+                  >
+                    Next
+                  </Link>
+                </div>
+              </div>
             </Card.Body>
           </Card>
         </div>

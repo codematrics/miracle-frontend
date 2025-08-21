@@ -164,85 +164,85 @@ const Patient = () => {
       </div>
 
       {/* Table */}
-      <div className="table-responsive card-table">
-        <table className="table table-striped no-footer display table-responsive-xl dataTable text-black">
-          <thead>
-            <tr>
-              <th>Sr No</th>
-              <th>Patient ID</th>
-              <th>Date Check In</th>
-              <th>Patient Name</th>
-              <th>Doctor Assigned</th>
-              <th>Cabin No</th>
-              <th>Status</th>
-              <th className="text-end">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
+      <div className="card-table dataTables_wrapper no-footer">
+        <div id="workflow_list" className="table-responsive">
+          <table className="table table-striped no-footer display table-responsive-xl dataTable text-black">
+            <thead>
               <tr>
-                <td colSpan="8" className="text-center py-4">
-                  <div className="spinner-border text-primary" role="status" />
-                  <div className="mt-2">Loading visits...</div>
-                </td>
+                <th>Sr No</th>
+                <th>Patient ID</th>
+                <th>Date Check In</th>
+                <th>Patient Name</th>
+                <th>Doctor Assigned</th>
+                <th>Cabin No</th>
+                <th>Status</th>
+                <th className="text-end">Action</th>
               </tr>
-            ) : visitsData.length === 0 ? (
-              <tr>
-                <td colSpan="8" className="text-center py-4 text-muted">
-                  <i className="fa fa-calendar-times fa-2x mb-2 d-block"></i>
-                  No visits found
-                </td>
-              </tr>
-            ) : (
-              visitsData.map((visit, ind) => (
-                <tr key={visit.id || ind}>
-                  <td>{ind + 1}</td>
-                  <td>
-                    <span
-                      onClick={() => navigate(`/patient-details/${visit.patient.id}`)}
-                      style={{ cursor: 'pointer', color: '#007bff' }}
-                      role="button"
-                    >
-                      {visit.patient.uhid}
-                    </span>
-                  </td>
-                  <td>{formatDate(visit.visitDate)}</td>
-                  <td>{visit.patient.name}</td>
-                  <td>{visit.visitingdoctor}</td>
-                  <td>-</td>
-                  <td>{getStatusComponent(visit.status)}</td>
-                  <td>
-                    <Dropdown className="ms-auto text-end">
-                      <Dropdown.Toggle className="btn-link i-false" as="div">
-                        <i className="fa fa-ellipsis-v"></i>
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu align="end">
-                        <Dropdown.Item>Accept Patient</Dropdown.Item>
-                        <Dropdown.Item onClick={() => fetchPrescriptionData(visit.patient.id)}>
-                          Prescription
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          onClick={() => window.open(`/casesheet/${visit.id}`, '_blank')}
-                        >
-                          Case Sheet
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          onClick={() => navigate(`/patient-details/${visit.patient.id}`)}
-                        >
-                          View Details
-                        </Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="8" className="text-center py-4">
+                    <div className="spinner-border text-primary" role="status" />
+                    <div className="mt-2">Loading visits...</div>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-
-        {/* Pagination */}
+              ) : visitsData.length === 0 ? (
+                <tr>
+                  <td colSpan="8" className="text-center py-4 text-muted">
+                    <i className="fa fa-calendar-times fa-2x mb-2 d-block"></i>
+                    No visits found
+                  </td>
+                </tr>
+              ) : (
+                visitsData.map((visit, ind) => (
+                  <tr key={visit.id || ind}>
+                    <td>{ind + 1}</td>
+                    <td>
+                      <span
+                        onClick={() => navigate(`/patient-details/${visit.patient.id}`)}
+                        style={{ cursor: 'pointer', color: '#007bff' }}
+                        role="button"
+                      >
+                        {visit.patient.uhid}
+                      </span>
+                    </td>
+                    <td>{formatDate(visit.visitDate)}</td>
+                    <td>{visit.patient.name}</td>
+                    <td>{visit.visitingdoctor}</td>
+                    <td>-</td>
+                    <td>{getStatusComponent(visit.status)}</td>
+                    <td>
+                      <Dropdown className="ms-auto text-end">
+                        <Dropdown.Toggle className="btn-link i-false" as="div">
+                          <i className="fa fa-ellipsis-v"></i>
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu align="end">
+                          <Dropdown.Item>Accept Patient</Dropdown.Item>
+                          <Dropdown.Item onClick={() => fetchPrescriptionData(visit.patient.id)}>
+                            Prescription
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() => window.open(`/casesheet/${visit.id}`, '_blank')}
+                          >
+                            Case Sheet
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() => navigate(`/patient-details/${visit.patient.id}`)}
+                          >
+                            View Details
+                          </Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
         <div className="d-sm-flex text-center justify-content-between align-items-center">
-          <div>
+          <div className="dataTables_info" id="example5_info" role="status" aria-live="polite">
             Showing {activePag.current * sort + 1} to{' '}
             {visitsData.length > (activePag.current + 1) * sort
               ? (activePag.current + 1) * sort
@@ -253,6 +253,7 @@ const Patient = () => {
             <Link
               to="#"
               onClick={() => activePag.current > 0 && onClickPage(activePag.current - 1)}
+              className={`paginate_button previous ${pagination.page <= 1 ? 'disabled' : ''}`}
             >
               Previous
             </Link>
@@ -260,7 +261,9 @@ const Patient = () => {
               <Link
                 key={i}
                 to="#"
-                className={activePag.current === i ? 'current ms-1' : 'ms-1'}
+                className={`paginate_button d-flex align-items-center justify-content-center ${
+                  activePag.current === i ? 'current' : ''
+                } ${i > 0 ? 'ms-1' : ''}`}
                 onClick={() => onClickPage(i)}
               >
                 {num}
@@ -271,6 +274,7 @@ const Patient = () => {
               onClick={() =>
                 activePag.current + 1 < paggination.length && onClickPage(activePag.current + 1)
               }
+              className={`paginate_button next ${pagination.page >= pagination.pages ? 'disabled' : ''}`}
             >
               Next
             </Link>

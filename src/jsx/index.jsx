@@ -26,6 +26,7 @@ import ProductOrder from './components/AppsMenu/Shop/ProductOrder';
 import Doctor from './components/Dashboard/Doctor';
 import DoctorDetails from './components/Dashboard/DoctorDetails';
 import WorkFlow from './components/Dashboard/Pathology/WorkFlow.jsx';
+import DoctorMaster from './components/Dashboard/Doctors/DoctorMaster';
 import PatientDetails from './components/Dashboard/PatientDetails';
 import BillingDetails from './components/Dashboard/Reception/BillingDetails';
 /// Reception Dashboard
@@ -118,6 +119,9 @@ const Markup = () => {
     // Services Management
     { url: 'services', component: <ServicesPage /> },
     { url: 'parameters', component: <ParametersPage /> },
+    
+    // Doctor Management
+    { url: 'doctors', component: <DoctorMaster /> },
 
     //Apps
     { url: 'app-profile', component: <AppProfile /> },

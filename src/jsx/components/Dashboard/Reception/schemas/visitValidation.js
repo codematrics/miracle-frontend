@@ -1,33 +1,48 @@
 import * as Yup from 'yup';
 
 export const visitSchema = Yup.object().shape({
-  refby: Yup.string().required('Ref By is required'),
+  // Required fields matching backend validation
+  refby: Yup.string()
+    .required('Referral source is required')
+    .min(1, 'Referral source must be at least 1 character')
+    .max(100, 'Referral source must be under 100 characters'),
 
-  visitingdoctor: Yup.string().required('Visiting Doctor is required'),
+  visitingdoctor: Yup.string()
+    .required('Visiting Doctor is required'),
 
-  visittype: Yup.string().required('Visit Type is required'),
+  visittype: Yup.string()
+    .required('Visit Type is required')
+    .min(1, 'Visit type must be at least 1 character')
+    .max(50, 'Visit type must be under 50 characters'),
 
-  visitdetail: Yup.string().max(200, 'Visit Description must be under 200 characters').nullable(),
+  mediclaim_type: Yup.string()
+    .required('Insurance type is required')
+    .min(1, 'Insurance type must be at least 1 character')
+    .max(50, 'Insurance type must be under 50 characters'),
+
+  // Optional fields
+  visitdetail: Yup.string()
+    .max(200, 'Visit notes must be under 200 characters')
+    .nullable(),
 
   medicolegal: Yup.string()
     .oneOf(['Yes', 'No'], 'Invalid Medico Legal option')
-    .required('Please select Medico Legal status'),
+    .nullable(),
 
-  mediclaim_type: Yup.string().required('Please select Mediclaim type'),
-
-  mediclaim_id: Yup.string().when('mediclaim_type', {
-    is: val => val && val !== '1', // if not "Not Applicable"
-    then: schema => schema.required('Mediclaim ID is required'),
-    otherwise: schema => schema.nullable(),
-  }),
+  mediclaim_id: Yup.string()
+    .when('mediclaim_type', {
+      is: val => val && val !== 'Self', // if not "Self Payment"
+      then: schema => schema.required('Policy/Card number is required'),
+      otherwise: schema => schema.nullable(),
+    }),
 });
 
 export const initialVisitValues = {
-  refby: '', // dropdown value
+  refby: 'Self', // default to Self (matching backend format)
   visitingdoctor: '', // dropdown value
-  visittype: '', // dropdown value
+  visittype: 'OPD', // default to OPD
   visitdetail: '', // optional text
   medicolegal: 'No', // default radio selection
-  mediclaim_type: '1', // default "Not Applicable"
-  mediclaim_id: '', // required if mediclaim_type != "1"
+  mediclaim_type: 'Self', // default to Self (matching backend example)
+  mediclaim_id: '', // required if mediclaim_type != "Self"
 };

@@ -88,8 +88,12 @@ export const MenuList = [
   {
     title: 'Master',
     classsChange: 'mm-collapse',
-    iconStyle: <i className="fa fa-receipt" />,
+    iconStyle: <i className="fa fa-database" />,
     content: [
+      {
+        title: 'Doctors',
+        to: 'doctors',
+      },
       {
         title: 'Services',
         to: 'services',
