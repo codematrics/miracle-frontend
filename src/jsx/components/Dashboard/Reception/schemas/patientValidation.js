@@ -91,14 +91,14 @@ export const patientSchema = yup.object().shape({
   idNo: yup
     .string()
     .required('ID number is required')
-    .min(6, 'ID number must be at least 6 characters')
+    .min(1, 'ID number is required')
     .max(20, 'ID number cannot exceed 20 characters')
     .matches(/^[a-zA-Z0-9]+$/, 'ID number can only contain letters and numbers'),
 
   patientType: yup
     .mixed()
     .oneOf(['General', 'VIP', 'Staff'], 'Patient type must be one of: General, VIP, Staff')
-    .required('Patient type is required'),
+    .nullable(),
 
   address: yup.object().shape({
     village: yup

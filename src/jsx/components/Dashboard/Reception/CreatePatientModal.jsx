@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 
 import axios from 'axios';
 import { Form, Formik } from 'formik';
+import { useRef } from 'react';
 import Swal from 'sweetalert2';
 
 import AgeField from './components/AgeField';
@@ -11,12 +12,28 @@ import FormRow from './components/FormRow';
 import { initialPatientValues, patientSchema } from './schemas/patientValidation';
 
 const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
+  const formikRef = useRef();
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      // Transform age to number and filter out empty optional fields
+      // Transform data to match exact backend API format
       const submitData = {
-        ...values,
+        patientName: values.patientName,
+        relation: values.relation,
+        fatherOrHusbandName: values.fatherOrHusbandName,
         age: parseInt(values.age, 10),
+        ageUnit: values.ageUnit,
+        gender: values.gender,
+        mobileNo: values.mobileNo,
+        idType: values.idType,
+        idNo: values.idNo,
+        address: {
+          village: values.address.village,
+          state: values.address.state,
+          district: values.address.district,
+          tehsil: values.address.tehsil,
+          postOffice: values.address.postOffice,
+          pincode: values.address.pincode,
+        },
       };
 
       // Validate age is a valid number
@@ -32,18 +49,21 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
         return;
       }
 
-      // Remove empty optional fields
-      if (!submitData.maritalStatus || submitData.maritalStatus === '') {
-        delete submitData.maritalStatus;
+      // Add optional fields only if they have values (convert empty strings to null)
+      if (values.maritalStatus && values.maritalStatus !== '') {
+        submitData.maritalStatus = values.maritalStatus;
       }
-      if (!submitData.religion || submitData.religion === '') {
-        delete submitData.religion;
+      if (values.religion && values.religion !== '') {
+        submitData.religion = values.religion;
       }
-      if (!submitData.occupation || submitData.occupation === '') {
-        delete submitData.occupation;
+      if (values.occupation && values.occupation !== '') {
+        submitData.occupation = values.occupation;
       }
-      if (!submitData.emailId || submitData.emailId === '') {
-        delete submitData.emailId;
+      if (values.emailId && values.emailId !== '') {
+        submitData.emailId = values.emailId;
+      }
+      if (values.patientType && values.patientType !== '' && values.patientType !== 'General') {
+        submitData.patientType = values.patientType;
       }
 
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/patients`, submitData, {
@@ -73,15 +93,35 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
     } catch (error) {
       console.error('Error creating patient:', error);
 
-      // Handle validation errors from backend
-      if (error.response?.status === 400 && error.response?.data?.errors) {
-        const validationErrors = error.response.data.errors;
-
-        // Show only the first validation error as a toast
-        if (validationErrors.length > 0) {
-          const firstError = validationErrors[0];
-          toast.error(`${firstError.message}`, {
-            position: 'bottom-right',
+      // Handle backend errors
+      if (error.response?.status === 400) {
+        if (error.response.data?.message?.includes('already exists') || 
+            error.response.data?.message?.includes('Mobile number') ||
+            error.response.data?.message?.includes('ID number')) {
+          // Duplicate patient error
+          toast.error(error.response.data.message, {
+            position: 'top-right',
+            autoClose: 6000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        } else if (error.response.data?.errors && Array.isArray(error.response.data.errors)) {
+          // Validation errors
+          const firstError = error.response.data.errors[0];
+          toast.error(firstError.message || firstError.msg || 'Validation failed', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        } else {
+          // Other 400 errors
+          toast.error(error.response.data?.message || 'Invalid data provided', {
+            position: 'top-right',
             autoClose: 5000,
             hideProgressBar: false,
             closeOnClick: true,
@@ -91,8 +131,10 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
         }
       } else {
         // Handle other types of errors
-        const errorMessage =
-          error.response?.data?.message || 'Failed to create patient. Please try again.';
+        const errorMessage = 
+          error.response?.data?.message || 
+          error.message || 
+          'Failed to create patient. Please try again.';
 
         toast.error(errorMessage, {
           position: 'top-right',
@@ -122,9 +164,11 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
       </Modal.Header>
 
       <Formik
+        ref={formikRef}
         initialValues={initialPatientValues}
         validationSchema={patientSchema}
         onSubmit={handleSubmit}
+        enableReinitialize
       >
         {({ isSubmitting }) => (
           <Form>

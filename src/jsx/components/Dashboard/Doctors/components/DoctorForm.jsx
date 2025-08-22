@@ -9,6 +9,7 @@ const DoctorForm = ({ show, onHide, onSubmit, loading, initialData = null }) => 
     doctorName: initialData?.doctorName || '',
     specialization: initialData?.specialization || '',
     qualification: initialData?.qualification || '',
+    licenseNo: initialData?.licenseNo || '',
     email: initialData?.email || '',
     mobileNo: initialData?.mobileNo || '',
     department: initialData?.department || '',
@@ -44,6 +45,7 @@ const DoctorForm = ({ show, onHide, onSubmit, loading, initialData = null }) => 
         doctorName: initialData.doctorName || '',
         specialization: initialData.specialization || '',
         qualification: initialData.qualification || '',
+        licenseNo: initialData.licenseNo || '',
         email: initialData.email || '',
         mobileNo: initialData.mobileNo || '',
         department: initialData.department || '',
@@ -75,6 +77,7 @@ const DoctorForm = ({ show, onHide, onSubmit, loading, initialData = null }) => 
         doctorName: '',
         specialization: '',
         qualification: '',
+        licenseNo: '',
         email: '',
         mobileNo: '',
         department: '',
@@ -139,6 +142,7 @@ const DoctorForm = ({ show, onHide, onSubmit, loading, initialData = null }) => 
     if (!formData.doctorName.trim()) newErrors.doctorName = 'Doctor name is required';
     if (!formData.specialization.trim()) newErrors.specialization = 'Specialization is required';
     if (!formData.department.trim()) newErrors.department = 'Department is required';
+    if (!formData.licenseNo.trim()) newErrors.licenseNo = 'License number is required';
 
     // Email validation
     if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
@@ -181,6 +185,7 @@ const DoctorForm = ({ show, onHide, onSubmit, loading, initialData = null }) => 
       doctorName: '',
       specialization: '',
       qualification: '',
+      licenseNo: '',
       email: '',
       mobileNo: '',
       department: '',
@@ -268,6 +273,25 @@ const DoctorForm = ({ show, onHide, onSubmit, loading, initialData = null }) => 
                   placeholder="e.g., MBBS, MD"
                   style={{ height: '40px' }}
                 />
+              </div>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-md-4">
+              <div className="form-group">
+                <label className="text-black font-w500">
+                  License Number <span className="text-danger">*</span>
+                </label>
+                <Form.Control
+                  type="text"
+                  value={formData.licenseNo}
+                  onChange={e => handleChange('licenseNo', e.target.value)}
+                  placeholder="Enter medical license number"
+                  style={{ height: '40px' }}
+                  isInvalid={!!errors.licenseNo}
+                />
+                <Form.Control.Feedback type="invalid">{errors.licenseNo}</Form.Control.Feedback>
               </div>
             </div>
           </div>

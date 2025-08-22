@@ -19,7 +19,7 @@ const usePathologyAPI = () => {
     return headers;
   }, []);
 
-  const fetchLabOrders = useCallback(async (stage, page = 1) => {
+  const fetchLabOrders = useCallback(async (stage, page = 1, filters = {}) => {
     setLoading(true);
     try {
       let endpoint = '';
@@ -29,18 +29,25 @@ const usePathologyAPI = () => {
         limit: '10',
       });
 
+      // Add filter parameters to the URL
+      Object.keys(filters).forEach(key => {
+        if (filters[key] && filters[key].toString().trim()) {
+          params.append(key, filters[key].toString().trim());
+        }
+      });
+
       switch (stage) {
         case 'collection':
           endpoint = `${API_URL}/lab/orders?${params}`;
           break;
         case 'result':
-          endpoint = `${API_URL}/lab/entry-orders?page=${page}`;
+          endpoint = `${API_URL}/lab/entry-orders?${params}`;
           break;
         case 'authorization':
-          endpoint = `${API_URL}/lab/authorization?page=${page}`;
+          endpoint = `${API_URL}/lab/authorization?${params}`;
           break;
         default:
-          endpoint = `${API_URL}/lab/orders?page=${page}`;
+          endpoint = `${API_URL}/lab/orders?${params}`;
       }
 
       const response = await fetch(endpoint, { headers: getAuthHeaders() });

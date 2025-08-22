@@ -78,8 +78,8 @@ export const getServiceById = async serviceId => {
 };
 
 /**
- * Create a new service
- * @param {Object} serviceData - Service data to create
+ * Create a new parameter
+ * @param {Object} parameterData - Parameter data to create
  * @returns {Promise} API response
  */
 export const createParameter = async parameterData => {
@@ -91,48 +91,48 @@ export const createParameter = async parameterData => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error creating service:', error);
+    console.error('Error creating parameter:', error);
     throw error;
   }
 };
 
 /**
- * Update an existing service
- * @param {string} serviceId - Service ID to update
- * @param {Object} serviceData - Updated service data
+ * Update an existing parameter
+ * @param {string} parameterId - Parameter ID to update
+ * @param {Object} parameterData - Updated parameter data
  * @returns {Promise} API response
  */
-export const updateService = async (serviceId, serviceData) => {
+export const updateParameter = async (parameterId, parameterData) => {
   try {
-    const response = await axios.put(`${API_URL}/services/${serviceId}`, serviceData, {
+    const response = await axios.put(`${API_URL}/parameters/${parameterId}`, parameterData, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
     return response.data;
   } catch (error) {
-    console.error('Error updating service:', error);
+    console.error('Error updating parameter:', error);
     throw error;
   }
 };
 
 /**
- * Delete a service
- * @param {string} serviceId - Service ID to delete
+ * Delete a parameter
+ * @param {string} parameterId - Parameter ID to delete
  * @returns {Promise} API response
  */
-export const deleteParameter = async serviceId => {
+export const deleteParameter = async parameterId => {
   try {
-    const response = await axios.delete(`${API_URL}/parameters/${serviceId}`);
+    const response = await axios.delete(`${API_URL}/parameters/${parameterId}`);
     return response.data;
   } catch (error) {
-    console.error('Error deleting service:', error);
+    console.error('Error deleting parameter:', error);
     throw error;
   }
 };
 
 /**
- * Fetch services with pagination
+ * Fetch parameters with pagination
  * @param {Object} params - Query parameters (page, limit, search, category)
  * @returns {Promise} API response with pagination
  */
@@ -141,7 +141,7 @@ export const fetchParametersWithPagination = async (params = {}) => {
     const response = await axios.get(`${API_URL}/parameters`, { params });
     return response.data;
   } catch (error) {
-    console.error('Error fetching services with pagination:', error);
+    console.error('Error fetching parameters with pagination:', error);
     throw error;
   }
 };

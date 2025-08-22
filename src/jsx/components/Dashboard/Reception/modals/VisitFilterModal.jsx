@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 
-const DateFilterModal = ({ show, onHide, onSubmit, initialFilters = {} }) => {
+const VisitFilterModal = ({ show, onHide, onSubmit, initialFilters = {} }) => {
   const [filters, setFilters] = useState({
     fromDate: '',
     toDate: '',
     mobileNo: '',
-    patientId: '',
+    uhid: '',
     patientName: '',
+    status: '',
+    doctorName: '',
   });
 
   // Initialize filters when modal opens
@@ -17,8 +19,10 @@ const DateFilterModal = ({ show, onHide, onSubmit, initialFilters = {} }) => {
         fromDate: initialFilters.from || '',
         toDate: initialFilters.to || '',
         mobileNo: initialFilters.mobileNo || '',
-        patientId: initialFilters.uhid || '',
+        uhid: initialFilters.uhid || '',
         patientName: initialFilters.patientName || '',
+        status: initialFilters.status || '',
+        doctorName: initialFilters.doctorName || '',
       });
     }
   }, [show, initialFilters]);
@@ -37,8 +41,10 @@ const DateFilterModal = ({ show, onHide, onSubmit, initialFilters = {} }) => {
     if (filters.fromDate) filterParams.from = filters.fromDate;
     if (filters.toDate) filterParams.to = filters.toDate;
     if (filters.mobileNo) filterParams.mobileNo = filters.mobileNo;
-    if (filters.patientId) filterParams.uhid = filters.patientId;
+    if (filters.uhid) filterParams.uhid = filters.uhid;
     if (filters.patientName) filterParams.patientName = filters.patientName;
+    if (filters.status) filterParams.status = filters.status;
+    if (filters.doctorName) filterParams.doctorName = filters.doctorName;
 
     onSubmit(filterParams);
     onHide();
@@ -49,16 +55,19 @@ const DateFilterModal = ({ show, onHide, onSubmit, initialFilters = {} }) => {
       fromDate: '',
       toDate: '',
       mobileNo: '',
-      patientId: '',
+      uhid: '',
       patientName: '',
+      status: '',
+      doctorName: '',
     });
     onSubmit({});
     onHide();
   };
+
   return (
     <Modal className="fade" show={show} onHide={onHide} centered>
       <Modal.Header>
-        <Modal.Title>Date Filter</Modal.Title>
+        <Modal.Title>Visit Filters</Modal.Title>
         <Button
           variant=""
           className="btn-close"
@@ -114,13 +123,13 @@ const DateFilterModal = ({ show, onHide, onSubmit, initialFilters = {} }) => {
           </div>
           <div className="col-md-6">
             <div className="form-group">
-              <label className="text-black font-w500">Patient ID</label>
+              <label className="text-black font-w500">UHID</label>
               <input
                 type="text"
-                id="patientid"
-                name="patientid"
-                value={filters.patientId}
-                onChange={(e) => handleInputChange('patientId', e.target.value)}
+                id="uhid"
+                name="uhid"
+                value={filters.uhid}
+                onChange={(e) => handleInputChange('uhid', e.target.value)}
                 placeholder="Enter UHID"
                 className="form-control text-black"
                 style={{ height: '35px' }}
@@ -129,7 +138,7 @@ const DateFilterModal = ({ show, onHide, onSubmit, initialFilters = {} }) => {
           </div>
         </div>
         <div className="row">
-          <div className="col-md-12">
+          <div className="col-md-6">
             <div className="form-group">
               <label className="text-black font-w500">Patient Name</label>
               <input
@@ -142,6 +151,41 @@ const DateFilterModal = ({ show, onHide, onSubmit, initialFilters = {} }) => {
                 className="form-control text-black"
                 style={{ height: '35px' }}
               />
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="form-group">
+              <label className="text-black font-w500">Doctor Name</label>
+              <input
+                type="text"
+                id="doctorname"
+                name="doctorname"
+                value={filters.doctorName}
+                onChange={(e) => handleInputChange('doctorName', e.target.value)}
+                placeholder="Enter doctor name"
+                className="form-control text-black"
+                style={{ height: '35px' }}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-12">
+            <div className="form-group">
+              <label className="text-black font-w500">Visit Status</label>
+              <select
+                className="form-control text-black"
+                style={{ height: '35px' }}
+                value={filters.status}
+                onChange={(e) => handleInputChange('status', e.target.value)}
+              >
+                <option value="">All Status</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="no_show">No Show</option>
+              </select>
             </div>
           </div>
         </div>
@@ -161,4 +205,4 @@ const DateFilterModal = ({ show, onHide, onSubmit, initialFilters = {} }) => {
   );
 };
 
-export default DateFilterModal;
+export default VisitFilterModal;

@@ -16,6 +16,7 @@ import axios from 'axios';
 
 import CreatePatientModal from './CreatePatientModal';
 import CreateVisitModal from './CreateVisitModal';
+import VisitFilterModal from './modals/VisitFilterModal';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -59,15 +60,13 @@ const PatientVisits = () => {
   // Modal States
   const [showPatientModal, setShowPatientModal] = useState(false);
   const [showVisitModal, setShowVisitModal] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
 
   // Filter States
   const [filters, setFilters] = useState({
     search: '',
-    status: '',
-    from: '',
-    to: '',
-    doctorId: '',
   });
+  const [activeFilters, setActiveFilters] = useState({});
 
   // Load visits from API
   const loadVisits = useCallback(
@@ -78,6 +77,7 @@ const PatientVisits = () => {
           page,
           limit: sort,
           ...filters,
+          ...activeFilters,
         };
 
         // Remove empty filters
@@ -117,7 +117,7 @@ const PatientVisits = () => {
         setLoading(false);
       }
     },
-    [filters]
+    [filters, activeFilters]
   );
 
   // Handle pagination click
@@ -138,9 +138,9 @@ const PatientVisits = () => {
     .fill()
     .map((_, i) => i + 1);
 
-  // Handle filter changes
-  const handleFilterChange = (filterName, value) => {
-    setFilters(prev => ({ ...prev, [filterName]: value }));
+  // Handle modal filter submission
+  const handleFilterSubmit = (filterParams) => {
+    setActiveFilters(filterParams);
   };
 
   // Handle search with debouncing
@@ -206,78 +206,74 @@ const PatientVisits = () => {
                 <h4 className="card-title mb-0">Patient Visits</h4>
                 <small className="text-muted">Manage patient visits and appointments</small>
               </div>
-              <ButtonGroup>
-                <Dropdown>
-                  <Dropdown.Toggle variant="primary" size="sm">
-                    <i className="fa fa-plus me-2"></i>Add
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => setShowPatientModal(true)}>
-                      <i className="fa fa-user-plus me-2"></i>New Patient
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={() => setShowVisitModal(true)}>
-                      <i className="fa fa-calendar-plus me-2"></i>Add Visit
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </ButtonGroup>
+              <div className="d-flex gap-2">
+                <Button
+                  variant={Object.keys(activeFilters).length > 0 ? "success" : "outline-primary"}
+                  size="sm"
+                  onClick={() => setShowFilterModal(true)}
+                >
+                  <i className="fa fa-filter me-2"></i>
+                  {Object.keys(activeFilters).length > 0 ? 'Filters Applied' : 'Filter'}
+                  {Object.keys(activeFilters).length > 0 && (
+                    <span className="badge bg-light text-dark ms-1">
+                      {Object.keys(activeFilters).length}
+                    </span>
+                  )}
+                </Button>
+                {Object.keys(activeFilters).length > 0 && (
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={() => handleFilterSubmit({})}
+                    title="Clear all filters"
+                  >
+                    <i className="fa fa-times" />
+                  </Button>
+                )}
+                <ButtonGroup>
+                  <Dropdown>
+                    <Dropdown.Toggle variant="primary" size="sm">
+                      <i className="fa fa-plus me-2"></i>Add
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item onClick={() => setShowPatientModal(true)}>
+                        <i className="fa fa-user-plus me-2"></i>New Patient
+                      </Dropdown.Item>
+                      <Dropdown.Item onClick={() => setShowVisitModal(true)}>
+                        <i className="fa fa-calendar-plus me-2"></i>Add Visit
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </ButtonGroup>
+              </div>
             </Card.Header>
 
             <Card.Body>
-              {/* Filters */}
+              {/* Quick Search */}
               <div className="row mb-4">
-                <div className="col-md-3">
+                <div className="col-md-4">
                   <InputGroup size="sm">
                     <InputGroup.Text>
                       <i className="fa fa-search"></i>
                     </InputGroup.Text>
                     <Form.Control
                       type="text"
-                      placeholder="Search visits..."
+                      placeholder="Quick search visits..."
                       value={filters.search}
                       onChange={e => handleSearch(e.target.value)}
                     />
                   </InputGroup>
                 </div>
-
-                <div className="col-md-2">
-                  <Form.Select
-                    size="sm"
-                    value={filters.status}
-                    onChange={e => handleFilterChange('status', e.target.value)}
-                  >
-                    <option value="">All Status</option>
-                    <option value="scheduled">Scheduled</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
-                  </Form.Select>
-                </div>
-
-                <div className="col-md-2">
-                  <Form.Control
-                    type="date"
-                    size="sm"
-                    value={filters.from}
-                    onChange={e => handleFilterChange('from', e.target.value)}
-                    placeholder="From Date"
-                  />
-                </div>
-
-                <div className="col-md-2">
-                  <Form.Control
-                    type="date"
-                    size="sm"
-                    value={filters.to}
-                    onChange={e => handleFilterChange('to', e.target.value)}
-                    placeholder="To Date"
-                  />
-                </div>
-
-                <div className="col-md-3">
-                  <div className="d-flex align-items-center text-muted">
+                <div className="col-md-8">
+                  <div className="d-flex align-items-center justify-content-end text-muted">
                     <small>
                       Total Visits: <strong>{pagination.total}</strong>
+                      {Object.keys(activeFilters).length > 0 && (
+                        <span className="ms-2 text-success">
+                          <i className="fa fa-filter me-1"></i>
+                          {Object.keys(activeFilters).length} filter(s) applied
+                        </span>
+                      )}
                     </small>
                   </div>
                 </div>
@@ -479,6 +475,13 @@ const PatientVisits = () => {
         show={showVisitModal}
         onHide={() => setShowVisitModal(false)}
         onVisitCreated={handleVisitCreated}
+      />
+
+      <VisitFilterModal
+        show={showFilterModal}
+        onHide={() => setShowFilterModal(false)}
+        initialFilters={activeFilters}
+        onSubmit={handleFilterSubmit}
       />
     </div>
   );

@@ -200,7 +200,7 @@ const Patient = () => {
                     <td>{ind + 1}</td>
                     <td>
                       <span
-                        onClick={() => navigate(`/patient-details/${visit.patient.id}`)}
+                        onClick={() => navigate(`/patient-details/${visit.patient.uhid}`)}
                         style={{ cursor: 'pointer', color: '#007bff' }}
                         role="button"
                       >
@@ -219,7 +219,7 @@ const Patient = () => {
                         </Dropdown.Toggle>
                         <Dropdown.Menu align="end">
                           <Dropdown.Item>Accept Patient</Dropdown.Item>
-                          <Dropdown.Item onClick={() => fetchPrescriptionData(visit.patient.id)}>
+                          <Dropdown.Item onClick={() => fetchPrescriptionData(visit.patient.uhid)}>
                             Prescription
                           </Dropdown.Item>
                           <Dropdown.Item
@@ -228,7 +228,7 @@ const Patient = () => {
                             Case Sheet
                           </Dropdown.Item>
                           <Dropdown.Item
-                            onClick={() => navigate(`/patient-details/${visit.patient.id}`)}
+                            onClick={() => navigate(`/patient-details/${visit.patient.uhid}`)}
                           >
                             View Details
                           </Dropdown.Item>

@@ -18,13 +18,14 @@ const WorkFlow = ({ stage = 'collection' }) => {
   const [testParameters, setTestParameters] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 1 });
+  const [currentFilters, setCurrentFilters] = useState({});
   const activePag = useRef(0);
   const [test, settest] = useState(0);
 
   const { loading, fetchLabOrders, fetchOrderTests, collectTests, saveResults, authorizeOrder } = usePathologyAPI();
 
-  const loadLabOrders = async (page = 1) => {
-    const result = await fetchLabOrders(stage, page);
+  const loadLabOrders = async (page = 1, filters = currentFilters) => {
+    const result = await fetchLabOrders(stage, page, filters);
     setTableData(result.data);
     setPagination(result.pagination);
   };
@@ -32,12 +33,13 @@ const WorkFlow = ({ stage = 'collection' }) => {
 
   useEffect(() => {
     activePag.current = 0;
-    loadLabOrders(1);
+    setCurrentFilters({}); // Clear filters when stage changes
+    loadLabOrders(1, {});
   }, [stage]);
 
   const onClick = i => {
     activePag.current = i;
-    loadLabOrders(i + 1);
+    loadLabOrders(i + 1, currentFilters);
     settest(i);
   };
 
@@ -110,6 +112,13 @@ const WorkFlow = ({ stage = 'collection' }) => {
     }
   };
 
+  const handleFilterSubmit = async (filters) => {
+    setCurrentFilters(filters);
+    activePag.current = 0;
+    settest(0);
+    await loadLabOrders(1, filters);
+  };
+
 
   return (
     <>
@@ -120,11 +129,28 @@ const WorkFlow = ({ stage = 'collection' }) => {
         <div>
           <Button
             className="me-2"
-            variant="primary btn-sm"
+            variant={Object.keys(currentFilters).length > 0 ? "success" : "primary"}
+            size="sm"
             onClick={() => setDateFilterModal(true)}
           >
-            <i className="las la-calendar-plus scale5 me-2" /> Filter Date
+            <i className="las la-filter scale5 me-2" /> 
+            {Object.keys(currentFilters).length > 0 ? 'Filters Applied' : 'Filter'}
+            {Object.keys(currentFilters).length > 0 && (
+              <span className="badge bg-light text-dark ms-1">
+                {Object.keys(currentFilters).length}
+              </span>
+            )}
           </Button>
+          {Object.keys(currentFilters).length > 0 && (
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              onClick={() => handleFilterSubmit({})}
+              title="Clear all filters"
+            >
+              <i className="las la-times" />
+            </Button>
+          )}
         </div>
       </div>
 
@@ -147,7 +173,8 @@ const WorkFlow = ({ stage = 'collection' }) => {
       <DateFilterModal
         show={dateFilterModal}
         onHide={() => setDateFilterModal(false)}
-        onSubmit={() => console.log('Filter submitted')}
+        initialFilters={currentFilters}
+        onSubmit={handleFilterSubmit}
       />
 
       <StageModal

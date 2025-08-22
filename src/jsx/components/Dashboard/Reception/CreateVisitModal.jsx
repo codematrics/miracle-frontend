@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Modal, Table } from 'react-bootstrap';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
@@ -37,7 +36,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
 
   // Transform doctors data for select options
   const getDoctorOptions = () => {
-    if (!doctorsData?.data) return [{ value: '', label: 'Select Doctor' }];
+    if (!doctorsData?.data) return [];
 
     const options = doctorsData.data.map(doctor => ({
       value: doctor.value,
@@ -49,7 +48,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
       consultationFee: doctor.consultationFee,
     }));
 
-    return [{ value: '', label: 'Select Doctor' }, ...options];
+    return [...options];
   };
 
   // Get selected doctor data

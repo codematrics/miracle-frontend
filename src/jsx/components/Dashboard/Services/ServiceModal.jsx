@@ -2,6 +2,7 @@ import { Button, Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
 import { Form, Formik } from 'formik';
+import { useRef } from 'react';
 import Swal from 'sweetalert2';
 import * as Yup from 'yup';
 
@@ -15,36 +16,33 @@ const serviceSchema = Yup.object({
     .max(100, 'Service name must be less than 100 characters')
     .required('Service name is required'),
 
-  code: Yup.string()
-    .min(2, 'Service code must be at least 2 characters')
-    .max(20, 'Service code must be less than 20 characters')
-    .matches(
-      /^[A-Z0-9_]+$/,
-      'Service code must contain only uppercase letters, numbers, and underscores'
-    )
-    .required('Service code is required'),
 
   description: Yup.string().max(500, 'Description must be less than 500 characters'),
 
   category: Yup.string().required('Category is required'),
 
-  rate: Yup.number().min(0, 'Rate must be 0 or greater').required('Rate is required'),
+  rate: Yup.number()
+    .typeError('Rate must be a valid number')
+    .min(0, 'Rate cannot be negative')
+    .max(999999, 'Rate cannot exceed 999,999')
+    .required('Rate is required'),
 
   status: Yup.string()
     .oneOf(['active', 'inactive'], 'Status must be either active or inactive')
     .required('Status is required'),
 
   // ✅ Conditional validation for Report Name
-  reportName: Yup.string().when('category', {
-    is: val => val === 'pathology' || val === 'radiology',
-    then: schema => schema.required('Report Name is required'),
-    otherwise: schema => schema.notRequired(),
-  }),
+  reportName: Yup.string()
+    .max(100, 'Report name must be less than 100 characters')
+    .when('category', {
+      is: val => val === 'pathology' || val === 'radiology',
+      then: schema => schema.required('Report name is required when category is pathology or radiology'),
+      otherwise: schema => schema.notRequired(),
+    }),
 });
 
 const initialValues = {
   name: '',
-  code: '',
   description: '',
   category: '',
   rate: '',
@@ -54,13 +52,23 @@ const initialValues = {
 
 const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
   const isEditing = Boolean(service);
+  const formikRef = useRef();
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
+      // Transform data to match exact backend API format
       const serviceData = {
-        ...values,
+        name: values.name.trim(),
+        description: values.description ? values.description.trim() : '',
+        category: values.category,
         rate: parseFloat(values.rate),
+        status: values.status || 'active',
       };
+
+      // Add reportName only if category requires it and value exists
+      if ((values.category === 'pathology' || values.category === 'radiology') && values.reportName) {
+        serviceData.reportName = values.reportName.trim();
+      }
 
       let response;
       if (isEditing) {
@@ -88,16 +96,42 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
         throw new Error(response.message || 'Operation failed');
       }
     } catch (error) {
-      if (error.response?.status === 400 && error.response?.data?.errors) {
-        const validationErrors = error.response.data.errors;
-        if (validationErrors.length > 0) {
-          const firstError = validationErrors[0];
-          toast.error(firstError.message, {
+      // Handle backend errors according to API documentation
+      if (error.response?.status === 400) {
+        // Validation errors
+        if (error.response.data?.errors && Array.isArray(error.response.data.errors)) {
+          const firstError = error.response.data.errors[0];
+          toast.error(firstError.message || firstError.msg || 'Validation failed', {
             position: 'top-right',
             autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        } else {
+          // General validation error
+          toast.error(error.response.data?.message || 'Validation failed', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
           });
         }
+      } else if (error.response?.status === 409) {
+        // Duplicate service code error
+        toast.error(error.response.data?.message || 'Service code already exists', {
+          position: 'top-right',
+          autoClose: 6000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       } else {
+        // Handle other errors
         const errorMessage =
           error.response?.data?.message ||
           error.message ||
@@ -106,6 +140,10 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
         toast.error(errorMessage, {
           position: 'top-right',
           autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
         });
       }
     } finally {
@@ -117,7 +155,6 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
     if (isEditing && service) {
       return {
         name: service.name || service.serviceName || '',
-        code: service.code || service.serviceCode || '',
         description: service.description || '',
         category: service.category || '',
         rate: service.rate || service.price || '',
@@ -158,6 +195,7 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
       </Modal.Header>
 
       <Formik
+        ref={formikRef}
         initialValues={getInitialValues()}
         validationSchema={serviceSchema}
         onSubmit={handleSubmit}
@@ -167,8 +205,11 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
           <Form>
             <Modal.Body className="px-4">
               <div className="row g-3">
-                <FormField name="name" label="Service Name*" className="col-12 col-md-8" />
-                <FormField name="code" label="Service Code*" className="col-12 col-md-4" />
+                <FormField 
+                  name="name" 
+                  label={<>Service Name <span style={{ color: 'red' }}>*</span></>} 
+                  className="col-12" 
+                />
                 <FormField
                   type="textarea"
                   name="description"
@@ -179,27 +220,31 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
                 <FormField
                   type="select"
                   name="category"
-                  label="Category*"
+                  label={<>Category <span style={{ color: 'red' }}>*</span></>}
                   className="col-12 col-md-6"
                   options={categories}
                 />
 
                 {/* ✅ Conditionally render Report Name */}
                 {(values.category === 'pathology' || values.category === 'radiology') && (
-                  <FormField name="reportName" label="Report Name*" className="col-12 col-md-6" />
+                  <FormField 
+                    name="reportName" 
+                    label={<>Report Name <span style={{ color: 'red' }}>*</span></>} 
+                    className="col-12 col-md-6" 
+                  />
                 )}
 
                 <FormField
                   type="number"
                   name="rate"
-                  label="Rate (₹)*"
+                  label={<>Rate (₹) <span style={{ color: 'red' }}>*</span></>}
                   className="col-12 col-md-3"
                 />
 
                 <FormField
                   type="select"
                   name="status"
-                  label="Status*"
+                  label="Status"
                   className="col-12 col-md-3"
                   options={[
                     { label: 'Active', value: 'active' },

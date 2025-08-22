@@ -3,11 +3,14 @@ import { Badge, Button, Col, Form, Modal, Nav, Row, Tab, Table } from 'react-boo
 import { toast } from 'react-toastify';
 
 import PathologyService from '../../../../services/PathologyService';
+import DateFilterModal from './modals/DateFilterModal';
 
 const PathologyWorkflow = () => {
   const [activeTab, setActiveTab] = useState('collection');
   const [labOrders, setLabOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [currentFilters, setCurrentFilters] = useState({});
 
   // Collection Modal State
   const [showCollectionModal, setShowCollectionModal] = useState(false);
@@ -26,10 +29,10 @@ const PathologyWorkflow = () => {
   const [testResults, setTestResults] = useState([]);
 
   // Fetch lab orders based on workflow stage
-  const fetchLabOrders = async (status = null) => {
+  const fetchLabOrders = async (status = null, filters = {}) => {
     setLoading(true);
     try {
-      const response = await PathologyService.labOrders.getAll(status);
+      const response = await PathologyService.labOrders.getAll(status, filters);
       if (response.success) {
         setLabOrders(response.data || []);
       }
@@ -171,7 +174,18 @@ const PathologyWorkflow = () => {
     else if (tab === 'result') status = PathologyService.constants.WORKFLOW_STATUS.COLLECTED;
     else if (tab === 'authorization') status = PathologyService.constants.WORKFLOW_STATUS.COMPLETED;
 
-    fetchLabOrders(status);
+    fetchLabOrders(status, currentFilters);
+  };
+
+  // Handle filter submission
+  const handleFilterSubmit = async (filters) => {
+    setCurrentFilters(filters);
+    let status = null;
+    if (activeTab === 'collection') status = PathologyService.constants.WORKFLOW_STATUS.PENDING;
+    else if (activeTab === 'result') status = PathologyService.constants.WORKFLOW_STATUS.COLLECTED;
+    else if (activeTab === 'authorization') status = PathologyService.constants.WORKFLOW_STATUS.COMPLETED;
+    
+    await fetchLabOrders(status, filters);
   };
 
   // Open collection modal
@@ -206,6 +220,32 @@ const PathologyWorkflow = () => {
       <div className="form-head align-items-center d-flex mb-4">
         <div className="me-auto">
           <h2 className="text-black font-w600">Pathology Workflow</h2>
+        </div>
+        <div>
+          <Button
+            className="me-2"
+            variant={Object.keys(currentFilters).length > 0 ? "success" : "primary"}
+            size="sm"
+            onClick={() => setShowFilterModal(true)}
+          >
+            <i className="las la-filter scale5 me-2" /> 
+            {Object.keys(currentFilters).length > 0 ? 'Filters Applied' : 'Filter'}
+            {Object.keys(currentFilters).length > 0 && (
+              <span className="badge bg-light text-dark ms-1">
+                {Object.keys(currentFilters).length}
+              </span>
+            )}
+          </Button>
+          {Object.keys(currentFilters).length > 0 && (
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              onClick={() => handleFilterSubmit({})}
+              title="Clear all filters"
+            >
+              <i className="las la-times" />
+            </Button>
+          )}
         </div>
       </div>
 
@@ -280,6 +320,14 @@ const PathologyWorkflow = () => {
         order={selectedOrder}
         results={testResults}
         onAuthorize={handleAuthorize}
+      />
+
+      {/* Filter Modal */}
+      <DateFilterModal
+        show={showFilterModal}
+        onHide={() => setShowFilterModal(false)}
+        initialFilters={currentFilters}
+        onSubmit={handleFilterSubmit}
       />
     </div>
   );
