@@ -212,7 +212,7 @@ const ParameterModal = ({ show, onHide, serviceId, parameter = null, onParameter
       let response;
       if (isEditing) {
         // For editing, we would need an updateParameter function
-        response = await updateParameter(parameter.id, payload);
+        response = await updateParameter(parameter._id, payload);
       } else {
         response = await createParameter(payload);
       }
