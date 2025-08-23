@@ -297,7 +297,7 @@ const OpdBills = () => {
                 ? 'Female'
                 : selectedPatient.gender || 'Other',
         },
-        patientCategory: selectedPatient?.patientType?.toLowerCase() || 'general',
+        patientCategory: selectedPatient?.patientType || PATIENT_TYPES.GENERAL,
         refby: values.refby,
         doctorId: selectedDoctor.employeeId,
         services: selectedServices.map(service => ({
