@@ -58,31 +58,61 @@ const PathologyWorkflow = () => {
     }
   };
 
-  // Fetch test parameters for result entry
-  const fetchTestParameters = async testId => {
+  // Fetch order details with test parameters for result entry
+  const fetchOrderDetails = async (orderId, testId) => {
     try {
-      const response = await PathologyService.testParameters.getByTestId(testId);
+      const response = await PathologyService.labOrders.getDetails(orderId);
       if (response.success) {
-        setTestParameters(response.data || []);
-        // Initialize parameter values
-        const initialValues = {};
-        response.data.forEach(param => {
-          initialValues[param.id] = param.default_value || '';
-        });
-        setParameterValues(initialValues);
+        const orderData = response.data;
+        // Find the specific test
+        const targetTest = orderData.tests?.find(test => test.testId === testId);
+        
+        if (targetTest) {
+          console.log('Target test found:', targetTest);
+          console.log('Parameters:', targetTest.parameters);
+          setTestParameters(targetTest.parameters || []);
+          // Initialize parameter values from currentResult
+          const initialValues = {};
+          targetTest.parameters?.forEach(param => {
+            initialValues[param.parameterId] = param.currentResult?.value || '';
+            console.log(`Parameter ${param.parameterName} (${param.dataType}):`, param);
+          });
+          setParameterValues(initialValues);
+        } else {
+          toast.error('Test not found in order details');
+        }
       }
     } catch (error) {
-      console.error('Error fetching test parameters:', error);
-      toast.error('Failed to fetch test parameters');
+      console.error('Error fetching order details:', error);
+      toast.error('Failed to fetch order details');
     }
   };
 
   // Fetch test results for authorization
   const fetchTestResults = async orderId => {
     try {
-      const response = await PathologyService.labResults.getByOrderId(orderId);
+      const response = await PathologyService.labOrders.getDetails(orderId);
       if (response.success) {
-        setTestResults(response.data || []);
+        const orderData = response.data;
+        // Flatten all parameters from all tests into a single array for authorization
+        const allParameters = [];
+        orderData.tests?.forEach(test => {
+          test.parameters?.forEach(param => {
+            if (param.currentResult && param.currentResult.status !== 'pending') {
+              allParameters.push({
+                ...param,
+                testName: test.reportName || test.serviceName,
+                value: param.currentResult.value,
+                status: param.currentResult.status,
+                isCritical: param.currentResult.isCritical,
+                isAbnormal: param.currentResult.isAbnormal,
+                interpretation: param.currentResult.isCritical ? 'critical' : 
+                              param.currentResult.isAbnormal ? 'abnormal' : 'normal'
+              });
+            }
+          });
+        });
+        setTestResults(allParameters);
       }
     } catch (error) {
       console.error('Error fetching test results:', error);
@@ -142,11 +172,14 @@ const PathologyWorkflow = () => {
   };
 
   // Handle authorization
-  const handleAuthorize = async () => {
+  const handleAuthorize = async (authData) => {
     try {
-      const response = await PathologyService.labOrders.authorize(selectedOrder.id);
+      const response = await PathologyService.labOrders.authorize(
+        selectedOrder.id,
+        authData.comment
+      );
       if (response.success) {
-        toast.success('Order authorized successfully');
+        toast.success(`Authorized ${authData.selectedResults.length} results successfully`);
         setShowAuthModal(false);
         fetchLabOrders(
           activeTab === 'authorization'
@@ -199,7 +232,7 @@ const PathologyWorkflow = () => {
   const openResultModal = (order, test) => {
     setSelectedOrder(order);
     setSelectedTest(test);
-    fetchTestParameters(test.id);
+    fetchOrderDetails(order.id, test.testId || test.id);
     setShowResultModal(true);
   };
 
@@ -605,41 +638,182 @@ const ResultEntryModal = ({
     }));
   };
 
+  const renderInputField = (param) => {
+    const currentValue = values[param.parameterId] || param.currentResult?.value || '';
+    const status = param.currentResult?.status || 'pending';
+    
+    // Debug logging for select parameters
+    if (param.dataType === 'select') {
+      console.log('Select parameter:', param.parameterName, {
+        dataType: param.dataType,
+        options: param.options,
+        currentValue: currentValue,
+        parameterId: param.parameterId
+      });
+    }
+    
+    switch (param.dataType) {
+      case 'numeric':
+        return (
+          <Form.Control
+            type="number"
+            step={param.decimalPlaces ? `0.${'0'.repeat(param.decimalPlaces - 1)}1` : '0.01'}
+            min={param.minValue || undefined}
+            max={param.maxValue || undefined}
+            value={currentValue}
+            onChange={e => handleParameterChange(param.parameterId, parseFloat(e.target.value) || '')}
+            placeholder="Enter numeric value"
+            className={status === 'authorized' ? 'bg-light' : ''}
+            disabled={status === 'authorized'}
+          />
+        );
+      
+      case 'boolean':
+        return (
+          <Form.Select
+            value={currentValue.toString()}
+            onChange={e => handleParameterChange(param.parameterId, e.target.value === 'true')}
+            className={status === 'authorized' ? 'bg-light' : ''}
+            disabled={status === 'authorized'}
+          >
+            <option value="">Select...</option>
+            <option value="true">Positive</option>
+            <option value="false">Negative</option>
+          </Form.Select>
+        );
+      
+      case 'select':
+        return (
+          <Form.Select
+            value={currentValue}
+            onChange={e => handleParameterChange(param.parameterId, e.target.value)}
+            className={status === 'authorized' ? 'bg-light' : ''}
+            disabled={status === 'authorized'}
+          >
+            <option value="">Select...</option>
+            {param.options?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </Form.Select>
+        );
+      
+      case 'text':
+      default:
+        return (
+          <Form.Control
+            type="text"
+            value={currentValue}
+            onChange={e => handleParameterChange(param.parameterId, e.target.value)}
+            placeholder="Enter text value"
+            className={status === 'authorized' ? 'bg-light' : ''}
+            disabled={status === 'authorized'}
+          />
+        );
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'pending':
+        return <Badge bg="warning">Pending</Badge>;
+      case 'saved':
+        return <Badge bg="info">Saved</Badge>;
+      case 'authorized':
+        return <Badge bg="success">Authorized</Badge>;
+      default:
+        return <Badge bg="secondary">Unknown</Badge>;
+    }
+  };
+
   return (
-    <Modal show={show} onHide={onHide} size="lg" centered>
+    <Modal show={show} onHide={onHide} size="xl" centered>
       <Modal.Header closeButton>
-        <Modal.Title>Result Entry - {test?.service_name}</Modal.Title>
+        <Modal.Title>Result Entry - {test?.reportName || test?.service_name}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {order && (
-          <div className="mb-3">
-            <strong>Patient:</strong> {order.patient_name} |<strong> Accession:</strong>{' '}
-            {order.accession_no}
+          <div className="mb-4 p-3 bg-light rounded">
+            <Row>
+              <Col md={6}>
+                <strong>Patient:</strong> {order.patientName || order.patient_name}
+              </Col>
+              <Col md={6}>
+                <strong>Accession No:</strong> {order.accessionNo || order.accession_no}
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <strong>UHID:</strong> {order.uhid}
+              </Col>
+              <Col md={6}>
+                <strong>Order ID:</strong> {order.id}
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <strong>Age/Gender:</strong> {order.ageGender}
+              </Col>
+              <Col md={6}>
+                <strong>Status:</strong> {order.statusDisplay}
+              </Col>
+            </Row>
           </div>
         )}
 
         <Form>
-          {parameters.map(param => (
-            <Row key={param.id} className="mb-3">
-              <Col md={4}>
-                <Form.Label>{param.parameter_name}</Form.Label>
-              </Col>
-              <Col md={4}>
-                <Form.Control
-                  type="text"
-                  value={values[param.id] || ''}
-                  onChange={e => handleParameterChange(param.id, e.target.value)}
-                  placeholder="Enter value"
-                />
-              </Col>
-              <Col md={2}>
-                <Form.Text className="text-muted">{param.unit}</Form.Text>
-              </Col>
-              <Col md={2}>
-                <Form.Text className="text-muted">{param.reference_range}</Form.Text>
-              </Col>
-            </Row>
-          ))}
+          <div className="table-responsive">
+            <Table striped bordered hover>
+              <thead className="table-dark">
+                <tr>
+                  <th>Parameter</th>
+                  <th>Value</th>
+                  <th>Unit</th>
+                  <th>Reference Range</th>
+                  <th>Status</th>
+                  <th>Methodology</th>
+                </tr>
+              </thead>
+              <tbody>
+                {parameters?.map(param => (
+                  <tr key={param.parameterId || param.id}>
+                    <td>
+                      <strong>{param.parameterName || param.parameter_name}</strong>
+                      <br />
+                      <small className="text-muted">
+                        Code: {param.parameterCode || param.code}
+                      </small>
+                    </td>
+                    <td style={{ minWidth: '200px' }}>
+                      {renderInputField(param)}
+                      {param.currentResult && (param.currentResult.isCritical || param.currentResult.isAbnormal) && (
+                        <small className={`d-block mt-1 ${
+                          param.currentResult.isCritical ? 'text-danger fw-bold' :
+                          param.currentResult.isAbnormal ? 'text-warning' : 'text-success'
+                        }`}>
+                          {param.currentResult.isCritical ? 'Critical' : 
+                           param.currentResult.isAbnormal ? 'Abnormal' : 'Normal'}
+                        </small>
+                      )}
+                    </td>
+                    <td>{param.unit || '-'}</td>
+                    <td>{param.referenceRange || param.reference_range || '-'}</td>
+                    <td>{getStatusBadge(param.currentResult?.status || 'pending')}</td>
+                    <td>
+                      <small className="text-muted">{param.methodology || '-'}</small>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+          
+          {parameters?.length === 0 && (
+            <div className="text-center text-muted py-4">
+              <p>No parameters found for this test</p>
+            </div>
+          )}
         </Form>
       </Modal.Body>
       <Modal.Footer>
@@ -656,47 +830,189 @@ const ResultEntryModal = ({
 
 // Authorization Modal Component
 const AuthorizationModal = ({ show, onHide, order, results, onAuthorize }) => {
+  const [selectedResults, setSelectedResults] = useState(new Set());
+  const [authComment, setAuthComment] = useState('');
+  
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedResults(new Set(results.map(r => r.id || r.parameterId)));
+    } else {
+      setSelectedResults(new Set());
+    }
+  };
+  
+  const handleSelectResult = (resultId) => {
+    const newSelected = new Set(selectedResults);
+    if (newSelected.has(resultId)) {
+      newSelected.delete(resultId);
+    } else {
+      newSelected.add(resultId);
+    }
+    setSelectedResults(newSelected);
+  };
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'pending':
+        return <Badge bg="warning">Pending</Badge>;
+      case 'saved':
+        return <Badge bg="info">Saved</Badge>;
+      case 'authorized':
+        return <Badge bg="success">Authorized</Badge>;
+      default:
+        return <Badge bg="secondary">Unknown</Badge>;
+    }
+  };
+
+  const getInterpretationBadge = (interpretation, value, referenceRange) => {
+    if (!interpretation) return null;
+    
+    switch (interpretation) {
+      case 'normal':
+        return <Badge bg="success" className="ms-2">Normal</Badge>;
+      case 'abnormal':
+        return <Badge bg="danger" className="ms-2">Abnormal</Badge>;
+      case 'critical':
+        return <Badge bg="danger" className="ms-2">Critical</Badge>;
+      default:
+        return <Badge bg="warning" className="ms-2">{interpretation}</Badge>;
+    }
+  };
+
+  const handleAuthorize = () => {
+    const authData = {
+      selectedResults: Array.from(selectedResults),
+      comment: authComment
+    };
+    onAuthorize(authData);
+  };
+
   return (
-    <Modal show={show} onHide={onHide} size="lg" centered>
+    <Modal show={show} onHide={onHide} size="xl" centered>
       <Modal.Header closeButton>
-        <Modal.Title>Authorization - {order?.accession_no}</Modal.Title>
+        <Modal.Title>
+          Authorization - {order?.accessionNo || order?.accession_no}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {order && (
-          <div className="mb-3">
-            <strong>Patient:</strong> {order.patient_name} |<strong> UHID:</strong> {order.uhid}
+          <div className="mb-4 p-3 bg-light rounded">
+            <Row>
+              <Col md={6}>
+                <strong>Patient:</strong> {order.patientName || order.patient_name}
+              </Col>
+              <Col md={6}>
+                <strong>UHID:</strong> {order.uhid}
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <strong>Accession No:</strong> {order.accessionNo || order.accession_no}
+              </Col>
+              <Col md={6}>
+                <strong>Order Date:</strong> {order.orderDate || order.created_at}
+              </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <strong>Age/Gender:</strong> {order.ageGender}
+              </Col>
+              <Col md={6}>
+                <strong>Status:</strong> {order.statusDisplay}
+              </Col>
+            </Row>
           </div>
         )}
 
-        <Table striped bordered>
-          <thead>
-            <tr>
-              <th>Parameter</th>
-              <th>Value</th>
-              <th>Unit</th>
-              <th>Reference Range</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {results.map(result => (
-              <tr key={result.id}>
-                <td>{result.parameter_name}</td>
-                <td>{result.value}</td>
-                <td>{result.unit}</td>
-                <td>{result.reference_range}</td>
-                <td>{getStatusBadge(result.status)}</td>
+        <div className="mb-3">
+          <Form.Check
+            type="checkbox"
+            label="Select All Results"
+            checked={selectedResults.size === results.length}
+            onChange={handleSelectAll}
+            className="fw-bold"
+          />
+        </div>
+
+        <div className="table-responsive">
+          <Table striped bordered hover>
+            <thead className="table-dark">
+              <tr>
+                <th style={{width: '40px'}}>Select</th>
+                <th>Parameter</th>
+                <th>Value</th>
+                <th>Unit</th>
+                <th>Reference Range</th>
+                <th>Status</th>
+                <th>Methodology</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {results.map(result => (
+                <tr key={result.id || result.parameterId}>
+                  <td>
+                    <Form.Check
+                      type="checkbox"
+                      checked={selectedResults.has(result.id || result.parameterId)}
+                      onChange={() => handleSelectResult(result.id || result.parameterId)}
+                    />
+                  </td>
+                  <td>
+                    <strong>{result.parameterName || result.parameter_name}</strong>
+                    <br />
+                    <small className="text-muted">
+                      Code: {result.parameterCode || result.code}
+                    </small>
+                  </td>
+                  <td>
+                    <span className="fw-bold">{result.value}</span>
+                    {getInterpretationBadge(
+                      result.interpretation, 
+                      result.value, 
+                      result.referenceRange || result.reference_range
+                    )}
+                  </td>
+                  <td>{result.unit || '-'}</td>
+                  <td>{result.referenceRange || result.reference_range || '-'}</td>
+                  <td>{getStatusBadge(result.status)}</td>
+                  <td>
+                    <small className="text-muted">{result.methodology || '-'}</small>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+
+        {results.length === 0 && (
+          <div className="text-center text-muted py-4">
+            <p>No results available for authorization</p>
+          </div>
+        )}
+
+        <div className="mt-4">
+          <Form.Group>
+            <Form.Label>Authorization Comments (Optional)</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={authComment}
+              onChange={(e) => setAuthComment(e.target.value)}
+              placeholder="Add any comments or remarks for this authorization..."
+            />
+          </Form.Group>
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>
           Close
         </Button>
-        <Button variant="success" onClick={onAuthorize}>
-          Authorize
+        <Button 
+          variant="success" 
+          onClick={handleAuthorize}
+          disabled={selectedResults.size === 0}
+        >
+          Authorize Selected ({selectedResults.size})
         </Button>
       </Modal.Footer>
     </Modal>

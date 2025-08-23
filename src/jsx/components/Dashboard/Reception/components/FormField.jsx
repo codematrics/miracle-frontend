@@ -140,6 +140,12 @@ const FormField = ({
           {label} {required && <span className="text-danger">*</span>}
         </label>
         {renderField()}
+
+        {hasError && (
+          <div className="invalid-feedback d-block mt-1" style={{ fontSize: '0.875rem' }}>
+            {errorMessage}
+          </div>
+        )}
       </div>
     </div>
   );

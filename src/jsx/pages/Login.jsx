@@ -1,37 +1,26 @@
-import { useState } from 'react';
-import { connect, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+
+import { ErrorMessage, Field, Form, Formik } from 'formik';
+import * as Yup from 'yup';
 
 import login from '../../assets/images/login.jpg';
 import { loadingToggleAction, loginAction } from '../../store/actions/AuthActions';
 
-function Login(props) {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('demo@example.com');
-  let errorsObj = { email: '', password: '' };
-  const [errors, setErrors] = useState(errorsObj);
-  const [password, setPassword] = useState('');
+export const loginSchema = Yup.object().shape({
+  email: Yup.string().email('Invalid email address').required('Email is required'),
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('Password is required'),
+});
+
+function Login() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  function onLogin(e) {
-    e.preventDefault();
-    let error = false;
-    const errorObj = { ...errorsObj };
-    if (email === '') {
-      errorObj.email = 'Email is Required';
-      error = true;
-    }
-    if (password === '') {
-      errorObj.password = 'Password is Required';
-      error = true;
-    }
-    setErrors(errorObj);
-    if (error) {
-      return;
-    }
-
+  function onLogin(values) {
     dispatch(loadingToggleAction(true));
-    dispatch(loginAction(email, password, navigate));
+    dispatch(loginAction(values.email, values.password, navigate));
   }
 
   return (
@@ -50,47 +39,58 @@ function Login(props) {
                   <div className="col-md-6">
                     <div className="auth-form">
                       <h4 className="main-title">Sign in </h4>
-                      {props.errorMessage && (
-                        <div className="bg-red-300 text-red-900 border border-red-900 p-1 my-2">
-                          {props.errorMessage}
-                        </div>
-                      )}
-                      {props.successMessage && (
-                        <div className="bg-green-300 text-green-900 border border-green-900 p-1 my-2">
-                          {props.successMessage}
-                        </div>
-                      )}
-                      <form onSubmit={onLogin}>
-                        <div className="form-group mb-3 pb-3">
-                          <label className="font-w600">Email</label>
-                          <span className="required"> *</span>
-                          <input
-                            type="email"
-                            className="form-control solid"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
-                          />
-                          {errors.email && <div className="text-danger fs-12">{errors.email}</div>}
-                        </div>
-                        <div className="form-group mb-3 pb-3">
-                          <label className="font-w600">Password</label>
-                          <span className="required"> *</span>
-                          <input
-                            type="password"
-                            className="form-control solid"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
-                          />
-                          {errors.password && (
-                            <div className="text-danger fs-12">{errors.password}</div>
-                          )}
-                        </div>
-                        <div className="text-center">
-                          <button type="submit" className="btn btn-primary btn-block rounded">
-                            Sign Me In
-                          </button>
-                        </div>
-                      </form>
+
+                      <Formik
+                        initialValues={{ email: 'demo@example.com', password: '' }}
+                        validationSchema={loginSchema}
+                        onSubmit={(values, { setSubmitting }) => {
+                          onLogin(values);
+                          setSubmitting(false);
+                        }}
+                      >
+                        {({ isSubmitting }) => (
+                          <Form>
+                            <div className="form-group mb-3 pb-3">
+                              <label className="font-w600">
+                                Email<span className="required"> *</span>
+                              </label>
+                              <Field type="email" name="email" className="form-control solid" />
+                              <ErrorMessage
+                                name="email"
+                                component="div"
+                                className="text-danger fs-12"
+                              />
+                            </div>
+
+                            <div className="form-group mb-3 pb-3">
+                              <label className="font-w600">
+                                Password<span className="required"> *</span>
+                              </label>
+                              <Field
+                                type="password"
+                                name="password"
+                                className="form-control solid"
+                              />
+                              <ErrorMessage
+                                name="password"
+                                component="div"
+                                className="text-danger fs-12"
+                              />
+                            </div>
+
+                            <div className="text-center">
+                              <button
+                                type="submit"
+                                className="btn btn-primary btn-block rounded"
+                                disabled={isSubmitting}
+                              >
+                                {isSubmitting ? 'Signing in...' : 'Sign Me In'}
+                              </button>
+                            </div>
+                          </Form>
+                        )}
+                      </Formik>
+
                       <Link to={'/page-register'} className="text-primary d-block text-center mt-3">
                         Don't have an account? Sign up
                       </Link>
@@ -106,11 +106,4 @@ function Login(props) {
   );
 }
 
-const mapStateToProps = state => {
-  return {
-    errorMessage: state.auth.errorMessage,
-    successMessage: state.auth.successMessage,
-    showLoading: state.auth.showLoading,
-  };
-};
-export default connect(mapStateToProps)(Login);
+export default Login;

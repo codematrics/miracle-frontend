@@ -84,14 +84,13 @@ export function loginAction(email, password, navigate) {
     try {
       const response = await login(email, password);
 
-      if (response.data?.success) {
-        const tokenSaved = saveTokenInLocalStorage(response.data);
+      if (response?.data?.status) {
+        const tokenSaved = saveTokenInLocalStorage(response?.data?.data);
 
         if (tokenSaved) {
           runLogoutTimer(dispatch, 7 * 24 * 60 * 60 * 1000, navigate);
-          dispatch(loginConfirmed(response.data));
+          dispatch(loginConfirmed(response?.data?.data));
 
-          // Add small delay to ensure Redux state is updated before navigation
           setTimeout(() => {
             navigate('/dashboard', { replace: true });
           }, 100);
@@ -99,14 +98,13 @@ export function loginAction(email, password, navigate) {
           throw new Error('Failed to save authentication data');
         }
       } else {
-        const errorMessage = formatError(response.data || { message: 'Login failed' });
+        const errorMessage = formatError(response.data?.message || { message: 'Login failed' });
         showErrorMessage(errorMessage);
         dispatch(loginFailed(errorMessage));
       }
     } catch (error) {
-      console.error('🚨 Login error:', error);
       const errorMessage = formatError(
-        error.response?.data || {
+        error.response?.message || {
           message: error.message || 'Network error occurred',
         }
       );

@@ -102,6 +102,17 @@ export const labOrdersAPI = {
       throw error;
     }
   },
+
+  // Get detailed lab order with tests and parameters
+  getDetails: async (orderId, category = 'pathology') => {
+    try {
+      const response = await pathologyApi.get(`/orders/${orderId}/details?category=${category}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching order details:', error);
+      throw error;
+    }
+  },
 };
 
 // Lab Order Tests API

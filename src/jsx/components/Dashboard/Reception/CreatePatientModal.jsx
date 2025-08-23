@@ -1,75 +1,115 @@
+import { useRef } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
 import axios from 'axios';
 import { Form, Formik } from 'formik';
-import { useRef } from 'react';
 import Swal from 'sweetalert2';
+import * as yup from 'yup';
 
+import {
+  GENDER,
+  ID_TYPES,
+  MARITAL_STATUS,
+  OCCUPATIONS,
+  PATIENT_TYPES,
+  RELATION_TYPES,
+  RELIGIONS,
+} from '../../../../constants/enums';
 import AgeField from './components/AgeField';
 import FormField from './components/FormField';
 import FormRow from './components/FormRow';
-import { initialPatientValues, patientSchema } from './schemas/patientValidation';
+
+const validationSchema = yup.object().shape({
+  name: yup.string().required('Patient Name is required'),
+  relation: yup
+    .string()
+    .oneOf(Object.values(RELATION_TYPES), 'Invalid relation')
+    .required('Relation is required'),
+  relativeName: yup.string().required('F/H Name is required'),
+  age: yup.number().required('Age is required').min(0, 'Age must be a positive number'),
+  gender: yup
+    .string()
+    .oneOf(Object.values(GENDER), 'Invalid gender')
+    .required('Gender is required'),
+  maritalStatus: yup
+    .string()
+    .oneOf(Object.values(MARITAL_STATUS), 'Invalid marital status')
+    .nullable(), // Optional
+  religion: yup.string().nullable(),
+  occupation: yup.string().nullable(),
+  patientType: yup.string().nullable(),
+  mobileNumber: yup
+    .string()
+    .required('Mobile Number is required')
+    .matches(/^[0-9]{10}$/, 'Mobile Number must be 10 digits'),
+  email: yup.string().email('Invalid email').nullable(),
+  idType: yup
+    .string()
+    .oneOf(Object.values(ID_TYPES), 'Invalid ID type')
+    .required('ID Type is required'),
+  idNo: yup.string().required('ID No is required'),
+  address: yup.object().shape({
+    street: yup.string().required('Village/Colony is required'),
+    city: yup.string().nullable(),
+    state: yup.string().required('State is required'),
+    district: yup.string().required('District is required'),
+    tehsil: yup.string().required('Tehsil is required'),
+    post: yup.string().required('Post is required'),
+    pincode: yup
+      .string()
+      .required('Pincode is required')
+      .matches(/^[0-9]{6}$/, 'Pincode must be 6 digits'),
+  }),
+});
+
+const initialPatientValues = {
+  name: '',
+  relation: '',
+  relativeName: '',
+  age: '',
+  ageUnit: 'Year',
+  gender: '',
+  maritalStatus: '',
+  religion: '',
+  occupation: '',
+  mobileNo: '',
+  emailId: '',
+  idType: '',
+  idNo: '',
+  patientType: 'General',
+  address: {
+    village: '',
+    state: '',
+    district: '',
+    tehsil: '',
+    post: '',
+    pincode: '',
+  },
+};
 
 const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
   const formikRef = useRef();
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      // Transform data to match exact backend API format
-      const submitData = {
-        patientName: values.patientName,
-        relation: values.relation,
-        fatherOrHusbandName: values.fatherOrHusbandName,
-        age: parseInt(values.age, 10),
-        ageUnit: values.ageUnit,
-        gender: values.gender,
-        mobileNo: values.mobileNo,
-        idType: values.idType,
-        idNo: values.idNo,
-        address: {
-          village: values.address.village,
-          state: values.address.state,
-          district: values.address.district,
-          tehsil: values.address.tehsil,
-          postOffice: values.address.postOffice,
-          pincode: values.address.pincode,
-        },
-      };
-
-      // Validate age is a valid number
-      if (isNaN(submitData.age) || submitData.age <= 0) {
-        toast.error('Please enter a valid age', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+      const parsedAge = parseInt(values.age, 10);
+      if (isNaN(parsedAge) || parsedAge <= 0) {
+        toast.error('Please enter a valid age');
         return;
       }
 
-      // Add optional fields only if they have values (convert empty strings to null)
-      if (values.maritalStatus && values.maritalStatus !== '') {
-        submitData.maritalStatus = values.maritalStatus;
-      }
-      if (values.religion && values.religion !== '') {
-        submitData.religion = values.religion;
-      }
-      if (values.occupation && values.occupation !== '') {
-        submitData.occupation = values.occupation;
-      }
-      if (values.emailId && values.emailId !== '') {
-        submitData.emailId = values.emailId;
-      }
-      if (values.patientType && values.patientType !== '' && values.patientType !== 'General') {
-        submitData.patientType = values.patientType;
-      }
+      const submitData = {
+        ...values,
+        age: parsedAge,
+        maritalStatus: values.maritalStatus || null,
+        religion: values.religion || null,
+        occupation: values.occupation || null,
+        emailId: values.emailId || null,
+        patientType: values.patientType !== 'General' ? values.patientType : null,
+      };
 
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/patients`, submitData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (response.data.success) {
@@ -81,7 +121,6 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
           timer: 1500,
         });
 
-        // Reset form and close modal
         resetForm();
         onHide();
 
@@ -93,58 +132,15 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
     } catch (error) {
       console.error('Error creating patient:', error);
 
-      // Handle backend errors
-      if (error.response?.status === 400) {
-        if (error.response.data?.message?.includes('already exists') || 
-            error.response.data?.message?.includes('Mobile number') ||
-            error.response.data?.message?.includes('ID number')) {
-          // Duplicate patient error
-          toast.error(error.response.data.message, {
-            position: 'top-right',
-            autoClose: 6000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
-        } else if (error.response.data?.errors && Array.isArray(error.response.data.errors)) {
-          // Validation errors
-          const firstError = error.response.data.errors[0];
-          toast.error(firstError.message || firstError.msg || 'Validation failed', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
-        } else {
-          // Other 400 errors
-          toast.error(error.response.data?.message || 'Invalid data provided', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
-        }
-      } else {
-        // Handle other types of errors
-        const errorMessage = 
-          error.response?.data?.message || 
-          error.message || 
-          'Failed to create patient. Please try again.';
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        'Failed to create patient. Please try again.';
 
-        toast.error(errorMessage, {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-      }
+      toast.error(message, {
+        position: 'top-right',
+        autoClose: 5000,
+      });
     } finally {
       setSubmitting(false);
     }
@@ -166,7 +162,7 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
       <Formik
         ref={formikRef}
         initialValues={initialPatientValues}
-        validationSchema={patientSchema}
+        validationSchema={validationSchema}
         onSubmit={handleSubmit}
         enableReinitialize
       >
@@ -175,7 +171,7 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
             <Modal.Body className="px-3 px-md-4">
               <FormRow className="row g-3 mb-3">
                 <FormField
-                  name="patientName"
+                  name="name"
                   label="Patient Name"
                   required
                   className="col-12 col-md-6 col-lg-3"
@@ -186,11 +182,11 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   type="select"
                   required
                   className="col-12 col-md-6 col-lg-3"
-                  options={['S/O', 'W/O', 'D/O', 'Other']}
+                  options={Object.values(RELATION_TYPES)}
                 />
                 <FormField
-                  name="fatherOrHusbandName"
-                  label="F/H Name"
+                  name="relativeName"
+                  label="Relative Name"
                   required
                   className="col-12 col-md-6 col-lg-3"
                 />
@@ -207,62 +203,44 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   type="radio"
                   required
                   className="col-12 col-md-6 col-lg-6"
-                  options={['Male', 'Female', 'Other']}
+                  options={Object.values(GENDER)}
                 />
                 <FormField
                   name="maritalStatus"
                   label="Marital Status"
                   type="select"
                   className="col-12 col-md-6 col-lg-6"
-                  options={[
-                    { value: '', label: 'Select Marital' },
-                    { value: 'Divorced', label: 'Divorced' },
-                    { value: 'Married', label: 'Married' },
-                    { value: 'Separated', label: 'Separated' },
-                    { value: 'Unmarried', label: 'Unmarried' },
-                    { value: 'Widowed', label: 'Widowed' },
-                  ]}
+                  options={Object.keys(MARITAL_STATUS).map(key => ({
+                    value: MARITAL_STATUS[key],
+                    label: MARITAL_STATUS[key],
+                  }))}
                 />
                 <FormField
                   name="religion"
                   label="Religion"
                   type="select"
                   className="col-12 col-md-6 col-lg-6"
-                  options={[
-                    { value: '', label: 'Select Religion' },
-                    { value: 'Hindu', label: 'Hindu' },
-                    { value: 'Buddhist', label: 'Buddhist' },
-                    { value: 'Christian', label: 'Christian' },
-                    { value: 'Jain', label: 'Jain' },
-                    { value: 'Muslim', label: 'Muslim' },
-                    { value: 'Parsi', label: 'Parsi' },
-                    { value: 'Sikh', label: 'Sikh' },
-                    { value: 'Other', label: 'Other' },
-                  ]}
+                  options={Object.keys(RELIGIONS).map(key => ({
+                    value: RELIGIONS[key],
+                    label: RELIGIONS[key],
+                  }))}
                 />
                 <FormField
                   name="occupation"
                   label="Occupation"
                   type="select"
                   className="col-12 col-md-6 col-lg-6"
-                  options={[
-                    { value: '', label: 'Select Occupation' },
-                    { value: 'SELF EMPLOYED', label: 'SELF EMPLOYED' },
-                    { value: 'GOVT. SERVICE', label: 'GOVT. SERVICE' },
-                    { value: 'PVT. SERVICE', label: 'PVT. SERVICE' },
-                    { value: 'BUSINESS', label: 'BUSINESS' },
-                    { value: 'HOUSE WORK', label: 'HOUSE WORK' },
-                    { value: 'STUDY', label: 'STUDY' },
-                    { value: 'UN-EMPLOYED', label: 'UN-EMPLOYED' },
-                    { value: 'OTHER', label: 'OTHER' },
-                  ]}
+                  options={Object.keys(OCCUPATIONS).map(key => ({
+                    value: OCCUPATIONS[key],
+                    label: OCCUPATIONS[key],
+                  }))}
                 />
               </FormRow>
 
               {/* Contact and ID Information Row */}
               <FormRow className="row g-3 mb-3">
                 <FormField
-                  name="mobileNo"
+                  name="mobileNumber"
                   label="Mobile No"
                   type="text"
                   required
@@ -281,7 +259,10 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   type="select"
                   required
                   className="col-6 col-sm-6 col-lg-6"
-                  options={['Aadhar Card', 'Pancard', 'Driving license', 'Voter ID', 'Passport']}
+                  options={Object.keys(ID_TYPES).map(key => ({
+                    value: ID_TYPES[key],
+                    label: ID_TYPES[key],
+                  }))}
                 />
                 <FormField name="idNo" label="ID No" required className="col-6 col-sm-6 col-lg-6" />
               </FormRow>
@@ -293,11 +274,14 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   label="Patient Type"
                   type="select"
                   className="col-6 col-sm-4 col-lg-3"
-                  options={['General', 'VIP', 'Staff']}
+                  options={Object.keys(PATIENT_TYPES).map(key => ({
+                    value: PATIENT_TYPES[key],
+                    label: PATIENT_TYPES[key],
+                  }))}
                 />
                 <FormField
-                  name="address.village"
-                  label="Village/Colony"
+                  name="address.street"
+                  label="Village/street"
                   required
                   className="col-12 col-sm-8 col-lg-6"
                 />
@@ -326,7 +310,7 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
                   className="col-6 col-sm-6 col-lg-3"
                 />
                 <FormField
-                  name="address.postOffice"
+                  name="address.post"
                   label="Post"
                   required
                   className="col-6 col-sm-6 col-lg-3"
