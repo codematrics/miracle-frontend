@@ -98,6 +98,7 @@ export const MenuList = [
         title: 'Services',
         to: 'services',
       },
+
       {
         title: 'Parameters',
         to: 'parameters',

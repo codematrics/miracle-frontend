@@ -15,14 +15,6 @@ const DoctorTable = ({
     return <Badge bg={isActive ? 'success' : 'danger'}>{isActive ? 'Active' : 'Inactive'}</Badge>;
   };
 
-  const getConsultantBadge = isConsultant => {
-    return (
-      <Badge bg={isConsultant ? 'primary' : 'secondary'}>
-        {isConsultant ? 'Consultant' : 'Not Available'}
-      </Badge>
-    );
-  };
-
   const formatAvailableDays = days => {
     if (!days || days.length === 0) return 'Not Set';
     return days.slice(0, 2).join(', ') + (days.length > 2 ? ` +${days.length - 2}` : '');
@@ -46,7 +38,7 @@ const DoctorTable = ({
   return (
     <div className="card-table dataTables_wrapper no-footer">
       <div className="table-responsive">
-        <table className="dataTable text-black">
+        <table className="dataTable text-black" style={{ width: '100%' }}>
           <thead>
             <tr>
               <th>Sr No</th>
@@ -58,7 +50,7 @@ const DoctorTable = ({
               <th>Available Days</th>
               <th>Timings</th>
               <th>Status</th>
-              <th>Consultant</th>
+              {/* <th>Consultant</th> */}
               <th className="text-end">Actions</th>
             </tr>
           </thead>
@@ -78,10 +70,10 @@ const DoctorTable = ({
             ) : (
               doctors.map((doctor, index) => (
                 <tr key={doctor.id}>
-                  <td>{(currentPage - 1) * 10 + index + 1}</td>
+                  <td>{(pagination.currentPage - 1) * 10 + index + 1}</td>
                   <td>
                     <div>
-                      <strong>{doctor.doctorName}</strong>
+                      <strong>{doctor.name}</strong>
                       {doctor.qualification && (
                         <div className="text-muted small">{doctor.qualification}</div>
                       )}
@@ -112,7 +104,7 @@ const DoctorTable = ({
                     </small>
                   </td>
                   <td>{getStatusBadge(doctor.isActive)}</td>
-                  <td>{getConsultantBadge(doctor.isConsultant)}</td>
+                  {/* <td>{getConsultantBadge(doctor.isConsultant)}</td> */}
                   <td className="text-end">
                     <Dropdown>
                       <Dropdown.Toggle
@@ -128,12 +120,12 @@ const DoctorTable = ({
                           <i className="las la-edit me-2"></i>
                           Edit
                         </Dropdown.Item>
-                        <Dropdown.Item onClick={() => onStatusChange(doctor.id, !doctor.isActive)}>
+                        <Dropdown.Item onClick={() => onStatusChange(doctor._id, !doctor.isActive)}>
                           <i className={`las ${doctor.isActive ? 'la-ban' : 'la-check'} me-2`}></i>
                           {doctor.isActive ? 'Deactivate' : 'Activate'}
                         </Dropdown.Item>
                         <Dropdown.Divider />
-                        <Dropdown.Item onClick={() => onDelete(doctor.id)} className="text-danger">
+                        <Dropdown.Item onClick={() => onDelete(doctor._id)} className="text-danger">
                           <i className="las la-trash me-2"></i>
                           Delete
                         </Dropdown.Item>

@@ -7,7 +7,8 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
  * @param {string} search - Optional search query
  * @returns {Promise} API response
  */
-export const fetchServices = async (search = '') => {
+
+export const fetchServices = async (search = '', serviceApplicableOn = '') => {
   try {
     const params = {
       all: true,
@@ -16,6 +17,10 @@ export const fetchServices = async (search = '') => {
     // Add search parameter if provided
     if (search && search.trim()) {
       params.search = search.trim();
+    }
+
+    if (serviceApplicableOn && serviceApplicableOn.trim()) {
+      params.serviceApplicableOn = serviceApplicableOn.trim();
     }
 
     const response = await axios.get(`${API_URL}/services`, { params });
@@ -31,18 +36,6 @@ export const fetchServices = async (search = '') => {
  * @param {Array} services - Services array from API
  * @returns {Array} Transformed services for react-select
  */
-export const transformServicesForSelect = services => {
-  return services.map(service => ({
-    id: service.id || service._id,
-    serviceId: service.id || service._id,
-    value: service.id || service._id,
-    label: service.name || service.serviceName || service.label,
-    code: service.code || service.serviceCode,
-    rate: service.rate || service.price || 0,
-    description: service.description || '',
-    category: service.category || '',
-  }));
-};
 
 /**
  * Search services with debounced API call
@@ -63,6 +56,40 @@ export const searchServices = async search => {
   }
 };
 
+export const loadServiceOptions = async (
+  search = '',
+  page = 1,
+  limit = 20,
+  serviceApplicableOn = ''
+) => {
+  const response = await axios.get(`${API_URL}/services/dropdown-list`, {
+    params: { search, page, limit, serviceApplicableOn },
+  });
+
+  if (response.data?.status && response.data?.data) {
+    return response.data;
+  }
+
+  return {
+    options: response.data?.data,
+    hasMore: response?.data?.hasMore,
+  };
+};
+
+export const loadOPDServiceOptions = async (search = '', page = 1, limit = 20) => {
+  const response = await axios.get(`${API_URL}/services/dropdown-list`, {
+    params: { search, page, limit, serviceApplicableOn: 'OPD' },
+  });
+
+  if (response.data?.status && response.data?.data) {
+    return response.data;
+  }
+
+  return {
+    options: response.data?.data,
+    hasMore: response?.data?.hasMore,
+  };
+};
 /**
  * Get service by ID
  * @param {string} serviceId - Service ID
@@ -128,6 +155,32 @@ export const deleteService = async serviceId => {
     return response.data;
   } catch (error) {
     console.error('Error deleting service:', error);
+    throw error;
+  }
+};
+
+export const getParameterByReportType = async (serviceId, reportType) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/services/linking/${serviceId}?reportType=${reportType}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching labTests:', error);
+    throw error;
+  }
+};
+
+export const linkParameterToService = async (serviceId, values) => {
+  try {
+    const response = await axios.put(`${API_URL}/services/linking/${serviceId}`, values, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating service:', error);
     throw error;
   }
 };

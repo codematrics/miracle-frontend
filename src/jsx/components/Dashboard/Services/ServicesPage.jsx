@@ -4,13 +4,16 @@ import { toast } from 'react-toastify';
 
 import Swal from 'sweetalert2';
 
+import { SERVICE_HEADS } from '../../../../constants/enums';
 import { deleteService, fetchServicesWithPagination } from '../../../../services/ServicesService';
+import LinkParametersModal from './ParameterServiceLinkingModal';
 import ServiceModal from './ServiceModal';
 
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showLinkModal, setShowLinkModal] = useState(false); // ✅ state for linking modal
   const [selectedService, setSelectedService] = useState(null);
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -20,11 +23,11 @@ const ServicesPage = () => {
   });
   const [filters, setFilters] = useState({
     search: '',
-    category: '',
+    serviceHead: '',
     status: '',
   });
 
-  // Load services with pagination and filters
+  // ✅ Corrected API data handling
   const loadServices = useCallback(
     async (page = 1, resetData = false) => {
       setLoading(true);
@@ -37,25 +40,26 @@ const ServicesPage = () => {
 
         // Remove empty filters
         Object.keys(params).forEach(key => {
-          if (params[key] === '' || params[key] === null || params[key] === undefined) {
-            delete params[key];
-          }
+          if (!params[key]) delete params[key];
         });
 
         const response = await fetchServicesWithPagination(params);
 
-        if (response.success) {
-          if (resetData) {
-            setServices(response.data);
-          } else {
-            setServices(prev => (page === 1 ? response.data : [...prev, ...response.data]));
-          }
+        if (response.status) {
+          const servicesData = response.data?.services || [];
+          const totalItems = response.data?.total || 0;
+          const currentPage = response.data?.page || 1;
+          const limit = response.data?.limit || pagination.itemsPerPage;
+
+          setServices(prev =>
+            resetData || page === 1 ? servicesData : [...prev, ...servicesData]
+          );
 
           setPagination({
-            currentPage: response.pagination?.currentPage || page,
-            totalPages: response.pagination?.totalPages || 1,
-            totalItems: response.pagination?.total || response.total || response.data.length,
-            itemsPerPage: response.pagination?.limit || pagination.itemsPerPage,
+            currentPage,
+            totalPages: Math.ceil(totalItems / limit),
+            totalItems,
+            itemsPerPage: limit,
           });
         } else {
           throw new Error(response.message || 'Failed to load services');
@@ -73,27 +77,23 @@ const ServicesPage = () => {
     [filters, pagination.itemsPerPage]
   );
 
-  // Handle search with debouncing
-  const handleSearch = useCallback(searchValue => {
-    setFilters(prev => ({ ...prev, search: searchValue }));
+  const handleSearch = useCallback(value => {
+    setFilters(prev => ({ ...prev, search: value }));
   }, []);
 
-  // Handle filter changes
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => ({ ...prev, [filterName]: value }));
   };
 
-  // Handle service creation/editing
   const handleServiceSaved = () => {
     loadServices(1, true);
     setSelectedService(null);
   };
 
-  // Handle service deletion
   const handleDeleteService = async service => {
     const result = await Swal.fire({
       title: 'Are you sure?',
-      text: `Do you want to delete the service "${service.name || service.serviceName}"?`,
+      text: `Do you want to delete the service "${service.serviceName}"?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -104,9 +104,9 @@ const ServicesPage = () => {
 
     if (result.isConfirmed) {
       try {
-        const response = await deleteService(service.id || service._id);
+        const response = await deleteService(service._id);
 
-        if (response.success) {
+        if (response.status) {
           Swal.fire({
             icon: 'success',
             title: 'Deleted!',
@@ -115,53 +115,36 @@ const ServicesPage = () => {
             timer: 1500,
           });
 
-          // Reload services
           loadServices(1, true);
         } else {
           throw new Error(response.message || 'Failed to delete service');
         }
       } catch (error) {
-        console.error('Error deleting service:', error);
-
-        const errorMessage =
-          error.response?.data?.message ||
-          error.message ||
-          'Failed to delete service. Please try again.';
-
         Swal.fire({
           icon: 'error',
           title: 'Error!',
-          text: errorMessage,
+          text:
+            error.response?.data?.message ||
+            error.message ||
+            'Failed to delete service. Please try again.',
         });
       }
     }
   };
 
-  // Handle edit service
   const handleEditService = service => {
+    console.log(service);
     setSelectedService(service);
     setShowModal(true);
   };
 
-  // Handle add new service
   const handleAddService = () => {
     setSelectedService(null);
     setShowModal(true);
   };
 
-  // Get status badge variant
-  const getStatusVariant = status => {
-    switch (status?.toLowerCase()) {
-      case 'active':
-        return 'success';
-      case 'inactive':
-        return 'secondary';
-      default:
-        return 'warning';
-    }
-  };
+  const getStatusVariant = isActive => (isActive ? 'success' : 'secondary');
 
-  // Get category badge variant
   const getCategoryVariant = category => {
     const variants = {
       consultation: 'primary',
@@ -178,14 +161,21 @@ const ServicesPage = () => {
     return variants[category?.toLowerCase()] || 'light';
   };
 
-  // Load services on component mount and filter changes
+  const handleLinkParameter = service => {
+    setSelectedService(service);
+    setShowLinkModal(true); // ✅ open linking modal
+  };
+
+  const handleClearFilters = () => {
+    setFilters({ search: '', serviceHead: '', status: '' });
+  };
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       loadServices(1, true);
     }, 300);
-
     return () => clearTimeout(timeoutId);
-  }, [filters]);
+  }, [filters, loadServices]);
 
   return (
     <div className="">
@@ -227,19 +217,14 @@ const ServicesPage = () => {
                 <Col md={3}>
                   <Form.Select
                     value={filters.category}
-                    onChange={e => handleFilterChange('category', e.target.value)}
+                    onChange={e => handleFilterChange('serviceHead', e.target.value)}
                   >
                     <option value="">All Categories</option>
-                    <option value="consultation">Consultation</option>
-                    <option value="diagnostic">Diagnostic</option>
-                    <option value="laboratory">Laboratory</option>
-                    <option value="radiology">Radiology</option>
-                    <option value="pathology">pathology</option>
-                    <option value="procedure">Procedure</option>
-                    <option value="surgery">Surgery</option>
-                    <option value="pharmacy">Pharmacy</option>
-                    <option value="emergency">Emergency</option>
-                    <option value="other">Other</option>
+                    {Object.keys(SERVICE_HEADS).map(key => (
+                      <option key={SERVICE_HEADS[key]} value={SERVICE_HEADS[key]}>
+                        {SERVICE_HEADS[key]}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Col>
 
@@ -249,17 +234,19 @@ const ServicesPage = () => {
                     onChange={e => handleFilterChange('status', e.target.value)}
                   >
                     <option value="">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
                   </Form.Select>
                 </Col>
 
                 <Col md={2}>
-                  <div className="d-flex align-items-center text-muted">
-                    <small>
-                      Total: <strong>{pagination.totalItems}</strong>
-                    </small>
-                  </div>
+                  <Button
+                    variant="outline-secondary"
+                    className="w-100"
+                    onClick={handleClearFilters}
+                  >
+                    <i className="las la-redo-alt me-2"></i> Clear Filters
+                  </Button>
                 </Col>
               </Row>
 
@@ -270,8 +257,8 @@ const ServicesPage = () => {
                     <tr>
                       <th>Service Code</th>
                       <th>Service Name</th>
-                      <th>Category</th>
-                      <th>Report Name</th>
+                      <th>Service Head</th>
+                      <th>Head Type</th>
                       <th>Rate (₹)</th>
                       <th>Status</th>
                       <th>Actions</th>
@@ -280,7 +267,7 @@ const ServicesPage = () => {
                   <tbody>
                     {loading && services.length === 0 ? (
                       <tr>
-                        <td colSpan="6" className="text-center py-4">
+                        <td colSpan="7" className="text-center py-4">
                           <div className="d-flex justify-content-center align-items-center">
                             <div className="spinner-border text-primary me-2" role="status">
                               <span className="visually-hidden">Loading...</span>
@@ -291,7 +278,7 @@ const ServicesPage = () => {
                       </tr>
                     ) : services.length === 0 ? (
                       <tr>
-                        <td colSpan="6" className="text-center py-5">
+                        <td colSpan="7" className="text-center py-5">
                           <div className="text-muted">
                             <i className="fas fa-inbox fa-3x mb-3 d-block opacity-50"></i>
                             <h6>No services found</h6>
@@ -305,41 +292,37 @@ const ServicesPage = () => {
                       </tr>
                     ) : (
                       services.map((service, index) => (
-                        <tr key={service.id || service._id || index}>
+                        <tr key={service._id || index}>
                           <td>
-                            <code className="text-primary fw-bold">
-                              {service.code || service.serviceCode}
-                            </code>
+                            <code className="text-primary fw-bold">{service.code}</code>
                           </td>
                           <td>
-                            <div>
-                              <strong>{service.name || service.serviceName}</strong>
-                              {service.description && (
-                                <small className="text-muted d-block">
-                                  {service.description.length > 50
-                                    ? `${service.description.substring(0, 50)}...`
-                                    : service.description}
-                                </small>
-                              )}
-                            </div>
+                            <strong>{service.serviceName}</strong>
                           </td>
                           <td>
                             <Badge
-                              bg={getCategoryVariant(service.category)}
+                              bg={getCategoryVariant(service.serviceHead)}
                               className="text-capitalize"
                             >
-                              {service.category || 'Other'}
+                              {service.serviceHead || 'Other'}
                             </Badge>
                           </td>
-                          <td>{service.reportName || '-'}</td>
+                          <td>
+                            <Badge
+                              bg={getCategoryVariant(service.headType)}
+                              className="text-capitalize"
+                            >
+                              {service.headType || 'Other'}
+                            </Badge>
+                          </td>
                           <td>
                             <strong className="text-success">
-                              ₹{(service.rate || service.price || 0).toLocaleString()}
+                              ₹{(service.price || 0).toLocaleString()}
                             </strong>
                           </td>
                           <td>
-                            <Badge bg={getStatusVariant(service.status)}>
-                              {service.status || 'Active'}
+                            <Badge bg={getStatusVariant(service.isActive)}>
+                              {service.isActive ? 'Active' : 'Inactive'}
                             </Badge>
                           </td>
                           <td>
@@ -358,6 +341,13 @@ const ServicesPage = () => {
                                 >
                                   <i className="fas fa-edit me-2 text-warning"></i>
                                   Edit
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                  onClick={() => handleLinkParameter(service)} // ✅ linking option
+                                  className="d-flex align-items-center"
+                                >
+                                  <i className="fas fa-link me-2 text-primary"></i>
+                                  Link Services
                                 </Dropdown.Item>
                                 <Dropdown.Divider />
                                 <Dropdown.Item
@@ -407,12 +397,18 @@ const ServicesPage = () => {
         </div>
       </div>
 
-      {/* Service Modal */}
       <ServiceModal
         show={showModal}
         onHide={() => setShowModal(false)}
         service={selectedService}
         onServiceSaved={handleServiceSaved}
+      />
+
+      <LinkParametersModal
+        show={showLinkModal}
+        onHide={() => setShowLinkModal(false)}
+        serviceId={selectedService?._id}
+        onLinked={handleServiceSaved}
       />
     </div>
   );

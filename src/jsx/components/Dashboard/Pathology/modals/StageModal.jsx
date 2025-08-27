@@ -31,7 +31,6 @@ const StageModal = ({
           <th>Report Name</th>
           <th>Test Name</th>
           <th>Sample Type</th>
-          <th>Container Type</th>
           <th>Status</th>
         </tr>
       </thead>
@@ -73,34 +72,23 @@ const StageModal = ({
       <Table striped bordered responsive>
         <thead>
           <tr>
-            <th>Report Name</th>
             <th>Test Name</th>
+            <th>Report Type</th>
             <th>Sample Type</th>
             <th>Container Type</th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody>
-          {orderTests.tests?.map(test => (
+          {orderTests.parameters?.map(test => (
             <tr
-              key={test.testId}
-              onClick={() => {
-                if (test.status === TEST_STATUS.COLLECTED) {
-                  setSelectedTests([test.testId]);
-                  setTestParameters(
-                    test.parameters?.map(param => ({
-                      ...param,
-                      value: param?.value || param?.currentResult?.value || '',
-                    })) || []
-                  );
-                }
-              }}
+              key={test._id}
               style={{ cursor: test.status === TEST_STATUS.COLLECTED ? 'pointer' : 'default' }}
             >
-              <td>{test.reportName}</td>
-              <td>{test.serviceName}</td>
+              <td>{test.parameterName}</td>
+              <td>{test.reportType}</td>
               <td>{test.sampleType}</td>
-              <td>{test.containerType}</td>
+              <td>{test.formatType}</td>
               <td>{getStatusBadge(test.status)}</td>
             </tr>
           ))}

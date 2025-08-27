@@ -18,7 +18,7 @@ const FormField = ({
 }) => {
   const { errors, touched } = useFormikContext();
 
-  // ✅ Helper to safely get nested errors (e.g. address.city)
+  // ✅ Helper to safely get nested errors
   const getError = fieldName => {
     const keys = fieldName.split('.');
     let error = errors;
@@ -82,16 +82,16 @@ const FormField = ({
           </Field>
         );
 
-      case 'radio': {
-        const radioElement = (
-          <div className="form-control" style={style}>
+      case 'radio':
+        return renderWithErrorIcon(
+          <div>
             {options.map((option, index) => (
-              <div key={index} className="form-check custom-checkbox form-check-inline text-black">
+              <div key={index} className="form-check form-check-inline text-black">
                 <Field
                   type="radio"
                   name={name}
                   value={typeof option === 'string' ? option : option.value}
-                  className="form-check-input"
+                  className={`form-check-input ${fieldClassName}`}
                   id={`${name}-${index}`}
                 />
                 <label className="form-check-label" htmlFor={`${name}-${index}`}>
@@ -102,8 +102,21 @@ const FormField = ({
           </div>
         );
 
-        return renderWithErrorIcon(radioElement);
-      }
+      case 'checkbox':
+        return renderWithErrorIcon(
+          <div className="form-check text-black">
+            <Field
+              type="checkbox"
+              name={name}
+              id={name}
+              className={`form-check-input ${fieldClassName}`}
+              {...props}
+            />
+            <label className="form-check-label" htmlFor={name}>
+              {label}
+            </label>
+          </div>
+        );
 
       case 'textarea':
         return renderWithErrorIcon(
@@ -112,7 +125,7 @@ const FormField = ({
             name={name}
             placeholder={placeholder}
             className={`form-control text-black ${fieldClassName}`}
-            style={style}
+            style={{ ...style, minHeight: '80px' }}
             maxLength={maxLength}
             {...props}
           />
@@ -136,9 +149,13 @@ const FormField = ({
   return (
     <div className={className}>
       <div className="form-group">
-        <label className="text-black">
-          {label} {required && <span className="text-danger">*</span>}
-        </label>
+        {/* ✅ Don’t render external label for single checkbox, it has its own inline label */}
+        {!(type === 'checkbox') && (
+          <label className="text-black">
+            {label} {required && <span className="text-danger">*</span>}
+          </label>
+        )}
+
         {renderField()}
 
         {hasError && (

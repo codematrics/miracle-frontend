@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 
 import Swal from 'sweetalert2';
 
+import { FORMAT_TYPE, REPORT_TYPE, SAMPLE_TYPE } from '../../../../constants/enums';
 import {
   deleteParameter,
   fetchParametersWithPagination,
@@ -24,10 +25,12 @@ const ParametersPage = () => {
   const [filters, setFilters] = useState({
     search: '',
     status: '',
-    dataType: '',
+    reportType: '',
+    formatType: '',
+    sampleType: '',
   });
 
-  // Load parameters with pagination & filters
+  // ✅ Fetch parameters with pagination & filters
   const loadParameters = useCallback(
     async (page = 1, resetData = false) => {
       setLoading(true);
@@ -38,31 +41,38 @@ const ParametersPage = () => {
           ...filters,
         };
 
+        // Remove empty filters
         Object.keys(params).forEach(key => {
           if (!params[key]) delete params[key];
         });
 
         const response = await fetchParametersWithPagination(params);
 
-        if (response.success) {
-          if (resetData) {
-            setParameters(response.data);
-          } else {
-            setParameters(prev => (page === 1 ? response.data : [...prev, ...response.data]));
-          }
+        if (response.status) {
+          const parametersData = response.data?.parameters || [];
+          const totalItems = response.data?.total || 0;
+          const currentPage = response.data?.page || 1;
+          const limit = response.data?.limit || pagination.itemsPerPage;
+
+          setParameters(prev =>
+            resetData || page === 1 ? parametersData : [...prev, ...parametersData]
+          );
 
           setPagination({
-            currentPage: response.pagination?.currentPage || page,
-            totalPages: response.pagination?.totalPages || 1,
-            totalItems: response.pagination?.total || response.data.length,
-            itemsPerPage: response.pagination?.limit || pagination.itemsPerPage,
+            currentPage,
+            totalPages: Math.ceil(totalItems / limit),
+            totalItems,
+            itemsPerPage: limit,
           });
         } else {
-          throw new Error(response.message || 'Failed to load parameters');
+          throw new Error(response.message || 'Failed to load services');
         }
       } catch (error) {
-        console.error('Error loading parameters:', error);
-        toast.error('Failed to load parameters. Please try again.');
+        console.error('Error loading services:', error);
+        toast.error('Failed to load services. Please try again.', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
       } finally {
         setLoading(false);
       }
@@ -70,7 +80,7 @@ const ParametersPage = () => {
     [filters, pagination.itemsPerPage]
   );
 
-  // Handle filter change
+  // ✅ Handle filters
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => ({ ...prev, [filterName]: value }));
   };
@@ -105,6 +115,7 @@ const ParametersPage = () => {
       }
     }
   };
+  const getStatusVariant = isActive => (isActive ? 'success' : 'secondary');
 
   const handleEditParameter = param => {
     setSelectedParameter(param);
@@ -116,10 +127,21 @@ const ParametersPage = () => {
     setShowModal(true);
   };
 
+  const handleClearFilters = () => {
+    setFilters({
+      search: '',
+      status: '',
+      reportType: '',
+      formatType: '',
+      sampleType: '',
+    });
+  };
+
+  // ✅ Auto reload on filters change
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       loadParameters(1, true);
-    }, 300);
+    }, 400);
     return () => clearTimeout(timeoutId);
   }, [filters]);
 
@@ -137,7 +159,7 @@ const ParametersPage = () => {
         </Card.Header>
 
         <Card.Body className="px-0">
-          {/* Filters */}
+          {/* ✅ Filters */}
           <Row className="mb-4 px-3">
             <Col md={4}>
               <InputGroup>
@@ -153,16 +175,50 @@ const ParametersPage = () => {
               </InputGroup>
             </Col>
 
+            <Col md={2}>
+              <Button variant="outline-secondary" className="w-100" onClick={handleClearFilters}>
+                <i className="las la-redo-alt me-2"></i> Clear Filters
+              </Button>
+            </Col>
+          </Row>
+          <Row className="mb-4 px-3">
             <Col md={3}>
               <Form.Select
-                value={filters.dataType}
-                onChange={e => handleFilterChange('dataType', e.target.value)}
+                value={filters.reportType}
+                onChange={e => handleFilterChange('reportType', e.target.value)}
               >
-                <option value="">All Data Types</option>
-                <option value="numeric">Numeric</option>
-                <option value="text">Text</option>
-                <option value="boolean">Boolean</option>
-                <option value="select">Select</option>
+                <option value="">All report Type</option>
+                {Object.keys(REPORT_TYPE).map(key => (
+                  <option key={REPORT_TYPE[key]} value={REPORT_TYPE[key]}>
+                    {REPORT_TYPE[key]}
+                  </option>
+                ))}
+              </Form.Select>
+            </Col>
+            <Col md={3}>
+              <Form.Select
+                value={filters.sampleType}
+                onChange={e => handleFilterChange('sampleType', e.target.value)}
+              >
+                <option value="">All Sample Type</option>
+                {Object.keys(SAMPLE_TYPE).map(key => (
+                  <option key={SAMPLE_TYPE[key]} value={SAMPLE_TYPE[key]}>
+                    {SAMPLE_TYPE[key]}
+                  </option>
+                ))}
+              </Form.Select>
+            </Col>
+            <Col md={3}>
+              <Form.Select
+                value={filters.formatType}
+                onChange={e => handleFilterChange('formatType', e.target.value)}
+              >
+                <option value="">All Format Type</option>
+                {Object.keys(FORMAT_TYPE).map(key => (
+                  <option key={FORMAT_TYPE[key]} value={FORMAT_TYPE[key]}>
+                    {FORMAT_TYPE[key]}
+                  </option>
+                ))}
               </Form.Select>
             </Col>
 
@@ -176,41 +232,32 @@ const ParametersPage = () => {
                 <option value="inactive">Inactive</option>
               </Form.Select>
             </Col>
-
-            <Col md={2}>
-              <div className="d-flex align-items-center text-muted">
-                <small>
-                  Total: <strong>{pagination.totalItems}</strong>
-                </small>
-              </div>
-            </Col>
           </Row>
 
-          {/* Parameters Table */}
+          {/* ✅ Parameters Table */}
           <div className="table-responsive">
             <Table hover className="align-middle">
               <thead className="table-light">
                 <tr>
                   <th>#</th>
                   <th>Name</th>
-                  <th>Code</th>
-                  <th>Unit</th>
-                  <th>Data Type</th>
-                  <th>Range</th>
-                  <th>Linked Service</th>
+                  <th>Report Type</th>
+                  <th>Sample Type</th>
+                  <th>Format Type</th>
+                  <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading && parameters.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="text-center py-4">
+                    <td colSpan="9" className="text-center py-4">
                       Loading...
                     </td>
                   </tr>
                 ) : parameters.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="text-center py-5 text-muted">
+                    <td colSpan="9" className="text-center py-5 text-muted">
                       <i className="fas fa-inbox fa-3x mb-3"></i>
                       <h6>No parameters found</h6>
                     </td>
@@ -218,21 +265,23 @@ const ParametersPage = () => {
                 ) : (
                   parameters.map((param, index) => (
                     <tr key={param._id}>
+                      {/* ✅ Fix index calculation */}
                       <td>
-                        <strong>#{index}</strong>
+                        #{(pagination.currentPage - 1) * pagination.itemsPerPage + (index + 1)}
                       </td>
                       <td>
                         <strong>{param.parameterName}</strong>
                       </td>
                       <td>
-                        <code>{param.parameterCode || '-'}</code>
+                        <code>{param.reportType || '-'}</code>
                       </td>
-                      <td>{param.unit || '-'}</td>
+                      <td>{param.sampleType || '-'}</td>
+                      <td>{param.formatType || '-'}</td>
                       <td>
-                        <Badge bg="info">{param.dataType}</Badge>
+                        <Badge bg={getStatusVariant(param.isActive)}>
+                          {param.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
                       </td>
-                      <td>{param.referenceRange || '-'}</td>
-                      <td>{param.serviceId?.name || '-'}</td>
                       <td>
                         <Dropdown>
                           <Dropdown.Toggle variant="outline-secondary" size="sm">
@@ -259,6 +308,7 @@ const ParametersPage = () => {
             </Table>
           </div>
 
+          {/* ✅ Pagination */}
           {pagination.currentPage < pagination.totalPages && (
             <div className="text-center mt-4">
               <Button

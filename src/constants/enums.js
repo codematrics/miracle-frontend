@@ -94,3 +94,156 @@ export const RELIGIONS = {
   SIKH: 'Sikh',
   OTHER: 'Other',
 };
+
+export const DOCTOR_DEPARTMENTS = [
+  'Medicine',
+  'Surgery',
+  'Pediatrics',
+  'Gynecology',
+  'Orthopedics',
+  'Cardiology',
+  'Neurology',
+  'Radiology',
+  'Pathology',
+  'Emergency',
+];
+
+export const DOCTOR_SPECIALIZATION = [
+  'General Medicine',
+  'General Surgery',
+  'Cardiology',
+  'Neurology',
+  'Orthopedics',
+  'Gynecology',
+  'Pediatrics',
+  'Radiology',
+  'Pathology',
+  'Emergency Medicine',
+  'Anesthesiology',
+  'Dermatology',
+];
+
+export const SERVICE_CATEGORY = {
+  CONSULTATION: 'Consultation',
+  PATHOLOGY: 'Pathology',
+  RADIOLOGY: 'Radiology',
+  OTHER: 'Other',
+};
+
+export const SERVICE_APPLICABLE = {
+  OPD: 'OPD',
+  IPD: 'IPD',
+  BOTH: 'Both',
+};
+
+export const HEAD_TYPE = {
+  PROCEDURE: 'Procedure',
+  PATHOLOGY: 'Pathology',
+  CONSULTATION: 'Consultation',
+  SURGERY: 'Surgery',
+  RADIOLOGY: 'Radiology',
+  OTHER: 'Other',
+};
+
+export const SERVICE_HEADS = {
+  GENERAL_MEDICINE: 'General Medicine',
+  PEDIATRICS: 'Pediatrics',
+  SURGERY: 'Surgery',
+  ORTHOPEDICS: 'Orthopedics',
+  CARDIOLOGY: 'Cardiology',
+  NEUROLOGY: 'Neurology',
+  NEPHROLOGY: 'Nephrology',
+  GASTROENTEROLOGY: 'Gastroenterology',
+  PULMONOLOGY: 'Pulmonology',
+  DERMATOLOGY: 'Dermatology',
+  ENDOCRINOLOGY: 'Endocrinology',
+  PSYCHIATRY: 'Psychiatry',
+  ENT: 'ENT',
+  OPHTHALMOLOGY: 'Ophthalmology',
+  UROLOGY: 'Urology',
+  OB_GYN: 'Obstetrics & Gynecology',
+  ANESTHESIOLOGY: 'Anesthesiology',
+  PATHOLOGY: 'Pathology / Lab Services',
+  RADIOLOGY: 'Radiology / Imaging',
+  CT_SCAN: 'CT Scan',
+  MRI: 'MRI',
+  X_RAY: 'X-Ray',
+  ULTRASOUND: 'Ultrasound',
+  ECG_ECHO: 'ECG / Echo',
+  PHYSIOTHERAPY: 'Physiotherapy / Rehabilitation',
+  DIALYSIS: 'Dialysis',
+  CHEMOTHERAPY: 'Chemotherapy',
+  OPERATION_THEATER: 'Operation Theater',
+  BLOOD_BANK: 'Blood Bank',
+  NUTRITION: 'Nutrition & Dietetics',
+  MEDICAL_RECORDS: 'Medical Records / HIM',
+  BILLING: 'Billing / Finance',
+  INSURANCE: 'Insurance / TPA',
+  HOUSEKEEPING: 'Housekeeping / Sanitation',
+  EMERGENCY: 'Emergency / ER',
+  ICU: 'ICU',
+  NICU: 'NICU',
+  CCU: 'CCU',
+  BURN_UNIT: 'Burn Unit',
+  TELEMEDICINE: 'Telemedicine',
+  COUNSELING: 'Counseling / Social Work',
+};
+
+export const REPORT_TYPE = {
+  HAEMATOLOGY: 'Haematology',
+  BIOCHEMISTRY: 'Biochemistry',
+  SEROLOGY: 'Serology',
+  CYTOLOGY: 'Cytology',
+  OUTSOURCE: 'Outsource',
+  HORMONES_IMMUNOLOGY: 'HormonesImmunology',
+  CLINICAL: 'Clinical',
+};
+
+export const FORMAT_TYPE = {
+  TABULAR: 'Tabular',
+  FREESTYLE: 'FreeStyle',
+  SELECTIVE: 'Selective',
+};
+
+export const SAMPLE_TYPE = {
+  SERUM: 'Serum',
+  URINE: 'Urine',
+  BLOOD: 'Blood',
+  FLUIDS: 'Fluids',
+  SEMEN: 'Semen',
+  TISSUE: 'Tissue',
+  STOOL: 'Stool',
+  SWAB: 'Swab',
+};
+
+export const GENDER_WITH_ALL = {
+  MALE: 'Male',
+  FEMALE: 'Female',
+  ALL: 'All',
+};
+
+export const AGE_UNITS = {
+  ALL: 'All',
+  YEAR: 'Year',
+  MONTH: 'Month',
+  DAY: 'Day',
+};
+
+export const VISIT_TYPE = {
+  OPD: 'OPD',
+  IPD: 'IPD',
+  EMERGENCY: 'Emergency',
+};
+
+export const INSURANCE_TYPE = {
+  SELF: 'Self',
+  AYUSHMAN: 'Ayushman',
+  INSURANCE: 'Insurance',
+  CORPORATE: 'Corporate',
+};
+
+export const VISIT_STATUS = {
+  PENDING: 'Pending',
+  ACCEPTED: 'Accepted',
+  CLOSED: 'Closed',
+};

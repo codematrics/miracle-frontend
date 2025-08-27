@@ -82,9 +82,9 @@ export const getServiceById = async serviceId => {
  * @param {Object} parameterData - Parameter data to create
  * @returns {Promise} API response
  */
-export const createParameter = async parameterData => {
+export const createLabParameter = async parameterData => {
   try {
-    const response = await axios.post(`${API_URL}/parameters`, parameterData, {
+    const response = await axios.post(`${API_URL}/lab-parameters`, parameterData, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -102,9 +102,9 @@ export const createParameter = async parameterData => {
  * @param {Object} parameterData - Updated parameter data
  * @returns {Promise} API response
  */
-export const updateParameter = async (parameterId, parameterData) => {
+export const updateLabParameter = async (parameterId, parameterData) => {
   try {
-    const response = await axios.put(`${API_URL}/parameters/${parameterId}`, parameterData, {
+    const response = await axios.put(`${API_URL}/lab-parameters/${parameterId}`, parameterData, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -138,7 +138,7 @@ export const deleteParameter = async parameterId => {
  */
 export const fetchParametersWithPagination = async (params = {}) => {
   try {
-    const response = await axios.get(`${API_URL}/parameters`, { params });
+    const response = await axios.get(`${API_URL}/lab-parameters`, { params });
     return response.data;
   } catch (error) {
     console.error('Error fetching parameters with pagination:', error);

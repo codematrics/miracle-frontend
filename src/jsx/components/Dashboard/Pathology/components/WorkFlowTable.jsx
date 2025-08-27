@@ -45,16 +45,14 @@ const WorkFlowTable = ({
               <th style={{ wordWrap: 'break-word', paddingRight: '15px' }}>Sr No</th>
               <th style={{ wordWrap: 'break-word' }}>Accession</th>
               <th style={{ wordWrap: 'break-word' }}>Order Date</th>
-              <th style={{ wordWrap: 'break-word' }}>Report Name</th>
+              <th style={{ wordWrap: 'break-word' }}>Head Type</th>
               <th style={{ wordWrap: 'break-word' }}>Service Name</th>
               <th style={{ wordWrap: 'break-word' }}>Cons.Dr / Ref.Dr.</th>
               <th style={{ wordWrap: 'break-word' }}>UHID</th>
               <th style={{ wordWrap: 'break-word' }}>Patient Name</th>
               <th style={{ wordWrap: 'break-word' }}>Age/Sex</th>
               <th style={{ wordWrap: 'break-word' }}>Visit No</th>
-              <th style={{ wordWrap: 'break-word' }} className="text-end">
-                Action
-              </th>
+              <th style={{ wordWrap: 'break-word' }}>Status</th>
             </tr>
           </thead>
           <tbody>
@@ -88,27 +86,31 @@ const WorkFlowTable = ({
                         }
                       }}
                     >
-                      {item.formattedAccession || item.accessionNo}
+                      {item.labOrder.accessionNo}
                     </span>
                   </td>
                   <td className={getStatusClass(item.status)}>
-                    {new Date(item.orderDate).toLocaleDateString()}{' '}
-                    {new Date(item.orderDate).toLocaleTimeString()}
+                    {new Date(item.labOrder.orderDate).toLocaleDateString()}{' '}
+                    {new Date(item.labOrder.orderDate).toLocaleTimeString()}
                   </td>
-                  <td className={getStatusClass(item.status)}>{item.reportName || 'Lab Report'}</td>
+                  <td className={getStatusClass(item.status)}>
+                    {item.service.headType || 'Lab Report'}
+                  </td>
                   <td
                     className={getStatusClass(item.status)}
                     style={{ width: '20%', wordWrap: 'break-word' }}
                   >
-                    {item.serviceName || `${item.totalTests} Tests`}
+                    {item.service.serviceName}
                   </td>
                   <td className={getStatusClass(item.status)}>
-                    {item.doctorInfo?.name || 'N/A'} / {item.referredBy || 'Self'}
+                    {item.doctor?.name || 'N/A'} / {item.referredBy || 'Self'}
                   </td>
-                  <td className={getStatusClass(item.status)}>{item.uhid}</td>
-                  <td className={getStatusClass(item.status)}>{item.patientName}</td>
-                  <td className={getStatusClass(item.status)}>{item.ageGender}</td>
-                  <td className={getStatusClass(item.status)}>{item.visitNo || 'N/A'}</td>
+                  <td className={getStatusClass(item.status)}>{item.patient?.uhidNo}</td>
+                  <td className={getStatusClass(item.status)}>{item.patient?.name}</td>
+                  <td className={getStatusClass(item.status)}>
+                    {item.patient?.age}/{item.patient?.gender}
+                  </td>
+                  <td className={getStatusClass(item.status)}>{item.visit.code || 'N/A'}</td>
                   <td className={getStatusClass(item.status)}>{getStatusBadge(item.status)}</td>
                 </tr>
               ))

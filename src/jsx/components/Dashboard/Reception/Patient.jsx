@@ -1,37 +1,39 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-import axios from 'axios';
-
+import { VISIT_STATUS } from '../../../../constants/enums.js';
+import {
+  acceptThePatient,
+  fetchVisitsWithPagination,
+  getPrescriptionPdf,
+} from '../../../../services/VisitService.js';
 import '../../../casesheet.css';
 import CreatePatientModal from './CreatePatientModal.jsx';
 import CreateVisitModal from './CreateVisitModal.jsx';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import CreatePrescriptionModal from './PrescriptionModal.jsx';
 
 // Status badge generator
 const getStatusComponent = status => {
   const statusMap = {
-    completed: {
-      text: 'Completed',
+    [VISIT_STATUS.ACCEPTED]: {
+      text: 'Consulting',
       color: 'primary',
       style: 'badge-outline-primary',
     },
-    cancelled: { text: 'Hold', color: 'danger', style: 'badge-outline-danger' },
-    in_progress: {
-      text: 'Consulting',
+    [VISIT_STATUS.CLOSED]: {
+      text: 'Completed',
       color: 'info',
       style: 'badge-info light',
     },
-    scheduled: {
+    [VISIT_STATUS.PENDING]: {
       text: 'Pending',
       color: 'warning',
       style: 'badge-warning light',
     },
   };
-  const { text, color, style } = statusMap[status?.toLowerCase()] || statusMap.scheduled;
+  const { text, color, style } = statusMap[status] || statusMap.scheduled;
   return (
     <span className={`badge ${style}`}>
       <i className={`fa fa-circle text-${color} me-1`} />
@@ -54,8 +56,8 @@ const formatDate = dateString =>
 const Patient = () => {
   const [openAddPatientModel, setOpenAddPatientModal] = useState(false);
   const [visitModal, setVisitModal] = useState(false);
+  const [prescriptionModal, setPrescriptionModal] = useState(null);
   const [dateFilterModal, setDateFilterModal] = useState(false);
-  const [prescriptionModal, setPrescriptionModal] = useState(false);
 
   const [visitsData, setVisitsData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -70,61 +72,91 @@ const Patient = () => {
   });
 
   const sort = 10;
-  const activePag = useRef(0);
   const navigate = useNavigate();
 
-  const fetchVisits = async (page = 1) => {
-    setLoading(true);
-    try {
-      const { data } = await axios.get(`${API_URL}/visits`, {
-        params: { page, limit: pagination.limit },
-      });
+  const loadVisits = useCallback(
+    async (page = 1, resetData = false) => {
+      setLoading(true);
+      try {
+        const params = {
+          page,
+          limit: pagination.itemsPerPage,
+          // ...filters,
+        };
 
-      if (data.success) {
-        setVisitsData(data.data);
-        setPagination({
-          currentPage: data.pagination?.currentPage || page,
-          totalPages: data.pagination?.totalPages || 1,
-          total: data.pagination?.total || 0,
-          limit: data.pagination?.limit || 10,
+        // Remove empty filters
+        Object.keys(params).forEach(key => {
+          if (!params[key]) delete params[key];
         });
-      } else {
-        toast.error('Failed to load visits');
+
+        const response = await fetchVisitsWithPagination(params);
+
+        if (response.status) {
+          const visitData = response.data?.visits || [];
+          const totalItems = response.data?.total || 0;
+          const currentPage = response.data?.page || 1;
+          const limit = response.data?.limit || pagination.itemsPerPage;
+
+          setVisitsData(prev => (resetData || page === 1 ? visitData : [...prev, ...visitData]));
+
+          setPagination({
+            currentPage,
+            totalPages: Math.ceil(totalItems / limit),
+            totalItems,
+            itemsPerPage: limit,
+          });
+        } else {
+          throw new Error(response.message || 'Failed to load visits');
+        }
+      } catch (error) {
+        console.error('Error loading visits:', error);
+        toast.error('Failed to load visits. Please try again.', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      toast.error('Error loading visits. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [pagination.itemsPerPage]
+  );
 
   useEffect(() => {
-    fetchVisits();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const onClickPage = i => {
-    activePag.current = i;
-    if (
-      i + 1 > Math.ceil(visitsData.length / sort) &&
-      pagination.currentPage < pagination.totalPages
-    ) {
-      fetchVisits(pagination.currentPage + 1);
-    }
-  };
+    const timeoutId = setTimeout(() => {
+      loadVisits(1, true);
+    }, 300);
+    return () => clearTimeout(timeoutId);
+  }, [loadVisits]);
 
   const handlePatientCreated = () => toast.success('Patient created successfully!');
   const handleVisitCreated = () => {
-    fetchVisits();
+    loadVisits(pagination.currentPage);
     toast.success('Visit created successfully!');
   };
+  const handlePrescriptionCreated = () => {
+    loadVisits(pagination.currentPage);
+  };
 
-  const fetchPrescriptionData = async patientId => {
+  const acceptPatient = async visitId => {
     try {
-      // API call placeholder
-      setCaseSheetData(null);
-      setPrescriptionModal(true);
+      await acceptThePatient(visitId);
+      loadVisits(paggination.currentPage);
     } catch {
-      setError('Failed to fetch prescription data');
+      setError('Failed to change prescription data');
+    }
+  };
+
+  const fetchPrescriptionData = async prescriptionId => {
+    try {
+      const response = await getPrescriptionPdf(prescriptionId);
+
+      // Create a blob link and open in new tab
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (error) {
+      console.error('Failed to fetch prescription PDF:', error);
+      toast.error('Failed to fetch prescription PDF');
     }
   };
 
@@ -174,7 +206,7 @@ const Patient = () => {
                 <th>Date Check In</th>
                 <th>Patient Name</th>
                 <th>Doctor Assigned</th>
-                <th>Cabin No</th>
+                <th>Visit Type</th>
                 <th>Status</th>
                 <th className="text-end">Action</th>
               </tr>
@@ -204,13 +236,13 @@ const Patient = () => {
                         style={{ cursor: 'pointer', color: '#007bff' }}
                         role="button"
                       >
-                        {visit.patient.uhid}
+                        {visit.patientId.uhidNo}
                       </span>
                     </td>
                     <td>{formatDate(visit.visitDate)}</td>
-                    <td>{visit.patient.name}</td>
-                    <td>{visit.visitingdoctor}</td>
-                    <td>-</td>
+                    <td>{visit.patientId.name}</td>
+                    <td>{visit?.consultingDoctorId?.name || 'N/A'}</td>
+                    <td>{visit.visitType}</td>
                     <td>{getStatusComponent(visit.status)}</td>
                     <td>
                       <Dropdown className="ms-auto text-end">
@@ -218,10 +250,23 @@ const Patient = () => {
                           <i className="fa fa-ellipsis-v"></i>
                         </Dropdown.Toggle>
                         <Dropdown.Menu align="end">
-                          <Dropdown.Item>Accept Patient</Dropdown.Item>
-                          <Dropdown.Item onClick={() => fetchPrescriptionData(visit.patient.uhid)}>
-                            Prescription
+                          <Dropdown.Item onClick={() => acceptPatient(visit._id)}>
+                            Accept Patient
                           </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() =>
+                              setPrescriptionModal({
+                                visitId: visit._id,
+                                patientId: visit.patientId._id,
+                              })
+                            }
+                          >
+                            Add Prescription
+                          </Dropdown.Item>
+                          <Dropdown.Item onClick={() => fetchPrescriptionData(visit.prescription)}>
+                            View Prescription
+                          </Dropdown.Item>
+
                           <Dropdown.Item
                             onClick={() => window.open(`/casesheet/${visit.id}`, '_blank')}
                           >
@@ -241,45 +286,27 @@ const Patient = () => {
             </tbody>
           </table>
         </div>
-        <div className="d-sm-flex text-center justify-content-between align-items-center">
-          <div className="dataTables_info" id="example5_info" role="status" aria-live="polite">
-            Showing {activePag.current * sort + 1} to{' '}
-            {visitsData.length > (activePag.current + 1) * sort
-              ? (activePag.current + 1) * sort
-              : visitsData.length}{' '}
-            of {pagination.total} entries
-          </div>
-          <div className="dataTables_paginate paging_simple_numbers d-flex justify-content-center align-items-center pb-3">
-            <Link
-              to="#"
-              onClick={() => activePag.current > 0 && onClickPage(activePag.current - 1)}
-              className={`paginate_button previous ${pagination.page <= 1 ? 'disabled' : ''}`}
+        {pagination.currentPage < pagination.totalPages && (
+          <div className="text-center mt-4">
+            <Button
+              variant="outline-primary"
+              onClick={() => loadVisits(pagination.currentPage + 1)}
+              disabled={loading}
             >
-              Previous
-            </Link>
-            {paggination.map((num, i) => (
-              <Link
-                key={i}
-                to="#"
-                className={`paginate_button d-flex align-items-center justify-content-center ${
-                  activePag.current === i ? 'current' : ''
-                } ${i > 0 ? 'ms-1' : ''}`}
-                onClick={() => onClickPage(i)}
-              >
-                {num}
-              </Link>
-            ))}
-            <Link
-              to="#"
-              onClick={() =>
-                activePag.current + 1 < paggination.length && onClickPage(activePag.current + 1)
-              }
-              className={`paginate_button next ${pagination.page >= pagination.pages ? 'disabled' : ''}`}
-            >
-              Next
-            </Link>
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-chevron-down me-2"></i>
+                  Load More Services
+                </>
+              )}
+            </Button>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Modals */}
@@ -292,6 +319,14 @@ const Patient = () => {
         show={visitModal}
         onHide={() => setVisitModal(false)}
         onVisitCreated={handleVisitCreated}
+      />
+      {console.log(prescriptionModal)}
+      <CreatePrescriptionModal
+        show={Boolean(prescriptionModal)}
+        onHide={() => setPrescriptionModal(null)}
+        visitId={prescriptionModal?.visitId}
+        patientId={prescriptionModal?.patientId}
+        onPrescriptionCreated={handlePrescriptionCreated}
       />
       {/* Date Filter Modal omitted for brevity, same as before */}
       {/* Prescription Modal omitted for brevity, same as before */}

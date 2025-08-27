@@ -1,40 +1,104 @@
-import React, { Component } from 'react';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
+import { Field, useFormikContext } from 'formik';
 
-import PageTitle from '../../../layouts/PageTitle';
+const CkEditorField = ({
+  name,
+  label,
+  required = false,
+  className = 'col-md-12',
+  fieldClassName = '',
+  style = { minHeight: '150px' },
+}) => {
+  const { values, setFieldValue, errors, touched } = useFormikContext();
 
-class CkEditor extends Component {
-  render() {
+  // ✅ Helper to get nested error
+  const getError = fieldName => {
+    const keys = fieldName.split('.');
+    let error = errors;
+    let touch = touched;
+
+    for (const key of keys) {
+      error = error?.[key];
+      touch = touch?.[key];
+    }
+
+    return { hasError: !!(error && touch), errorMessage: error };
+  };
+
+  const { hasError, errorMessage } = getError(name);
+
+  const renderWithErrorIcon = fieldElement => {
+    if (!hasError) return fieldElement;
+
     return (
-      <>
-        <PageTitle activeMenu="CkEditor" motherMenu="Form" pageContent="CkEditor" />
+      <div className="position-relative">
+        {fieldElement}
+        <OverlayTrigger
+          placement="top"
+          overlay={<Tooltip id={`tooltip-${name}`}>{errorMessage}</Tooltip>}
+        >
+          <span
+            className="position-absolute"
+            style={{
+              right: '10px',
+              top: '10px',
+              color: '#dc3545',
+              cursor: 'pointer',
+              zIndex: 10,
+            }}
+          >
+            ⓘ
+          </span>
+        </OverlayTrigger>
+      </div>
+    );
+  };
 
-        <div className="row">
-          <div className="col-xl-12 col-xxl-12">
-            <div className="card">
-              <div className="card-header">
-                <h4 className="card-title">Form CkEditor</h4>
-              </div>
-              <div className="card-body custom-ekeditor">
+  return (
+    <div className={className}>
+      <div className="form-group">
+        <label className="text-black">
+          {label} {required && <span className="text-danger">*</span>}
+        </label>
+
+        {renderWithErrorIcon(
+          <Field name={name}>
+            {() => (
+              <div
+                className={`border rounded bg-white p-2 ${fieldClassName} ${
+                  hasError ? 'is-invalid' : ''
+                }`}
+                style={style}
+              >
                 <CKEditor
+                  config={{
+                    toolbar: {
+                      shouldNotGroupWhenFull: true,
+                    },
+                  }}
                   editor={ClassicEditor}
-                  // data="<p>Hello from CKEditor 5!</p>"
-                  onReady={editor => {}}
+                  data={values[name] || ''}
                   onChange={(event, editor) => {
                     const data = editor.getData();
+                    setFieldValue(name, data);
                   }}
-                  onBlur={(event, editor) => {}}
-                  onFocus={(event, editor) => {}}
                 />
               </div>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
-}
+            )}
+          </Field>
+        )}
 
-export default CkEditor;
+        {hasError && (
+          <div className="invalid-feedback d-block mt-1" style={{ fontSize: '0.875rem' }}>
+            {errorMessage}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default CkEditorField;

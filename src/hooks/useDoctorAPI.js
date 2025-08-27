@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 
+import axios from 'axios';
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const useDoctorAPI = () => {
@@ -33,23 +35,14 @@ const useDoctorAPI = () => {
           headers: getAuthHeaders(),
         });
         const result = await response.json();
-
-        if (result.success) {
-          return {
-            data: result.data || [],
-            pagination: result.pagination || {
-              currentPage: 1,
-              totalPages: 1,
-              hasNext: false,
-              hasPrev: false,
-            },
-            total: result.total || 0,
-          };
+        if (result?.status) {
+          return result.data;
         } else {
           toast.error(result.message || 'Failed to fetch doctors');
           return {
             data: [],
-            pagination: { currentPage: 1, totalPages: 1, hasNext: false, hasPrev: false },
+            limit: 10,
+            page: 1,
             total: 0,
           };
         }
@@ -58,7 +51,8 @@ const useDoctorAPI = () => {
         toast.error('Failed to fetch doctors');
         return {
           data: [],
-          pagination: { currentPage: 1, totalPages: 1, hasNext: false, hasPrev: false },
+          limit: 10,
+          page: 1,
           total: 0,
         };
       } finally {
@@ -67,6 +61,21 @@ const useDoctorAPI = () => {
     },
     [getAuthHeaders]
   );
+
+  const loadDoctorOptions = async (search = '', page = 1, limit = 20) => {
+    const response = await axios.get(`${API_URL}/doctors/dropdown-list`, {
+      params: { search, page, limit },
+    });
+
+    if (response.data?.status && response.data?.data) {
+      return response.data;
+    }
+
+    return {
+      options: response.data?.data,
+      hasMore: response?.data?.hasMore,
+    };
+  };
 
   const createDoctor = useCallback(
     async doctorData => {
@@ -80,7 +89,7 @@ const useDoctorAPI = () => {
 
         const result = await response.json();
 
-        if (result.success) {
+        if (result.status) {
           toast.success(result.message || 'Doctor created successfully');
           return { success: true, data: result.data };
         } else {
@@ -110,7 +119,7 @@ const useDoctorAPI = () => {
 
         const result = await response.json();
 
-        if (result.success) {
+        if (result.status) {
           toast.success(result.message || 'Doctor updated successfully');
           return { success: true, data: result.data };
         } else {
@@ -139,7 +148,7 @@ const useDoctorAPI = () => {
 
         const result = await response.json();
 
-        if (result.success) {
+        if (result.status) {
           toast.success(result.message || 'Doctor deleted successfully');
           return { success: true };
         } else {
@@ -166,7 +175,7 @@ const useDoctorAPI = () => {
         });
         const result = await response.json();
 
-        if (result.success) {
+        if (result.status) {
           return { success: true, data: result.data };
         } else {
           toast.error(result.message || 'Failed to fetch doctor details');
@@ -189,7 +198,8 @@ const useDoctorAPI = () => {
         const params = new URLSearchParams();
         if (filters.specialization) params.append('specialization', filters.specialization);
         if (filters.department) params.append('department', filters.department);
-        if (filters.isConsultant !== undefined) params.append('isConsultant', filters.isConsultant.toString());
+        if (filters.isConsultant !== undefined)
+          params.append('isConsultant', filters.isConsultant.toString());
 
         const response = await fetch(`${API_URL}/doctors/dropdown?${params}`, {
           headers: getAuthHeaders(),
@@ -218,6 +228,7 @@ const useDoctorAPI = () => {
     deleteDoctor,
     getDoctorById,
     getDoctorsDropdown,
+    loadDoctorOptions,
   };
 };
 

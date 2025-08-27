@@ -1,121 +1,71 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Modal, Table } from 'react-bootstrap';
-import Select from 'react-select';
 import { toast } from 'react-toastify';
 
 import axios from 'axios';
 import { Form, Formik } from 'formik';
 import Swal from 'sweetalert2';
+import * as Yup from 'yup';
 
-import { fetchServices, transformServicesForSelect } from '../../../../services/ServicesService';
-import { useGetDoctorsDropdownQuery } from '../../../../store/api/doctorsApi';
+import PaginatedSelect from '../../../../components/Common/PaginatedSelect';
+import { INSURANCE_TYPE, VISIT_TYPE } from '../../../../constants/enums';
+import useDoctorAPI from '../../../../hooks/useDoctorAPI';
+import { loadPatientOptions } from '../../../../services/PatientsService';
+import { loadServiceOptions } from '../../../../services/ServicesService';
 import FormField from './components/FormField';
-import { initialVisitValues, visitSchema } from './schemas/visitValidation';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
-  const [patientOptions, setPatientOptions] = useState([]);
-  const [selectedPatient, setSelectedPatient] = useState(null);
-  const [searchPatient, setSearchPatient] = useState('');
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [selectedServices, setSelectedServices] = useState([]);
-  const [servicesOptions, setServicesOptions] = useState([]);
-  const [servicesLoading, setServicesLoading] = useState(false);
-  const [servicesSearch, setServicesSearch] = useState('');
+export const visitSchema = Yup.object({
+  patientId: Yup.string().required('Patient is required'),
+  consultingDoctorId: Yup.string().required('Doctor is required'),
+  visitType: Yup.string()
+    .oneOf(Object.values(VISIT_TYPE), 'Invalid visit type')
+    .required('Visit type is required'),
+  referredBy: Yup.string().nullable(),
+  visitNote: Yup.string().nullable(),
+  medicoLegal: Yup.string().oneOf(['Yes', 'No']),
+  insuranceType: Yup.string().nullable(),
+  policyNumber: Yup.string().nullable(),
+  services: Yup.array().of(Yup.string()).min(1, 'Select at least one service'),
+});
 
-  // Fetch doctors dropdown data
-  const {
-    data: doctorsData,
-    isLoading: doctorsLoading,
-    error: doctorsError,
-  } = useGetDoctorsDropdownQuery();
+export const initialVisitValues = {
+  patientId: '',
+  consultingDoctorId: '',
+  visitType: '',
+  referredBy: '',
+  visitNote: '',
+  medicoLegal: false,
+  insuranceType: '',
+  policyNumber: '',
+  services: [],
+};
+
+const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
+  const { loadDoctorOptions } = useDoctorAPI();
+
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedServices, setSelectedServices] = useState([]);
 
   // Form reference for reset
   const formikRef = useRef(null);
 
   // Transform doctors data for select options
-  const getDoctorOptions = () => {
-    if (!doctorsData?.data) return [];
-
-    const options = doctorsData.data.map(doctor => ({
-      value: doctor.value,
-      label: doctor.nameWithSpecialization || doctor.label,
-      name: doctor.name,
-      employeeId: doctor.employeeId,
-      specialization: doctor.specialization,
-      department: doctor.department,
-      consultationFee: doctor.consultationFee,
-    }));
-
-    return [...options];
-  };
-
-  // Get selected doctor data
-  const getSelectedDoctor = doctorValue => {
-    if (!doctorValue || !doctorsData?.data) return null;
-    return doctorsData.data.find(doctor => doctor.value === doctorValue);
-  };
-
-  const getRefByOptions = () => {
-    return [{ value: 'Self', label: 'Self' }];
-  };
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      // Validate patient selection
-      if (!selectedPatient) {
-        toast.error('Please select a patient');
-        return;
-      }
+      const response = await axios.post(
+        `${API_URL}/visits`,
+        { ...values, medicoLegal: values.medicoLegal === 'Yes' ? true : false },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-      // Validate services selection (minimum 1, maximum 20)
-      if (selectedServices.length === 0) {
-        toast.error('Please select at least one service');
-        return;
-      }
-      if (selectedServices.length > 20) {
-        toast.error('Maximum 20 services allowed per visit');
-        return;
-      }
-
-      // Get selected doctor details and validate
-      const selectedDoctor = getSelectedDoctor(values.visitingdoctor);
-      if (!selectedDoctor?.employeeId) {
-        toast.error('Please select a valid doctor');
-        return;
-      }
-
-      // Prepare visit data according to backend API requirements
-      const submitData = {
-        // Required fields
-        doctorId: selectedDoctor.employeeId, // Doctor's employeeId (1-20 chars)
-        refby: values.refby, // Referral source (1-100 chars)
-        visittype: values.visittype, // Visit type (1-50 chars)
-        mediclaim_type: values.mediclaim_type, // Mediclaim type (1-50 chars)
-        services: selectedServices.map(service => ({
-          serviceId: service.id, // Valid MongoDB ObjectId
-          serviceName: service.label, // 1-100 characters
-          serviceCode: service.code, // 1-20 characters
-          rate: Number(service.rate) || 0, // Number (0-999999, cannot be negative)
-        })),
-
-        // Optional fields
-        ...(selectedPatient && { patientId: selectedPatient.id || selectedPatient.value }),
-        ...(values.medicolegal && { medicolegal: values.medicolegal }),
-        ...(values.visitdetail && { visitdetail: values.visitdetail }),
-        ...(values.mediclaim_id && { mediclaim_id: values.mediclaim_id }),
-      };
-
-      console.log('Submitting visit data:', submitData); // Debug log
-
-      const response = await axios.post(`${API_URL}/visits`, submitData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.data.success) {
+      if (response.data.status) {
         Swal.fire({
           icon: 'success',
           title: 'Success!',
@@ -128,7 +78,6 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
         resetForm();
         setSelectedPatient(null);
         setSelectedServices([]);
-        setSearchPatient('');
         onHide();
 
         // Callback to parent component
@@ -175,91 +124,15 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
     }
   };
 
-  const getPatientOptions = async () => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/patients/dropdown-data`);
-      if (response.data.success) {
-        setPatientOptions(response.data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching patient options:', error);
-    }
-  };
-
-  const handleSearchPatient = selectedOption => {
-    setSelectedPatient(selectedOption);
-    setSearchPatient(selectedOption);
-  };
-
-  const handleAddService = aSelectedOption => {
-    if (aSelectedOption && !selectedServices.some(service => service.id === aSelectedOption.id)) {
-      setSelectedServices([...selectedServices, aSelectedOption]);
-    }
-    setSelectedOption(null); // Clear the selected option
-  };
-
-  const handleRemoveService = serviceToRemove => {
-    setSelectedServices(selectedServices.filter(service => service.id !== serviceToRemove.id));
-  };
-
-  // Fetch services from API
-  const loadServices = useCallback(async (searchQuery = '') => {
-    setServicesLoading(true);
-    try {
-      const response = await fetchServices(searchQuery);
-      if (response.success) {
-        const transformedServices = transformServicesForSelect(response.data);
-        setServicesOptions(transformedServices);
-      } else {
-        toast.error('Failed to load services', {
-          position: 'top-right',
-          autoClose: 3000,
-        });
-      }
-    } catch (error) {
-      console.error('Error loading services:', error);
-      toast.error('Error loading services. Please try again.', {
-        position: 'top-right',
-        autoClose: 3000,
-      });
-    } finally {
-      setServicesLoading(false);
-    }
-  }, []);
-
-  // Handle services search with debouncing
-  const handleServicesSearch = useCallback(
-    inputValue => {
-      setServicesSearch(inputValue);
-
-      // Debounce search
-      const timeoutId = setTimeout(() => {
-        loadServices(inputValue);
-      }, 300);
-
-      return () => clearTimeout(timeoutId);
-    },
-    [loadServices]
-  );
-
   // Calculate total amount
   const getTotalAmount = () => {
-    return selectedServices.reduce((total, service) => total + (service.rate || 0), 0);
+    return selectedServices.reduce((total, service) => total + (service.price || 0), 0);
   };
-
-  useEffect(() => {
-    getPatientOptions();
-    loadServices(); // Load services when modal opens
-  }, [loadServices]);
 
   // Reset form completely when modal closes
   const resetFormData = () => {
     setSelectedPatient(null);
-    setSearchPatient('');
     setSelectedServices([]);
-    setSelectedOption(null);
-    setServicesOptions([]);
-    setServicesSearch('');
     // Reset Formik form
     if (formikRef.current) {
       formikRef.current.resetForm();
@@ -300,7 +173,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
         onSubmit={handleSubmit}
         enableReinitialize={true}
       >
-        {({ isSubmitting }) => (
+        {({ isSubmitting, errors, values }) => (
           <Form>
             <Modal.Body>
               {/* Patient Selection */}
@@ -311,16 +184,12 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                       <i className="fa fa-user me-2"></i>Select Patient{' '}
                       <span className="text-danger">*</span>
                     </label>
-                    <Select
-                      isClearable
-                      className="plugins-select-feild"
-                      isSearchable
-                      name="searchPatient"
-                      placeholder="Search and select a patient..."
-                      value={searchPatient}
-                      options={patientOptions}
-                      onChange={handleSearchPatient}
-                      noOptionsMessage={() => 'No patients found. Try adjusting your search.'}
+                    <PaginatedSelect
+                      name="patientId"
+                      loadOptions={loadPatientOptions}
+                      selectCallback={option => setSelectedPatient(option)}
+                      placeholder="Search patient..."
+                      className="mb-2"
                     />
                   </div>
                 </div>
@@ -339,23 +208,21 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                           <div className="col-lg-3 col-md-6 mb-2">
                             <div className="d-flex">
                               <strong className="me-1 text-nowrap">UHID:</strong>
-                              <span className="text-truncate">
-                                {selectedPatient.uhid || selectedPatient.value}
-                              </span>
+                              <span className="text-truncate">{selectedPatient.uhidNo}</span>
                             </div>
                           </div>
                           <div className="col-lg-3 col-md-6 mb-2">
                             <div className="d-flex">
                               <strong className="me-1 text-nowrap">Name:</strong>
-                              <span className="text-truncate" title={selectedPatient.label}>
-                                {selectedPatient.label}
+                              <span className="text-truncate" title={selectedPatient.name}>
+                                {selectedPatient.name}
                               </span>
                             </div>
                           </div>
                           <div className="col-lg-3 col-md-6 mb-2">
                             <div className="d-flex">
                               <strong className="me-1 text-nowrap">Mobile:</strong>
-                              <span className="text-nowrap">{selectedPatient.mobileno}</span>
+                              <span className="text-nowrap">{selectedPatient.mobileNumber}</span>
                             </div>
                           </div>
                           <div className="col-lg-1 col-md-3 mb-2">
@@ -384,45 +251,33 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                     <i className="fa fa-clipboard me-2 text-primary"></i>Visit Details
                   </h6>
                 </div>
-
-                <FormField
-                  name="visitingdoctor"
+                <PaginatedSelect
+                  name="consultingDoctorId"
                   label="Visiting Doctor"
-                  type="select"
-                  required
+                  loadOptions={loadDoctorOptions}
+                  placeholder="Search doctor..."
                   className="col-md-4"
-                  options={getDoctorOptions()}
-                  disabled={doctorsLoading}
                 />
 
                 <FormField
-                  name="visittype"
+                  name="visitType"
                   label="Visit Type"
                   type="select"
                   required
                   className="col-md-4"
-                  options={[
-                    { value: '', label: 'Select Visit Type' },
-                    { value: 'OPD', label: 'OPD' },
-                    { value: 'IPD', label: 'IPD' },
-                    { value: 'Emergency', label: 'Emergency' },
-                    { value: 'Consultation', label: 'Consultation' },
-                  ]}
+                  options={Object.values(VISIT_TYPE).map(value => ({ value, label: value }))}
                 />
-
                 <FormField
-                  name="refby"
+                  name="referredBy"
                   label="Referred By"
                   type="select"
                   required
                   className="col-md-4"
-                  options={getRefByOptions()}
-                  disabled={doctorsLoading}
+                  options={[{ value: 'Self', label: 'Self' }]}
                   hideEmptyOption={true}
                 />
-
                 <FormField
-                  name="visitdetail"
+                  name="visitNote"
                   label="Visit Notes (Optional)"
                   className="col-12"
                   placeholder="Enter any additional notes about this visit..."
@@ -438,7 +293,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                 </div>
 
                 <FormField
-                  name="medicolegal"
+                  name="medicoLegal"
                   label="Medico Legal (MLC)"
                   type="radio"
                   required
@@ -447,22 +302,16 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                 />
 
                 <FormField
-                  name="mediclaim_type"
+                  name="insuranceType"
                   label="Insurance Type"
                   type="select"
                   required
                   className="col-md-4"
-                  options={[
-                    { value: '', label: 'Select Insurance Type' },
-                    { value: 'Self', label: 'Self Payment' },
-                    { value: 'Ayushman', label: 'Ayushman Bharat' },
-                    { value: 'Insurance', label: 'Private Insurance' },
-                    { value: 'Corporate', label: 'Corporate Insurance' },
-                  ]}
+                  options={Object.values(INSURANCE_TYPE).map(value => ({ value, label: value }))}
                 />
 
                 <FormField
-                  name="mediclaim_id"
+                  name="policyNumber"
                   label="Policy/Card Number"
                   className="col-md-4"
                   placeholder="Enter policy or card number"
@@ -477,23 +326,15 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                     <span className="text-danger">*</span>
                   </h6>
                   <div className="form-group">
-                    <Select
-                      isClearable
-                      className="plugins-select-feild"
-                      isSearchable
-                      isLoading={servicesLoading}
-                      name="searchservices"
-                      placeholder="Search and add services for this visit..."
-                      options={servicesOptions}
-                      value={selectedOption}
-                      onChange={handleAddService}
-                      onInputChange={handleServicesSearch}
-                      noOptionsMessage={({ inputValue }) =>
-                        inputValue
-                          ? `No services found for "${inputValue}"`
-                          : 'Start typing to search services'
-                      }
-                      loadingMessage={() => 'Loading services...'}
+                    <PaginatedSelect
+                      name="services"
+                      loadOptions={loadServiceOptions}
+                      placeholder="Search services..."
+                      selectCallback={option => {
+                        setSelectedServices(option);
+                      }}
+                      className="mb-2"
+                      isMulti
                     />
                     <small className="text-muted mt-1">
                       <i className="fa fa-info-circle me-1"></i>
@@ -528,9 +369,6 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                           <tr>
                             <th>Service</th>
                             <th className="text-end">Price</th>
-                            <th className="text-center" width="80">
-                              Action
-                            </th>
                           </tr>
                         </thead>
                         <tbody>
@@ -538,25 +376,15 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                             <tr key={service.id || index}>
                               <td>
                                 <div>
-                                  <strong>{service.label}</strong>
+                                  <strong>{service.name}</strong>
                                   <br />
                                   <small className="text-muted">{service.code}</small>
                                 </div>
                               </td>
                               <td className="text-end">
                                 <strong className="text-success">
-                                  ₹{service.rate?.toLocaleString() || '0'}
+                                  ₹{service.price?.toLocaleString() || '0'}
                                 </strong>
-                              </td>
-                              <td className="text-center">
-                                <button
-                                  type="button"
-                                  onClick={() => handleRemoveService(service)}
-                                  className="btn btn-sm btn-outline-danger"
-                                  title="Remove service"
-                                >
-                                  <i className="fa fa-times" />
-                                </button>
                               </td>
                             </tr>
                           ))}

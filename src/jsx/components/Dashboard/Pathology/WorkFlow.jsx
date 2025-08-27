@@ -3,10 +3,11 @@ import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
 import usePathologyAPI from '../../../../hooks/usePathologyAPI';
-import DateFilterModal from './modals/DateFilterModal';
-import StageModal from './modals/StageModal';
 import WorkFlowTable from './components/WorkFlowTable';
-import { getStageTitle, validateTestSelection, prepareTestParameters } from './utils/workflowUtils';
+import DateFilterModal from './modals/DateFilterModal';
+import SampleCollection from './modals/SampleCollection';
+import StageModal from './modals/StageModal';
+import { getStageTitle, validateTestSelection } from './utils/workflowUtils';
 import './workflow.css';
 
 const WorkFlow = ({ stage = 'collection' }) => {
@@ -19,17 +20,18 @@ const WorkFlow = ({ stage = 'collection' }) => {
   const [tableData, setTableData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 1 });
   const [currentFilters, setCurrentFilters] = useState({});
+  const [sampleCollection, setSampleCollection] = useState(false);
   const activePag = useRef(0);
   const [test, settest] = useState(0);
 
-  const { loading, fetchLabOrders, fetchOrderTests, collectTests, saveResults, authorizeOrder } = usePathologyAPI();
+  const { loading, fetchLabOrders, fetchOrderTests, collectTests, saveResults, authorizeOrder } =
+    usePathologyAPI();
 
   const loadLabOrders = async (page = 1, filters = currentFilters) => {
     const result = await fetchLabOrders(stage, page, filters);
     setTableData(result.data);
     setPagination(result.pagination);
   };
-
 
   useEffect(() => {
     activePag.current = 0;
@@ -57,16 +59,18 @@ const WorkFlow = ({ stage = 'collection' }) => {
 
   const handleAccessionClick = async order => {
     setSelectedOrder(order);
-    setShowStageModal(true);
-    const orderData = await fetchOrderTests(order.id, stage);
-    // Merge order info with test data
-    setOrderTests({
-      ...order,
-      ...orderData
-    });
+
+    if (stage === 'collection') {
+      setSampleCollection(true);
+    } else {
+      const orderTestParameter = await fetchOrderTests(order._id, stage);
+      setShowStageModal(true);
+      setOrderTests({
+        ...order,
+        ...orderTestParameter,
+      });
+    }
   };
-
-
 
   const handleCollectTests = async () => {
     const validation = validateTestSelection(selectedTests, 'collection');
@@ -75,14 +79,13 @@ const WorkFlow = ({ stage = 'collection' }) => {
       return;
     }
 
-    const success = await collectTests(selectedTests);
+    const success = await collectTests(selectedTests, selectedOrder._id);
     if (success) {
       setShowStageModal(false);
       setSelectedTests([]);
       // Check if current page might be empty after action, go to previous page if needed
-      const currentPage = tableData.length === 1 && pagination.page > 1 
-        ? pagination.page - 1 
-        : pagination.page;
+      const currentPage =
+        tableData.length === 1 && pagination.page > 1 ? pagination.page - 1 : pagination.page;
       if (currentPage !== pagination.page) {
         activePag.current = currentPage - 1;
       }
@@ -112,13 +115,12 @@ const WorkFlow = ({ stage = 'collection' }) => {
     }
   };
 
-  const handleFilterSubmit = async (filters) => {
+  const handleFilterSubmit = async filters => {
     setCurrentFilters(filters);
     activePag.current = 0;
     settest(0);
     await loadLabOrders(1, filters);
   };
-
 
   return (
     <>
@@ -129,11 +131,11 @@ const WorkFlow = ({ stage = 'collection' }) => {
         <div>
           <Button
             className="me-2"
-            variant={Object.keys(currentFilters).length > 0 ? "success" : "primary"}
+            variant={Object.keys(currentFilters).length > 0 ? 'success' : 'primary'}
             size="sm"
             onClick={() => setDateFilterModal(true)}
           >
-            <i className="las la-filter scale5 me-2" /> 
+            <i className="las la-filter scale5 me-2" />
             {Object.keys(currentFilters).length > 0 ? 'Filters Applied' : 'Filter'}
             {Object.keys(currentFilters).length > 0 && (
               <span className="badge bg-light text-dark ms-1">
@@ -193,6 +195,14 @@ const WorkFlow = ({ stage = 'collection' }) => {
         getStageTitle={getStageTitle}
       />
 
+      <SampleCollection
+        show={sampleCollection}
+        onHide={() => setSampleCollection(false)}
+        selectedTestOrder={selectedOrder}
+        selectedTests={selectedTests}
+        setSelectedTests={setSelectedTests}
+        onCollectTests={handleCollectTests}
+      />
     </>
   );
 };

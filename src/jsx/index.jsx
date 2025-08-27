@@ -25,8 +25,8 @@ import ProductList from './components/AppsMenu/Shop/ProductList/ProductList';
 import ProductOrder from './components/AppsMenu/Shop/ProductOrder';
 import Doctor from './components/Dashboard/Doctor';
 import DoctorDetails from './components/Dashboard/DoctorDetails';
-import WorkFlow from './components/Dashboard/Pathology/WorkFlow.jsx';
 import DoctorMaster from './components/Dashboard/Doctors/DoctorMaster';
+import WorkFlow from './components/Dashboard/Pathology/WorkFlow.jsx';
 import PatientDetails from './components/Dashboard/PatientDetails';
 import BillingDetails from './components/Dashboard/Reception/BillingDetails';
 /// Reception Dashboard
@@ -39,6 +39,8 @@ import ServicesPage from './components/Dashboard/Services/ServicesPage';
 import Task from './components/Dashboard/Task';
 // Widget
 import ParametersPage from './components/Dashboard/parameters/ParameterPage.jsx';
+// Svg Icon
+import TestsPage from './components/Dashboard/tests/TestsPage.jsx';
 import CkEditor from './components/Forms/CkEditor/CkEditor';
 /// Form
 import Element from './components/Forms/Element/Element';
@@ -92,7 +94,6 @@ import Error500 from './pages/Error500';
 import Error503 from './pages/Error503';
 /// Pages
 import LockScreen from './pages/LockScreen';
-// Svg Icon
 import SvgIcon from './pages/SvgIcon';
 import Widget from './pages/Widget';
 import './step.css';
@@ -118,8 +119,9 @@ const Markup = () => {
 
     // Services Management
     { url: 'services', component: <ServicesPage /> },
+    { url: 'lab-tests', component: <TestsPage /> },
     { url: 'parameters', component: <ParametersPage /> },
-    
+
     // Doctor Management
     { url: 'doctors', component: <DoctorMaster /> },
 
