@@ -35,7 +35,7 @@ const usePathologyAPI = () => {
         let endpoint = `${API_URL}/lab/orders?${params}`;
         if (stage === 'collection') endpoint = `${API_URL}/lab-test-orders?${params}`;
         if (stage === 'result') endpoint = `${API_URL}/lab-test-orders/collected?${params}`;
-        if (stage === 'authorization') endpoint = `${API_URL}/lab/authorization?${params}`;
+        if (stage === 'authorization') endpoint = `${API_URL}/lab-test-orders/saved?${params}`;
 
         const response = await fetch(endpoint, { headers: getAuthHeaders() });
         const result = await response.json();
@@ -67,9 +67,12 @@ const usePathologyAPI = () => {
 
   /** 🔹 Fetch tests inside a specific lab order */
   const fetchOrderTests = useCallback(
-    async orderId => {
+    async (orderId, stage) => {
       try {
-        const endpoint = `${API_URL}/lab-test-orders/parameters?labTestOrderId=${orderId}`;
+        const endpoint =
+          stage === 'result'
+            ? `${API_URL}/lab-test-orders/parameters?labTestOrderId=${orderId}`
+            : `${API_URL}/lab-test-orders/parameters-result?labTestOrderId=${orderId}`;
         const response = await fetch(endpoint, { headers: getAuthHeaders() });
         const result = await response.json();
 

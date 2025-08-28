@@ -4,7 +4,10 @@ import { toast } from 'react-toastify';
 
 import usePathologyAPI from '../../../../hooks/usePathologyAPI';
 import WorkFlowTable from './components/WorkFlowTable';
+import AuthorizeResultModal from './modals/AuthorizeResultModal';
 import DateFilterModal from './modals/DateFilterModal';
+import ReportTypesModal from './modals/ReportTypesModal';
+import ResultEntryModal from './modals/ResultEntryModal';
 import SampleCollection from './modals/SampleCollection';
 import StageModal from './modals/StageModal';
 import { getStageTitle, validateTestSelection } from './utils/workflowUtils';
@@ -13,10 +16,16 @@ import './workflow.css';
 const WorkFlow = ({ stage = 'collection' }) => {
   const [dateFilterModal, setDateFilterModal] = useState(false);
   const [showStageModal, setShowStageModal] = useState(false);
+  const [showResultEntryModal, setShowResultEntryModal] = useState(false);
+  const [showAuthorizeModal, setShowAuthorizeModal] = useState(false);
+  const [showReportTypesModal, setShowReportTypesModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orderTests, setOrderTests] = useState([]);
   const [selectedTests, setSelectedTests] = useState([]);
   const [testParameters, setTestParameters] = useState([]);
+  const [resultOrderData, setResultOrderData] = useState(null);
+  const [authorizeOrderData, setAuthorizeOrderData] = useState(null);
+  const [reportTypesData, setReportTypesData] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 1 });
   const [currentFilters, setCurrentFilters] = useState({});
@@ -60,8 +69,26 @@ const WorkFlow = ({ stage = 'collection' }) => {
   const handleAccessionClick = async order => {
     setSelectedOrder(order);
 
+    // Check if order is authorized - show report types modal
+    if (order.status === 'authorized' || order.status === 'completed') {
+      const reportTypesData = await fetchReportTypes(order._id);
+      setReportTypesData(reportTypesData);
+      setShowReportTypesModal(true);
+      return;
+    }
+
     if (stage === 'collection') {
       setSampleCollection(true);
+    } else if (stage === 'result') {
+      // Use new ResultEntryModal for result stage
+      const orderTestParameter = await fetchOrderTests(order._id, stage);
+      setResultOrderData(orderTestParameter);
+      setShowResultEntryModal(true);
+    } else if (stage === 'authorization') {
+      // Use new AuthorizeResultModal for authorization stage
+      const orderTestParameter = await fetchOrderTests(order._id, stage);
+      setAuthorizeOrderData(orderTestParameter);
+      setShowAuthorizeModal(true);
     } else {
       const orderTestParameter = await fetchOrderTests(order._id, stage);
       setShowStageModal(true);
@@ -69,6 +96,60 @@ const WorkFlow = ({ stage = 'collection' }) => {
         ...order,
         ...orderTestParameter,
       });
+    }
+  };
+
+  // Fetch report types data for authorized orders
+  const fetchReportTypes = async orderId => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/lab-test-orders/printable?labTestOrderId=${orderId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(localStorage.getItem('userDetails'))?.token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const data = await response.json();
+
+      if (data.success || data.status) {
+        return data.data;
+      } else {
+        toast.error('Failed to fetch report types');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching report types:', error);
+      toast.error('Failed to fetch report types');
+      return null;
+    }
+  };
+
+  // Fetch order data for authorization modal
+  const fetchAuthorizeOrderData = async orderId => {
+    try {
+      // This should call your API endpoint that returns the authorization data with results
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/lab/orders/${orderId}/authorize`,
+        {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(localStorage.getItem('userDetails'))?.token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const data = await response.json();
+
+      if (data.success || data.status) {
+        setAuthorizeOrderData(data.data);
+        setShowAuthorizeModal(true);
+      } else {
+        toast.error('Failed to fetch authorization data');
+      }
+    } catch (error) {
+      console.error('Error fetching authorization data:', error);
+      toast.error('Failed to fetch authorization data');
     }
   };
 
@@ -101,6 +182,69 @@ const WorkFlow = ({ stage = 'collection' }) => {
       setSelectedTests([]);
       setTestParameters([]);
       await loadLabOrders(pagination.page);
+    }
+  };
+
+  // Handle save results from new ResultEntryModal
+  const handleSaveResultEntry = async resultData => {
+    try {
+      // Call API to save the grouped results
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/lab-test-orders/save-results`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${JSON.parse(localStorage.getItem('userDetails'))?.token}`,
+        },
+        body: JSON.stringify(resultData),
+      });
+
+      const data = await response.json();
+
+      if (data.status) {
+        setShowResultEntryModal(false);
+        setResultOrderData(null);
+        await loadLabOrders(pagination.page);
+        toast.success('Results saved successfully');
+      } else {
+        throw new Error(data.message || 'Failed to save results');
+      }
+    } catch (error) {
+      console.error('Error saving result entry:', error);
+      toast.error(error.message || 'Failed to save results');
+      throw error; // Re-throw to let the modal handle loading state
+    }
+  };
+
+  // Handle authorize results from AuthorizeResultModal
+  const handleAuthorizeResults = async authData => {
+    try {
+      // Call API to authorize the selected results
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/lab-test-orders/save-authorize`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${JSON.parse(localStorage.getItem('userDetails'))?.token}`,
+          },
+          body: JSON.stringify(authData),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success || data.status) {
+        setShowAuthorizeModal(false);
+        setAuthorizeOrderData(null);
+        await loadLabOrders(pagination.page);
+        toast.success('Results authorized successfully');
+      } else {
+        throw new Error(data.message || 'Failed to authorize results');
+      }
+    } catch (error) {
+      console.error('Error authorizing results:', error);
+      toast.error(error.message || 'Failed to authorize results');
+      throw error; // Re-throw to let the modal handle loading state
     }
   };
 
@@ -202,6 +346,27 @@ const WorkFlow = ({ stage = 'collection' }) => {
         selectedTests={selectedTests}
         setSelectedTests={setSelectedTests}
         onCollectTests={handleCollectTests}
+      />
+
+      <ResultEntryModal
+        show={showResultEntryModal}
+        onHide={() => setShowResultEntryModal(false)}
+        orderData={resultOrderData}
+        onSaveResults={handleSaveResultEntry}
+      />
+
+      <AuthorizeResultModal
+        show={showAuthorizeModal}
+        onHide={() => setShowAuthorizeModal(false)}
+        orderData={authorizeOrderData}
+        onSaveResults={handleSaveResultEntry}
+        onAuthorize={handleAuthorizeResults}
+      />
+
+      <ReportTypesModal
+        show={showReportTypesModal}
+        onHide={() => setShowReportTypesModal(false)}
+        orderData={reportTypesData}
       />
     </>
   );
