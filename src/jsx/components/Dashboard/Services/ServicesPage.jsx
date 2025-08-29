@@ -7,13 +7,15 @@ import Swal from 'sweetalert2';
 import { SERVICE_HEADS } from '../../../../constants/enums';
 import { deleteService, fetchServicesWithPagination } from '../../../../services/ServicesService';
 import LinkParametersModal from './ParameterServiceLinkingModal';
+import RadiologyTemplateLinkModal from './modals/RadiologyTemplateLinkModal';
 import ServiceModal from './ServiceModal';
 
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [showLinkModal, setShowLinkModal] = useState(false); // ✅ state for linking modal
+  const [showLinkModal, setShowLinkModal] = useState(false); // ✅ state for parameter linking modal
+  const [showTemplateLinkModal, setShowTemplateLinkModal] = useState(false); // ✅ state for template linking modal
   const [selectedService, setSelectedService] = useState(null);
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -163,7 +165,27 @@ const ServicesPage = () => {
 
   const handleLinkParameter = service => {
     setSelectedService(service);
-    setShowLinkModal(true); // ✅ open linking modal
+    setShowLinkModal(true); // ✅ open parameter linking modal
+  };
+
+  const handleLinkTemplate = service => {
+    // Check if service is radiology type
+    if (service.headType && service.headType.toLowerCase() === 'radiology') {
+      setSelectedService(service);
+      setShowTemplateLinkModal(true); // ✅ open template linking modal
+    } else {
+      toast.warning('Template linking is only available for Radiology services', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+    }
+  };
+
+  const handleTemplateLinkSuccess = () => {
+    setShowTemplateLinkModal(false);
+    setSelectedService(null);
+    // Optionally reload services if needed
+    // loadServices(1, true);
   };
 
   const handleClearFilters = () => {
@@ -343,12 +365,21 @@ const ServicesPage = () => {
                                   Edit
                                 </Dropdown.Item>
                                 <Dropdown.Item
-                                  onClick={() => handleLinkParameter(service)} // ✅ linking option
+                                  onClick={() => handleLinkParameter(service)} // ✅ parameter linking option
                                   className="d-flex align-items-center"
                                 >
                                   <i className="fas fa-link me-2 text-primary"></i>
-                                  Link Services
+                                  Link Parameters
                                 </Dropdown.Item>
+                                {service.headType && service.headType.toLowerCase() === 'radiology' && (
+                                  <Dropdown.Item
+                                    onClick={() => handleLinkTemplate(service)} // ✅ template linking option for radiology
+                                    className="d-flex align-items-center"
+                                  >
+                                    <i className="fas fa-file-medical me-2 text-success"></i>
+                                    Link Template
+                                  </Dropdown.Item>
+                                )}
                                 <Dropdown.Divider />
                                 <Dropdown.Item
                                   onClick={() => handleDeleteService(service)}
@@ -409,6 +440,13 @@ const ServicesPage = () => {
         onHide={() => setShowLinkModal(false)}
         serviceId={selectedService?._id}
         onLinked={handleServiceSaved}
+      />
+
+      <RadiologyTemplateLinkModal
+        show={showTemplateLinkModal}
+        onHide={() => setShowTemplateLinkModal(false)}
+        service={selectedService}
+        onSuccess={handleTemplateLinkSuccess}
       />
     </div>
   );

@@ -232,7 +232,7 @@ const Patient = () => {
                     <td>{ind + 1}</td>
                     <td>
                       <span
-                        onClick={() => navigate(`/patient-details/${visit.patient.uhid}`)}
+                        onClick={() => navigate(`/patient-details/${visit.patientId.uhidNo}`)}
                         style={{ cursor: 'pointer', color: '#007bff' }}
                         role="button"
                       >

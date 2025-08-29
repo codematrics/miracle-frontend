@@ -86,6 +86,17 @@ export const MenuList = [
     ],
   },
   {
+    title: 'Radiology',
+    classsChange: 'mm-collapse',
+    iconStyle: <i className="fa fa-x-ray" />,
+    content: [
+      {
+        title: 'Workflow',
+        to: 'radiology-workflow',
+      },
+    ],
+  },
+  {
     title: 'Master',
     classsChange: 'mm-collapse',
     iconStyle: <i className="fa fa-database" />,
@@ -98,10 +109,13 @@ export const MenuList = [
         title: 'Services',
         to: 'services',
       },
-
       {
         title: 'Parameters',
         to: 'parameters',
+      },
+      {
+        title: 'Radiology Templates',
+        to: 'radiology-templates',
       },
     ],
   },

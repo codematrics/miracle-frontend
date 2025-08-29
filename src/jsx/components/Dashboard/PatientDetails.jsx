@@ -3,7 +3,6 @@ import { Alert, Spinner } from 'react-bootstrap';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -16,7 +15,7 @@ const PatientDetails = () => {
 
   const fetchPatientDetails = async () => {
     if (!patientId) {
-      setError('Patient ID is required');
+      setError('UHID is required');
       setLoading(false);
       return;
     }
@@ -25,23 +24,26 @@ const PatientDetails = () => {
     setError(null);
 
     try {
-      const response = await axios.get(`${API_URL}/patients/${patientId}/details`, {
+      const response = await fetch(`${API_URL}/patients/${patientId}/details`, {
         headers: {
+          Authorization: `Bearer ${JSON.parse(localStorage.getItem('userDetails'))?.token}`,
           'Content-Type': 'application/json',
         },
       });
 
-      if (response.data.success) {
-        setPatientData(response.data.data);
+      const data = await response.json();
+
+      if (data.success) {
+        setPatientData(data.data);
         // Set the recent visit as the selected visit by default
-        setSelectedVisit(response.data.data.recentVisit);
+        setSelectedVisit(data.data.recentVisit);
       } else {
-        throw new Error(response.data.message || 'Failed to fetch patient details');
+        throw new Error(data.message || 'Failed to fetch patient details');
       }
     } catch (error) {
       console.error('Error fetching patient details:', error);
       const errorMessage =
-        error.response?.status === 404
+        error.response?.status === 404 || error.status === 404
           ? 'Patient not found'
           : error.response?.data?.message || error.message || 'Failed to fetch patient details';
 
@@ -88,10 +90,6 @@ const PatientDetails = () => {
     });
   };
 
-  const formatComplaint = complaint => {
-    if (!complaint) return 'N/A';
-    return complaint.split('\n').map((line, index) => <div key={index}>{line}</div>);
-  };
 
   if (loading) {
     return (
@@ -174,9 +172,7 @@ const PatientDetails = () => {
                     </div>
                     <div className="col-md-5 col-sm-12">
                       <label>Patient Name</label>
-                      <h5>
-                        {patientData?.patientName} {patientData?.relation} {patientData?.fathername}
-                      </h5>
+                      <h5>{patientData?.patientName}</h5>
                     </div>
                     <div className="col-md-2 col-sm-6">
                       <label>Mobile No</label>
@@ -201,182 +197,43 @@ const PatientDetails = () => {
       </div>
 
       <div className="row mt-3">
-        <div className="col-xl-5">
-          <div className="row">
-            <div className="col-xl-12">
-              <div className="card text-black p-2">
-                <h4 className="card-title">Recent Visit Details</h4>
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label>Visit No</label>
-                  </div>
-                  <div className="col-md-8 col-sm-12">
-                    <h5>{selectedVisit?.visitNo}</h5>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label>Visit Date</label>
-                  </div>
-                  <div className="col-md-8 col-sm-12">
-                    <h5>{formatDate(selectedVisit?.visitDate)}</h5>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label>Doctor Name</label>
-                  </div>
-                  <div className="col-md-8 col-sm-12">
-                    <h5>{selectedVisit?.doctorName}</h5>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label>License No</label>
-                  </div>
-                  <div className="col-md-8 col-sm-12">
-                    <h5>{selectedVisit?.licenseNo}</h5>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label>Specialization</label>
-                  </div>
-                  <div className="col-md-8 col-sm-12">
-                    <h5>{selectedVisit?.specialization}</h5>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label>Department</label>
-                  </div>
-                  <div className="col-md-8 col-sm-12">
-                    <h5>{selectedVisit?.department}</h5>
-                  </div>
-                </div>
-                <hr />
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label>C/O</label>
-                  </div>
-                  <div className="col-md-8 col-sm-12">
-                    <h6>{formatComplaint(selectedVisit?.chiefComplaint)}</h6>
-                  </div>
-                </div>
-                <hr />
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label>Vitals</label>
-                  </div>
-                  <div className="col-md-8 col-sm-12">
-                    <div className="row">
-                      <div className="col-md-6 col-sm-12">
-                        <h6>Temp: {selectedVisit?.vitals?.temperature}</h6>
-                      </div>
-                      <div className="col-md-6 col-sm-12">
-                        <h6>Spo2: {selectedVisit?.vitals?.spo2}</h6>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-md-6 col-sm-12">
-                        <h6>Height: {selectedVisit?.vitals?.height}</h6>
-                      </div>
-                      <div className="col-md-6 col-sm-12">
-                        <h6>Weight: {selectedVisit?.vitals?.weight}</h6>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-md-6 col-sm-12">
-                        <h6>BP: {selectedVisit?.vitals?.bloodPressure}</h6>
-                      </div>
-                      <div className="col-md-6 col-sm-12">
-                        <h6>R/R: {selectedVisit?.vitals?.respiratoryRate}</h6>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-md-6 col-sm-12">
-                        <h6>Pulse: {selectedVisit?.vitals?.pulse}</h6>
-                      </div>
-                      <div className="col-md-6 col-sm-12">{/* Empty column for alignment */}</div>
-                    </div>
-                  </div>
-                </div>
+        <div className="col-xl-12">
+          <div className="card text-black p-2">
+            <h4 className="card-title">Recent Visit Details</h4>
+            <div className="row">
+              <div className="col-md-2 col-sm-6">
+                <label>Visit No</label>
+                <h5>{selectedVisit?.visitNo}</h5>
+              </div>
+              <div className="col-md-2 col-sm-6">
+                <label>Visit Date</label>
+                <h5>{formatDate(selectedVisit?.visitDate)}</h5>
+              </div>
+              <div className="col-md-2 col-sm-6">
+                <label>Visit Type</label>
+                <h5>{selectedVisit?.visitType}</h5>
+              </div>
+              <div className="col-md-3 col-sm-6">
+                <label>Doctor Name</label>
+                <h5>{selectedVisit?.doctorName}</h5>
+              </div>
+              <div className="col-md-3 col-sm-6">
+                <label>Doctor Qualification</label>
+                <h5>{selectedVisit?.doctorQualification}</h5>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="col-xl-7">
-          <div className="row">
-            <div className="col-xl-12">
-              <div className="card text-black p-2">
-                <h4 className="card-title">Recent Visit Details</h4>
-
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label>Diagnosis</label>
-                  </div>
-                  <div className="col-md-8 col-sm-12">
-                    <h6>Provisional: {selectedVisit?.diagnosis?.provisional || 'N/A'}</h6>
-                    <h6>Final: {selectedVisit?.diagnosis?.final || 'N/A'}</h6>
-                    <h6>Additional: {selectedVisit?.diagnosis?.additional || 'N/A'}</h6>
-                  </div>
-                </div>
-                <hr />
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label>Past History</label>
-                  </div>
-                  <div className="col-md-8 col-sm-12">
-                    <h6>{selectedVisit?.pastHistory || 'N/A'}</h6>
-                  </div>
-                </div>
-                <hr />
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label>Investigation</label>
-                  </div>
-                  <div className="col-md-8 col-sm-12">
-                    <h6>{selectedVisit?.investigation || 'N/A'}</h6>
-                  </div>
-                </div>
-                <hr />
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label>Allergies</label>
-                  </div>
-                  <div className="col-md-8 col-sm-12">
-                    <h6>{selectedVisit?.allergies || 'N/A'}</h6>
-                  </div>
-                </div>
-                <hr />
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label>Advice</label>
-                  </div>
-                  <div className="col-md-8 col-sm-12">
-                    <h6>{selectedVisit?.advice || 'N/A'}</h6>
-                  </div>
-                </div>
-                <hr />
-                <div className="row">
-                  <div className="col-md-4 col-sm-12">
-                    <label>Medications</label>
-                  </div>
-                  <div className="col-md-8 col-sm-12">
-                    {selectedVisit?.medications?.length > 0 ? (
-                      selectedVisit.medications.map((med, index) => (
-                        <span className="text-black fs-6" style={{ color: '#3d4465' }} key={index}>
-                          {med.medicine} {med.dosage} {med.frequency} {med.duration} -{' '}
-                          {med.instructions}
-                          <br />
-                        </span>
-                      ))
-                    ) : (
-                      <h6>No medications prescribed</h6>
-                    )}
-                  </div>
-                </div>
+            <div className="row mt-3">
+              <div className="col-md-3 col-sm-6">
+                <label>Referred By</label>
+                <h5>{selectedVisit?.referredBy}</h5>
+              </div>
+              <div className="col-md-2 col-sm-6">
+                <label>Status</label>
+                <h5>
+                  <span className={`badge bg-${selectedVisit?.status === 'closed' ? 'success' : selectedVisit?.status === 'pending' ? 'warning' : 'secondary'}`}>
+                    {selectedVisit?.status || 'N/A'}
+                  </span>
+                </h5>
               </div>
             </div>
           </div>
@@ -394,8 +251,10 @@ const PatientDetails = () => {
                     <th>#</th>
                     <th>Visit No</th>
                     <th>Visit Date</th>
+                    <th>Visit Type</th>
                     <th>Doctor Name</th>
-                    <th>Advice</th>
+                    <th>Referred By</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -417,13 +276,19 @@ const PatientDetails = () => {
                           </span>
                         </td>
                         <td>{formatDate(visit.visitDate)}</td>
+                        <td>{visit.visitType}</td>
                         <td>{visit.doctorName}</td>
-                        <td>{visit.advice}</td>
+                        <td>{visit.referredBy}</td>
+                        <td>
+                          <span className={`badge bg-${visit.status === 'closed' ? 'success' : visit.status === 'pending' ? 'warning' : 'secondary'}`}>
+                            {visit.status || 'N/A'}
+                          </span>
+                        </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="5" className="text-center text-muted">
+                      <td colSpan="7" className="text-center text-muted">
                         No previous visits found
                       </td>
                     </tr>

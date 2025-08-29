@@ -28,6 +28,8 @@ import DoctorDetails from './components/Dashboard/DoctorDetails';
 import DoctorMaster from './components/Dashboard/Doctors/DoctorMaster';
 import WorkFlow from './components/Dashboard/Pathology/WorkFlow.jsx';
 import PatientDetails from './components/Dashboard/PatientDetails';
+import RadiologyTemplateMaster from './components/Dashboard/Radiology/RadiologyTemplateMaster';
+import RadiologyWorkflow from './components/Dashboard/Radiology/RadiologyWorkflow';
 import BillingDetails from './components/Dashboard/Reception/BillingDetails';
 /// Reception Dashboard
 import HomeReception from './components/Dashboard/Reception/HomeReception';
@@ -121,6 +123,10 @@ const Markup = () => {
     { url: 'services', component: <ServicesPage /> },
     { url: 'lab-tests', component: <TestsPage /> },
     { url: 'parameters', component: <ParametersPage /> },
+
+    // Radiology Management
+    { url: 'radiology-templates', component: <RadiologyTemplateMaster /> },
+    { url: 'radiology-workflow', component: <RadiologyWorkflow /> },
 
     // Doctor Management
     { url: 'doctors', component: <DoctorMaster /> },

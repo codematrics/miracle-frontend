@@ -247,3 +247,69 @@ export const VISIT_STATUS = {
   ACCEPTED: 'Accepted',
   CLOSED: 'Closed',
 };
+
+export const RADIOLOGY_ENUMS = {
+  // Template Field Types
+  TEMPLATE_FIELD_TYPES: {
+    TEXT: 'text',
+    TEXTAREA: 'textarea',
+    NUMBER: 'number',
+    SELECT: 'select',
+    CHECKBOX: 'checkbox',
+    RADIO: 'radio',
+  },
+
+  // Common Radiology Positions
+  PATIENT_POSITIONS: {
+    SUPINE: 'supine',
+    PRONE: 'prone',
+    LATERAL: 'lateral',
+    DECUBITUS: 'decubitus',
+    ERECT: 'erect',
+    SITTING: 'sitting',
+  },
+
+  // Contrast Types
+  CONTRAST_TYPES: {
+    IODINATED: 'iodinated',
+    GADOLINIUM: 'gadolinium',
+    BARIUM: 'barium',
+    NONE: 'none',
+  },
+
+  // Image Quality
+  IMAGE_QUALITY: {
+    EXCELLENT: 'excellent',
+    GOOD: 'good',
+    FAIR: 'fair',
+    POOR: 'poor',
+    NON_DIAGNOSTIC: 'non_diagnostic',
+  },
+
+  // Common Anatomical Regions
+  ANATOMICAL_REGIONS: {
+    HEAD: 'head',
+    NECK: 'neck',
+    CHEST: 'chest',
+    ABDOMEN: 'abdomen',
+    PELVIS: 'pelvis',
+    SPINE: 'spine',
+    EXTREMITIES: 'extremities',
+  },
+
+  // Scan Techniques
+  SCAN_TECHNIQUES: {
+    PLAIN: 'plain',
+    WITH_CONTRAST: 'with_contrast',
+    WITHOUT_CONTRAST: 'without_contrast',
+    PRE_POST_CONTRAST: 'pre_post_contrast',
+  },
+};
+
+export const VALIDATION_PATTERNS = {
+  ALPHANUMERIC: '^[A-Za-z0-9\\s]+$',
+  ALPHA_ONLY: '^[A-Za-z\\s]+$',
+  NUMERIC_ONLY: '^[0-9]+$',
+  DECIMAL: '^[0-9]+(\\.[0-9]+)?$',
+  SNAKE_CASE: '^[a-z][a-z0-9_]*$',
+};
