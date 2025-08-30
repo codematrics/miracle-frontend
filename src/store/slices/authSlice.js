@@ -273,16 +273,16 @@ const authSlice = createSlice({
 });
 
 // Export actions
-export const { 
-  clearError, 
-  clearSuccess, 
-  setLoading, 
-  logout, 
+export const {
+  clearError,
+  clearSuccess,
+  setLoading,
+  logout,
   loadingToggle,
   loginConfirmed,
   signupConfirmed,
   loginFailed,
-  signupFailed 
+  signupFailed,
 } = authSlice.actions;
 
 // Selectors

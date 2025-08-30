@@ -187,7 +187,7 @@ const DateFilterModal = ({ show, onHide, onSubmit, initialFilters = {} }) => {
                 {Object.entries(ORDER_STATUS).map(([key, value]) => (
                   <option key={key} value={value}>
                     {value.charAt(0).toUpperCase() + value.slice(1)}
-                  </option>
+                </option>
                 ))}
               </select>
             </div>

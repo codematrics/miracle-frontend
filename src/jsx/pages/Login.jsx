@@ -1,4 +1,4 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { ErrorMessage, Field, Form, Formik } from 'formik';
@@ -15,6 +15,11 @@ export const loginSchema = Yup.object().shape({
 });
 
 function Login() {
+  const { errorMessage, successMessage, showLoading } = useSelector(state => ({
+    errorMessage: state.auth.errorMessage,
+    successMessage: state.auth.successMessage,
+    showLoading: state.auth.showLoading,
+  }));
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -48,7 +53,7 @@ function Login() {
                           setSubmitting(false);
                         }}
                       >
-                        {({ isSubmitting }) => (
+                        {() => (
                           <Form>
                             <div className="form-group mb-3 pb-3">
                               <label className="font-w600">
@@ -82,9 +87,9 @@ function Login() {
                               <button
                                 type="submit"
                                 className="btn btn-primary btn-block rounded"
-                                disabled={isSubmitting}
+                                disabled={showLoading}
                               >
-                                {isSubmitting ? 'Signing in...' : 'Sign Me In'}
+                                {showLoading ? 'Signing in...' : 'Sign Me In'}
                               </button>
                             </div>
                           </Form>
