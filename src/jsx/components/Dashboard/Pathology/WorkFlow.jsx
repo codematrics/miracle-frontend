@@ -68,6 +68,7 @@ const WorkFlow = ({ stage = 'collection' }) => {
 
   const handleAccessionClick = async order => {
     setSelectedOrder(order);
+    setSelectedTests(order.collectedSamples || []);
 
     // Check if order is authorized - show report types modal
     if (order.status === 'authorized' || order.status === 'completed') {

@@ -101,10 +101,10 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
       const submitData = {
         ...values,
         age: parsedAge,
-        maritalStatus: values.maritalStatus || null,
-        religion: values.religion || null,
-        occupation: values.occupation || null,
-        emailId: values.emailId || null,
+        maritalStatus: values.maritalStatus,
+        religion: values.religion,
+        occupation: values.occupation,
+        emailId: values.emailId,
         patientType: values.patientType !== 'General' ? values.patientType : null,
       };
 
@@ -112,7 +112,7 @@ const CreatePatientModal = ({ show, onHide, onPatientCreated }) => {
         headers: { 'Content-Type': 'application/json' },
       });
 
-      if (response.data.success) {
+      if (response.data.status) {
         Swal.fire({
           icon: 'success',
           title: 'Success!',

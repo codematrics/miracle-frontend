@@ -23,7 +23,7 @@ const usePathologyAPI = () => {
       setLoading(true);
       try {
         const params = new URLSearchParams({
-          category: 'pathology',
+          headType: 'Pathology',
           page: page.toString(),
           limit: '10',
         });

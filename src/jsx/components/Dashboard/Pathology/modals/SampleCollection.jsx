@@ -21,6 +21,8 @@ const SampleCollection = ({
     setSamples(sampleData);
   };
 
+  console.log(selectedTests, selectedTestOrder);
+
   useEffect(() => {
     loadSamples();
   }, [selectedTestOrder]);
@@ -28,8 +30,6 @@ const SampleCollection = ({
   if (!selectedTestOrder) {
     return;
   }
-
-  console.log(selectedTests);
 
   return (
     <Modal show={show} onHide={onHide} size="xl" centered backdrop="static">
@@ -63,11 +63,12 @@ const SampleCollection = ({
                 <td>
                   <Form.Check
                     type="checkbox"
-                    checked={selectedTestOrder?.collectedSamples?.includes(sample)}
+                    checked={selectedTests.includes(sample)}
                     disabled={!(selectedTestOrder.status === ORDER_STATUS.PENDING)}
                     onChange={e => {
                       if (e.target.checked) {
-                        setSelectedTests([...selectedTests, sample]);
+                        !selectedTests.includes(sample) &&
+                          setSelectedTests([...selectedTests, sample]);
                       } else {
                         setSelectedTests(selectedTests.filter(name => name !== sample));
                       }
