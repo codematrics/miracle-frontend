@@ -29,6 +29,7 @@ function TPA() {
     </span>
   );
 }
+
 const tableData = [
   {
     pname: 'ASHKAR GOVARDHANLAL LASHKAR',

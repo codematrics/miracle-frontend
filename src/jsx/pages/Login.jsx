@@ -15,7 +15,7 @@ export const loginSchema = Yup.object().shape({
 });
 
 function Login() {
-  const { errorMessage, successMessage, showLoading } = useSelector(state => ({
+  const { showLoading } = useSelector(state => ({
     errorMessage: state.auth.errorMessage,
     successMessage: state.auth.successMessage,
     showLoading: state.auth.showLoading,

@@ -39,6 +39,8 @@ import CaseSheet from './components/Dashboard/Reception/pdf/CaseSheet.tsx';
 import Reviews from './components/Dashboard/Reviews';
 import ServicesPage from './components/Dashboard/Services/ServicesPage';
 import Task from './components/Dashboard/Task';
+/// Pages
+import BedListing from './components/Dashboard/beds/BedListing.jsx';
 // Widget
 import ParametersPage from './components/Dashboard/parameters/ParameterPage.jsx';
 // Svg Icon
@@ -94,7 +96,6 @@ import Error403 from './pages/Error403';
 import Error404 from './pages/Error404';
 import Error500 from './pages/Error500';
 import Error503 from './pages/Error503';
-/// Pages
 import LockScreen from './pages/LockScreen';
 import SvgIcon from './pages/SvgIcon';
 import Widget from './pages/Widget';
@@ -102,7 +103,6 @@ import './step.css';
 
 const Markup = () => {
   const allroutes = [
-    // RECEPTION Dashboard
     { url: '', component: <HomeReception /> },
     { url: 'dashboard', component: <HomeReception /> },
     { url: 'patient', component: <PatientReception /> },
@@ -113,23 +113,16 @@ const Markup = () => {
     { url: 'reviews', component: <Reviews /> },
     { url: 'doctor', component: <Doctor /> },
     { url: 'task', component: <Task /> },
-
-    // Pathology Dashboard
     { url: 'lab-workflow', component: <WorkFlow stage="collection" /> },
     { url: 'lab-result-entry', component: <WorkFlow stage="result" /> },
     { url: 'lab-authorization', component: <WorkFlow stage="authorization" /> },
-
-    // Services Management
     { url: 'services', component: <ServicesPage /> },
     { url: 'lab-tests', component: <TestsPage /> },
     { url: 'parameters', component: <ParametersPage /> },
-
-    // Radiology Management
     { url: 'radiology-templates', component: <RadiologyTemplateMaster /> },
     { url: 'radiology-workflow', component: <RadiologyWorkflow /> },
-
-    // Doctor Management
     { url: 'doctors', component: <DoctorMaster /> },
+    { url: 'beds', component: <BedListing /> },
 
     //Apps
     { url: 'app-profile', component: <AppProfile /> },
