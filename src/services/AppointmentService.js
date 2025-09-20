@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-const API_URL = `${import.meta.env.VITE_API_URL}/bed` || 'http://localhost:3001/api/lab';
+const API_URL = `${import.meta.env.VITE_API_URL}/appointment` || 'http://localhost:3001/api/lab';
 
 // Create axios instance with default config
-const bedAPI = axios.create({
+const appointmentAPI = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
@@ -11,7 +11,7 @@ const bedAPI = axios.create({
 });
 
 // Add request interceptor to include auth token
-bedAPI.interceptors.request.use(
+appointmentAPI.interceptors.request.use(
   config => {
     const userDetails = localStorage.getItem('userDetails');
     if (userDetails) {
@@ -28,7 +28,7 @@ bedAPI.interceptors.request.use(
 );
 
 // Bed API
-export const bedAPIService = {
+export const appointmentAPIService = {
   // Get all beds with optional status filter
   getAll: async (status = null, search = '') => {
     try {
@@ -42,7 +42,7 @@ export const bedAPIService = {
         url += `?${params.toString()}`;
       }
 
-      const response = await bedAPI.get(url);
+      const response = await appointmentAPI.get(url);
       return response.data;
     } catch (error) {
       console.error('Error fetching beds:', error);
@@ -52,16 +52,17 @@ export const bedAPIService = {
 
   create: async bedData => {
     try {
-      const response = await bedAPI.post('/', bedData);
+      const response = await appointmentAPI.post('/', bedData);
       return response.data;
     } catch (error) {
       console.error('Error creating bed:', error);
       throw error;
     }
   },
+
   update: async (bedId, bedData) => {
     try {
-      const response = await bedAPI.put(`/${bedId}`, bedData);
+      const response = await appointmentAPI.put(`/${bedId}`, bedData);
       return response.data;
     } catch (error) {
       console.error('Error updating bed:', error);
@@ -71,28 +72,13 @@ export const bedAPIService = {
 
   delete: async bedId => {
     try {
-      const response = await bedAPI.delete(`/${bedId}`);
+      const response = await appointmentAPI.delete(`/${bedId}`);
       return response.data;
     } catch (error) {
       console.error('Error deleting bed:', error);
       throw error;
     }
   },
-
-  loadBedOptions: async (search = '', page = 1, limit = 20) => {
-    const response = await bedAPI.get(`/dropdown-list`, {
-      params: { search, page, limit, status: 'available' },
-    });
-
-    if (response.data?.status && response.data?.data) {
-      return response.data;
-    }
-
-    return {
-      options: response.data?.data,
-      hasMore: response?.data?.hasMore,
-    };
-  },
 };
 
-export default bedAPIService;
+export default appointmentAPIService;

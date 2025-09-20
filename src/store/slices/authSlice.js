@@ -148,6 +148,7 @@ const authSlice = createSlice({
       state.showLoading = false;
       state.isAuthenticated = true;
       state.token = action.payload.token;
+      state.role = action.payload.user.role;
       state.user = action.payload.user;
       state.email = action.payload.user?.email || '';
       state.successMessage = 'Login Successfully Completed';

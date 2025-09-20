@@ -196,7 +196,12 @@ const BedListing = () => {
         </div>
       </div>
 
-      <BedCreateAndUpdate open={bedModal.open} data={bedModal.data} onClose={setClose} />
+      <BedCreateAndUpdate
+        refetch={fetchData}
+        open={bedModal.open}
+        data={bedModal.data}
+        onClose={setClose}
+      />
     </>
   );
 };

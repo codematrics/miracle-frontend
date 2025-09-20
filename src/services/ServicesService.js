@@ -90,6 +90,21 @@ export const loadOPDServiceOptions = async (search = '', page = 1, limit = 20) =
     hasMore: response?.data?.hasMore,
   };
 };
+
+export const loadIPDServiceOptions = async (search = '', page = 1, limit = 20) => {
+  const response = await axios.get(`${API_URL}/services/dropdown-list`, {
+    params: { search, page, limit, serviceApplicableOn: 'IPD' },
+  });
+
+  if (response.data?.status && response.data?.data) {
+    return response.data;
+  }
+
+  return {
+    options: response.data?.data,
+    hasMore: response?.data?.hasMore,
+  };
+};
 /**
  * Get service by ID
  * @param {string} serviceId - Service ID

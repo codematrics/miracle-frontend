@@ -1,6 +1,7 @@
 /// Menu
 import { useContext, useEffect, useReducer, useState } from 'react';
 import Collapse from 'react-bootstrap/Collapse';
+import { useSelector } from 'react-redux';
 /// Link
 import { Link } from 'react-router-dom';
 
@@ -22,6 +23,7 @@ const initialState = {
 const SideBar = () => {
   const { iconHover, sidebarposition, headerposition, sidebarLayout, ChangeIconSidebar } =
     useContext(ThemeContext);
+  const { role } = useSelector(state => state.auth);
 
   const [state, setState] = useReducer(reducer, initialState);
   useEffect(() => {}, []);
@@ -55,7 +57,7 @@ const SideBar = () => {
   path = path[path.length - 1];
 
   useEffect(() => {
-    MenuList.forEach(data => {
+    MenuList[role].forEach(data => {
       data.content?.forEach(item => {
         if (path === item.to) {
           setState({ active: data.title });
@@ -86,7 +88,7 @@ const SideBar = () => {
     >
       <div className="deznav-scroll">
         <ul className="metismenu" id="menu">
-          {MenuList.map((data, index) => {
+          {MenuList[role].map((data, index) => {
             let menuClass = data.classsChange;
             if (menuClass === 'menu-title') {
               return (

@@ -39,8 +39,12 @@ import CaseSheet from './components/Dashboard/Reception/pdf/CaseSheet.tsx';
 import Reviews from './components/Dashboard/Reviews';
 import ServicesPage from './components/Dashboard/Services/ServicesPage';
 import Task from './components/Dashboard/Task';
+/// Css
+import AppointmentListing from './components/Dashboard/appointments/AppointmentListing.jsx';
 /// Pages
 import BedListing from './components/Dashboard/beds/BedListing.jsx';
+/// Layout
+import IPD from './components/Dashboard/ipd/ipd.jsx';
 // Widget
 import ParametersPage from './components/Dashboard/parameters/ParameterPage.jsx';
 // Svg Icon
@@ -85,11 +89,9 @@ import BootstrapTable from './components/table/BootstrapTable';
 import FilteringTable from './components/table/FilteringTable/FilteringTable';
 /// Table
 import SortingTable from './components/table/SortingTable/SortingTable';
-/// Css
 import './index.css';
 import Footer from './layouts/Footer';
 import ScrollToTop from './layouts/ScrollToTop';
-/// Layout
 import Nav from './layouts/nav';
 import Error400 from './pages/Error400';
 import Error403 from './pages/Error403';
@@ -108,6 +110,7 @@ const Markup = () => {
     { url: 'patient', component: <PatientReception /> },
     { url: 'billing-details', component: <BillingDetails /> },
     { url: 'opd-bill', component: <OpdBill /> },
+    { url: 'ipd-bill', component: <IPD /> },
     { url: 'patient-details/:id', component: <PatientDetails /> },
     { url: 'doctor-details', component: <DoctorDetails /> },
     { url: 'reviews', component: <Reviews /> },
@@ -123,6 +126,7 @@ const Markup = () => {
     { url: 'radiology-workflow', component: <RadiologyWorkflow /> },
     { url: 'doctors', component: <DoctorMaster /> },
     { url: 'beds', component: <BedListing /> },
+    { url: 'appointments', component: <AppointmentListing /> },
 
     //Apps
     { url: 'app-profile', component: <AppProfile /> },
@@ -223,6 +227,7 @@ const Markup = () => {
 
 function MainLayout() {
   const { menuToggle, sidebariconHover } = useContext(ThemeContext);
+
   return (
     <div
       id="main-wrapper"

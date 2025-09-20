@@ -54,6 +54,7 @@ export function saveTokenInLocalStorage(tokenDetails) {
         id: tokenDetails.user.id,
         username: tokenDetails.user.username,
         email: tokenDetails.user.email,
+        role: tokenDetails.user.role,
       },
       expireDate: expireDate.toISOString(),
       timestamp: new Date().toISOString(),
@@ -116,6 +117,8 @@ export function checkAutoLogin(dispatch, navigate) {
         resolve(false);
         return;
       }
+
+      console.log(tokenDetails, 'tokenDetails');
 
       const authData = {
         token: tokenDetails.token,

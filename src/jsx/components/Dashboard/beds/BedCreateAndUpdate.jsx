@@ -1,4 +1,5 @@
-import { Button } from 'react-bootstrap';
+import { Button, Spinner } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 import { Form, Formik } from 'formik';
 
@@ -7,37 +8,46 @@ import bedAPIService from '../../../../services/BedService';
 import FormField from '../Reception/components/FormField';
 import { createBedSchema, updateBedSchema } from '../Reception/schemas/bedValidation';
 
-const BedCreateAndUpdate = ({ data, setOpen, open, onClose }) => {
-  const handleSubmit = values => {
-    if (data) {
-      // Update existing bed
-      bedAPIService
-        .update(data.id, values)
-        .then(response => {
-          console.log('Bed updated successfully:', response);
-          setOpen(false);
-        })
-        .catch(error => {
-          console.error('Error updating bed:', error);
+const BedCreateAndUpdate = ({ data, open, onClose, refetch }) => {
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      if (data) {
+        // Update existing bed
+        const response = await bedAPIService.update(data._id, values);
+        toast.success('Bed updated successfully', {
+          position: 'top-right',
+          autoClose: 5000,
         });
-    } else {
-      // Create new bed
-      bedAPIService
-        .create(values)
-        .then(response => {
-          console.log('Bed created successfully:', response);
-          setOpen(false);
-        })
-        .catch(error => {
-          console.error('Error creating bed:', error);
+        refetch?.();
+        console.log('Bed updated successfully:', response);
+      } else {
+        // Create new bed
+        const response = await bedAPIService.create(values);
+        toast.success('Bed created successfully', {
+          position: 'top-right',
+          autoClose: 5000,
         });
+        refetch?.();
+        console.log('Bed created successfully:', response);
+      }
+      // Close modal after success
+      onClose?.();
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Error saving bed', {
+        position: 'top-right',
+        autoClose: 5000,
+      });
+      console.error('Error saving bed:', error);
+    } finally {
+      // Stop the submitting state no matter success or error
+      setSubmitting(false);
     }
   };
 
   return (
     <CommonModal
+      title={data ? 'Update Bed' : 'Create Bed'}
       open={open}
-      setOpen={setOpen}
       onClose={onClose}
       confirmButtonText={data ? 'Update Bed' : 'Create Bed'}
     >
@@ -51,15 +61,11 @@ const BedCreateAndUpdate = ({ data, setOpen, open, onClose }) => {
         validationSchema={data ? updateBedSchema : createBedSchema}
         onSubmit={handleSubmit}
       >
-        {({ errors }) => (
+        {({ isSubmitting }) => (
           <Form>
-            {console.log(errors)}
-            <div className="mb-3">
-              <FormField name="bedNumber" label="Bed Number" type="text" />
-            </div>
-
             <div className="mb-3">
               <FormField
+                className=""
                 name="status"
                 label="Status"
                 type="select"
@@ -73,6 +79,7 @@ const BedCreateAndUpdate = ({ data, setOpen, open, onClose }) => {
 
             <div className="mb-3">
               <FormField
+                className=""
                 name="type"
                 label="Type"
                 type="select"
@@ -85,15 +92,22 @@ const BedCreateAndUpdate = ({ data, setOpen, open, onClose }) => {
             </div>
 
             <div className="mb-3">
-              <FormField name="ward" label="Ward" type="text" />
+              <FormField name="ward" label="Ward" type="text" className="" />
             </div>
 
             <div className="d-flex justify-content-end gap-2">
               <Button onClick={onClose} variant="dark btn-sm" type="button">
                 Close
               </Button>
-              <Button variant="primary btn-sm" type="submit">
-                {data ? 'Update Bed' : 'Create Bed'}
+              <Button variant="primary btn-sm" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Spinner animation="border" size="sm" className="me-2" />{' '}
+                    {data ? 'Updating...' : 'Creating...'}
+                  </>
+                ) : (
+                  <>{data ? 'Update Bed' : 'Create Bed'}</>
+                )}
               </Button>
             </div>
           </Form>
