@@ -1,10 +1,12 @@
 import { Button, Card, Col, Row, Spinner } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 
 import CommonModal from '../../../../components/Common/CommonModal';
 import PaginatedSelect from '../../../../components/Common/PaginatedSelect';
+import { ROLES } from '../../../../constants/enums';
 import useDoctorAPI from '../../../../hooks/useDoctorAPI';
 import appointmentAPIService from '../../../../services/AppointmentService';
 import { loadPatientOptions } from '../../../../services/PatientsService';
@@ -73,6 +75,7 @@ const formatDateTimeLocal = isoString => {
 
 const AppointmentCreateAndUpdate = ({ data, open, onClose, refetch }) => {
   const { loadDoctorOptions } = useDoctorAPI();
+  const { role } = useSelector(state => state.auth);
 
   const handleSubmit = async (values, form) => {
     form.setSubmitting(true);
@@ -143,21 +146,23 @@ const AppointmentCreateAndUpdate = ({ data, open, onClose, refetch }) => {
               </div>
 
               {/* Doctor */}
-              <div className="mb-3">
-                <label>
-                  Doctor <span className="text-danger">*</span>
-                </label>
-                <PaginatedSelect
-                  name="doctor"
-                  loadOptions={loadDoctorOptions}
-                  placeholder="Search doctor..."
-                  // value={values.doctor}
-                  // onChange={option => setFieldValue('doctor', option.value)}
-                  isDisabled={false}
-                />
-                <ErrorMessage name="doctor" component="div" className="text-danger" />
-                {isEdit && selectedDoctor && <DoctorInfoCard doctor={selectedDoctor} />}
-              </div>
+              {(role !== ROLES.DOCTOR || !data) && (
+                <div className="mb-3">
+                  <label>
+                    Doctor <span className="text-danger">*</span>
+                  </label>
+                  <PaginatedSelect
+                    name="doctor"
+                    loadOptions={loadDoctorOptions}
+                    placeholder="Search doctor..."
+                    // value={values.doctor}
+                    // onChange={option => setFieldValue('doctor', option.value)}
+                    isDisabled={false}
+                  />
+                  <ErrorMessage name="doctor" component="div" className="text-danger" />
+                  {isEdit && selectedDoctor && <DoctorInfoCard doctor={selectedDoctor} />}
+                </div>
+              )}
 
               {/* Appointment Date */}
               <div className="mb-3">

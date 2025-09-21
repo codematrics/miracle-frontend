@@ -56,6 +56,15 @@ const RadiologyTemplateEditor = ({ show, onHide, labTest }) => {
         if (data.data?.template?.templateContent && setFieldValue) {
           setFieldValue('templateContent', data.data.template.templateContent);
         }
+        if (data.data?.template?.impression && setFieldValue) {
+          setFieldValue('impression', data.data.template.impression);
+        }
+        if (data.data?.template?.findings && setFieldValue) {
+          setFieldValue('findings', data.data.template.findings);
+        }
+        if (data.data?.template?.methodology && setFieldValue) {
+          setFieldValue('methodology', data.data.template.methodology);
+        }
       } else {
         toast.error(data.message || 'Failed to fetch template data');
       }

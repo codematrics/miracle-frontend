@@ -20,7 +20,7 @@ const IPD = () => {
 
   const fetchData = () => {
     setLoading(true);
-    IPDApiService.getAll()
+    IPDApiService.getAll(pagination.page)
       .then(res => {
         setData(res?.data?.ipd);
         setPagination({ page: res?.data?.page, total: res?.data?.total, limit: res?.data?.limit });

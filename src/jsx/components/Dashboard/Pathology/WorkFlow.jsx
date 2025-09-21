@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
+import { ROLES } from '../../../../constants/enums';
 import usePathologyAPI from '../../../../hooks/usePathologyAPI';
 import WorkFlowTable from './components/WorkFlowTable';
 import AuthorizeResultModal from './modals/AuthorizeResultModal';
@@ -31,6 +33,7 @@ const WorkFlow = ({ stage = 'collection' }) => {
   const [currentFilters, setCurrentFilters] = useState({});
   const [sampleCollection, setSampleCollection] = useState(false);
   const activePag = useRef(0);
+  const { role } = useSelector(state => state.auth);
   const [test, settest] = useState(0);
 
   const { loading, fetchLabOrders, fetchOrderTests, collectTests, saveResults, authorizeOrder } =
@@ -67,6 +70,12 @@ const WorkFlow = ({ stage = 'collection' }) => {
   };
 
   const handleAccessionClick = async order => {
+    if (role === ROLES.DOCTOR) {
+      if (order.status !== 'saved') {
+        return;
+      }
+    }
+
     setSelectedOrder(order);
     setSelectedTests(order.collectedSamples || []);
 
@@ -124,33 +133,6 @@ const WorkFlow = ({ stage = 'collection' }) => {
       console.error('Error fetching report types:', error);
       toast.error('Failed to fetch report types');
       return null;
-    }
-  };
-
-  // Fetch order data for authorization modal
-  const fetchAuthorizeOrderData = async orderId => {
-    try {
-      // This should call your API endpoint that returns the authorization data with results
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/lab/orders/${orderId}/authorize`,
-        {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(localStorage.getItem('userDetails'))?.token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      const data = await response.json();
-
-      if (data.success || data.status) {
-        setAuthorizeOrderData(data.data);
-        setShowAuthorizeModal(true);
-      } else {
-        toast.error('Failed to fetch authorization data');
-      }
-    } catch (error) {
-      console.error('Error fetching authorization data:', error);
-      toast.error('Failed to fetch authorization data');
     }
   };
 

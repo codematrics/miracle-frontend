@@ -20,7 +20,7 @@ const CommonTable = ({
   return (
     <div className="card-table dataTables_wrapper no-footer">
       <div className="table-responsive">
-        <table className="dataTable text-black">
+        <table className="dataTable text-black" style={{ width: '100%' }}>
           <thead>
             <tr>
               {columns.map((col, index) => (

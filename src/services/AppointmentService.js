@@ -30,13 +30,14 @@ appointmentAPI.interceptors.request.use(
 // Bed API
 export const appointmentAPIService = {
   // Get all beds with optional status filter
-  getAll: async (status = null, search = '') => {
+  getAll: async (page = 1, status = null, search = '') => {
     try {
       let url = '/';
       const params = new URLSearchParams();
 
       if (status) params.append('status', status);
       if (search) params.append('search', search);
+      if (page) params.append('page', page);
 
       if (params.toString()) {
         url += `?${params.toString()}`;

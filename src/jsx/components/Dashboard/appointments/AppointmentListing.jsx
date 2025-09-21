@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 import CommonTable from '../../../../components/Common/CommonTable';
 import appointmentAPIService from '../../../../services/AppointmentService';
@@ -18,13 +19,20 @@ const AppointmentListing = () => {
     data: null,
   });
 
+  const navigate = useNavigate();
+
   const fetchData = () => {
     setLoading(true);
     appointmentAPIService
-      .getAll()
+      .getAll(pagination.page)
       .then(res => {
-        setData(res?.data?.appointments);
-        setPagination({ page: res?.data?.page, total: res?.data?.total, limit: res?.data?.limit });
+        setData(res?.data?.appointments || []);
+        setPagination(prev => ({
+          ...prev,
+          page: res?.data?.page || prev.page,
+          total: res?.data?.total || 0,
+          limit: res?.data?.limit || prev.limit,
+        }));
       })
       .finally(() => setLoading(false));
   };
@@ -34,7 +42,7 @@ const AppointmentListing = () => {
   };
 
   const setUpdateOpen = (status, data) => {
-    setBedModal({ open: status, data: data });
+    setBedModal({ open: status, data });
   };
 
   const setClose = () => {
@@ -45,7 +53,14 @@ const AppointmentListing = () => {
     {
       header: 'Patient No.',
       key: 'patient.patientId',
-      render: item => item.patient?.uhidNo || '',
+      render: item => (
+        <span
+          style={{ cursor: 'pointer', color: '#007bff' }}
+          onClick={() => navigate(`/patient-details/${item.patient?.uhidNo}`)}
+        >
+          {item.patient?.uhidNo || ''}
+        </span>
+      ),
     },
     {
       header: 'Patient Name',
@@ -60,8 +75,8 @@ const AppointmentListing = () => {
     {
       header: 'Appointment Date',
       key: 'appointmentDate',
+      render: item => item.appointmentDate || '',
     },
-
     {
       header: 'Status',
       key: 'status',
@@ -82,7 +97,7 @@ const AppointmentListing = () => {
 
   useEffect(() => {
     fetchData();
-  }, [pagination.current]);
+  }, [pagination.page]);
 
   return (
     <>
@@ -95,10 +110,11 @@ const AppointmentListing = () => {
         </div>
         <div>
           <Button className="me-2" variant="primary btn-sm" onClick={() => setCreateOpen(true)}>
-            <i className="las la-calendar-plus scale5 me-2" /> Add IPD
+            <i className="las la-calendar-plus scale5 me-2" /> Appointment
           </Button>
         </div>
       </div>
+
       <div className="row">
         <CommonTable
           columns={columns}
@@ -108,6 +124,7 @@ const AppointmentListing = () => {
           onPageChange={page => setPagination(prev => ({ ...prev, page }))}
         />
       </div>
+
       <AppointmentCreateAndUpdate
         open={bedModal.open}
         data={bedModal.data}

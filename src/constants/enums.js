@@ -30,6 +30,13 @@ export const PRIORITY = {
   STAT: 'stat',
 };
 
+export const ROLES = {
+  ADMIN: 'Admin',
+  RECEPTIONIST: 'Receptionist',
+  DOCTOR: 'Doctor',
+  TECHNICIAN: 'Technician',
+};
+
 export const ORDER_STATUS = {
   PENDING: 'pending',
   COLLECTED: 'collected',
