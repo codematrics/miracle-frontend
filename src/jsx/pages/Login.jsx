@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
@@ -95,10 +95,6 @@ function Login() {
                           </Form>
                         )}
                       </Formik>
-
-                      <Link to={'/page-register'} className="text-primary d-block text-center mt-3">
-                        Don't have an account? Sign up
-                      </Link>
                     </div>
                   </div>
                 </div>

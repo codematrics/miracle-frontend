@@ -47,6 +47,10 @@ import BedListing from './components/Dashboard/beds/BedListing.jsx';
 import IPD from './components/Dashboard/ipd/ipd.jsx';
 // Widget
 import ParametersPage from './components/Dashboard/parameters/ParameterPage.jsx';
+/// Table
+import ReceptionistListing from './components/Dashboard/receptionists/ReceptionistsList.jsx';
+/// Charts
+import TechniciansListing from './components/Dashboard/technicians/TechniciansList.jsx';
 // Svg Icon
 import TestsPage from './components/Dashboard/tests/TestsPage.jsx';
 import CkEditor from './components/Forms/CkEditor/CkEditor';
@@ -80,14 +84,12 @@ import UiProgressBar from './components/bootstrap/ProgressBar';
 import UiTab from './components/bootstrap/Tab';
 import UiTypography from './components/bootstrap/Typography';
 import ChartJs from './components/charts/Chartjs';
-/// Charts
 import SparklineChart from './components/charts/Sparkline';
 import ApexChart from './components/charts/apexcharts';
 import RechartJs from './components/charts/rechart';
 import BasicDatatable from './components/table/BasicDatatable';
 import BootstrapTable from './components/table/BootstrapTable';
 import FilteringTable from './components/table/FilteringTable/FilteringTable';
-/// Table
 import SortingTable from './components/table/SortingTable/SortingTable';
 import './index.css';
 import Footer from './layouts/Footer';
@@ -107,6 +109,8 @@ const Markup = () => {
   const allroutes = [
     { url: '', component: <HomeReception /> },
     { url: 'dashboard', component: <HomeReception /> },
+    { url: 'receptionists', component: <ReceptionistListing /> },
+    { url: 'technicians', component: <TechniciansListing /> },
     { url: 'patient', component: <PatientReception /> },
     { url: 'billing-details', component: <BillingDetails /> },
     { url: 'opd-bill', component: <OpdBill /> },

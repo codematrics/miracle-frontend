@@ -35,6 +35,7 @@ const DoctorValidationSchema = Yup.object().shape({
     .of(Yup.string().oneOf(weekDays))
     .required('Select at least one available day'),
   isActive: Yup.boolean().required(),
+  password: Yup.string().required(),
 });
 
 const DoctorForm = ({ show, onHide, onSubmit, loading, initialData = null }) => {
@@ -57,6 +58,7 @@ const DoctorForm = ({ show, onHide, onSubmit, loading, initialData = null }) => 
     country: 'India',
     availableDays: [],
     isActive: true,
+    password: '',
   };
 
   return (
@@ -150,6 +152,8 @@ const DoctorForm = ({ show, onHide, onSubmit, loading, initialData = null }) => 
                 placeholder="e.g., 10:00-14:00"
                 required
               />
+
+              <FormField name="password" label="Password" required />
 
               <div className="mt-3 form-check">
                 <input

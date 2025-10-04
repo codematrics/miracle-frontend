@@ -91,6 +91,14 @@ export const MenuList = {
           to: 'doctors',
         },
         {
+          title: 'Receptionists',
+          to: 'receptionists',
+        },
+        {
+          title: 'Technicians',
+          to: 'technicians',
+        },
+        {
           title: 'Services',
           to: 'services',
         },
@@ -109,9 +117,9 @@ export const MenuList = {
       ],
     },
   ],
-  Reception: [
+  Receptionist: [
     {
-      title: 'Reception',
+      title: 'Receptionist',
       classsChange: 'mm-collapse',
       iconStyle: <i className="flaticon-381-bookmark-1" />,
       content: [

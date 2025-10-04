@@ -7,7 +7,6 @@ const DoctorTable = ({
   pagination,
   onEdit,
   onDelete,
-  onStatusChange,
   onPageChange,
   currentPage,
 }) => {
@@ -49,8 +48,7 @@ const DoctorTable = ({
               <th>Consultation Fee</th>
               <th>Available Days</th>
               <th>Timings</th>
-              <th>Status</th>
-              {/* <th>Consultant</th> */}
+              <th>Password</th>
               <th className="text-end">Actions</th>
             </tr>
           </thead>
@@ -103,7 +101,7 @@ const DoctorTable = ({
                         : formatTimings(doctor.consultationTimings)}
                     </small>
                   </td>
-                  <td>{getStatusBadge(doctor.isActive)}</td>
+                  <td>{doctor.password}</td>
                   {/* <td>{getConsultantBadge(doctor.isConsultant)}</td> */}
                   <td className="text-end">
                     <Dropdown>
@@ -120,10 +118,7 @@ const DoctorTable = ({
                           <i className="las la-edit me-2"></i>
                           Edit
                         </Dropdown.Item>
-                        <Dropdown.Item onClick={() => onStatusChange(doctor._id, !doctor.isActive)}>
-                          <i className={`las ${doctor.isActive ? 'la-ban' : 'la-check'} me-2`}></i>
-                          {doctor.isActive ? 'Deactivate' : 'Activate'}
-                        </Dropdown.Item>
+
                         <Dropdown.Divider />
                         <Dropdown.Item onClick={() => onDelete(doctor._id)} className="text-danger">
                           <i className="las la-trash me-2"></i>

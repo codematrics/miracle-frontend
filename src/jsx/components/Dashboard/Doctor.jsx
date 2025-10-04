@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dropdown, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
@@ -125,19 +125,6 @@ const tableData = [
   // { image: IMAGES.Userpng13, pname:'Cive Slauw', assigned:'Dr. Samantha', disease:'Cold & Flu', status:<PatientBtn />, room:'AB-007'},
 ];
 
-// function hanldeSort(){
-
-//    return  tableData.sort(function(a,b){
-//         if (b.disease > a.disease) {
-//             return -1;
-//         } else if (a.disease > b.disease) {
-//             return console.log(tableData);
-//           } else {
-//             return 0;
-//         }
-//     })
-// }
-
 const Doctor = () => {
   const [openModel, setOpenModal] = useState();
   const [data, setData] = useState(document.querySelectorAll('#doctor_list tbody tr'));
@@ -246,7 +233,7 @@ const Doctor = () => {
                     </th>
                     <th>Schedule</th>
                     <th>Contact</th>
-                    <th>Status</th>
+                    <th>Password</th>
                     <th className="text-end">Action</th>
                   </tr>
                 </thead>
@@ -291,15 +278,8 @@ const Doctor = () => {
                       <td>
                         <span className="text-nowrap">+12 4124 5125</span>
                       </td>
-                      {ind % 2 === 1 ? (
-                        <td>
-                          <span className="text-dark">Unavailable</span>
-                        </td>
-                      ) : (
-                        <td>
-                          <span className="text-primary">Available</span>
-                        </td>
-                      )}
+                      <td>{item.password}</td>
+
                       <td>
                         <Dropdown className=" ms-auto c-pointer text-end">
                           <Dropdown.Toggle className="btn-link i-false" as="div">

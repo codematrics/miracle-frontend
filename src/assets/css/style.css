@@ -17099,8 +17099,8 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
     .metismenu
     > li:nth-last-child(-n + 1)
     > ul {
-    bottom: 0;
-    top: auto !important;
+    bottom: auto;
+    top: 0 !important;
   }
 }
 @media only screen and (min-width: 768px) {
