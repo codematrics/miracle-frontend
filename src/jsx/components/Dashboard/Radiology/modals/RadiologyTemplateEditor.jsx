@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Button, Col, Form, Modal, Row, Spinner } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
+import { ROLES } from '../../../../../constants/enums';
 import SimpleCkEditor from './SimpleCkEditor';
 
 const RadiologyTemplateEditor = ({ show, onHide, labTest }) => {
+  const { role } = useSelector(state => state.auth);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [templateData, setTemplateData] = useState(null);
@@ -166,7 +169,7 @@ const RadiologyTemplateEditor = ({ show, onHide, labTest }) => {
     }
   }, [show, labTest?._id]);
 
-  const isEditable = labTest?.status === 'pending';
+  const isEditable = labTest?.status === 'pending' && role !== ROLES.DOCTOR;
   const isAuthorized = labTest?.status === 'authorized';
 
   return (

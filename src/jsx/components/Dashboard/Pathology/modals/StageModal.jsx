@@ -359,6 +359,7 @@ const StageModal = ({
         return null;
     }
   };
+  console.log(show, 'show');
 
   return (
     <Modal show={show} onHide={onHide} size="xl" centered backdrop="static">

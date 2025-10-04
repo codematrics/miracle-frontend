@@ -88,7 +88,25 @@ const WorkFlow = ({ stage = 'collection' }) => {
     }
 
     if (stage === 'collection') {
-      setSampleCollection(true);
+      if (order.status === 'pending') setSampleCollection(true);
+      else if (order.status === 'collected') {
+        const orderTestParameter = await fetchOrderTests(order._id, stage);
+        setResultOrderData(orderTestParameter);
+        setShowResultEntryModal(true);
+      } else if (order.status === 'saved') {
+        if (role === ROLES.DOCTOR) {
+          const orderTestParameter = await fetchOrderTests(order._id, stage);
+          setAuthorizeOrderData(orderTestParameter);
+          setShowAuthorizeModal(true);
+        }
+      } else {
+        const orderTestParameter = await fetchOrderTests(order._id, stage);
+        setShowStageModal(true);
+        setOrderTests({
+          ...order,
+          ...orderTestParameter,
+        });
+      }
     } else if (stage === 'result') {
       // Use new ResultEntryModal for result stage
       const orderTestParameter = await fetchOrderTests(order._id, stage);
@@ -144,8 +162,9 @@ const WorkFlow = ({ stage = 'collection' }) => {
     }
 
     const success = await collectTests(selectedTests, selectedOrder._id);
+    setShowStageModal(false);
+    setSampleCollection(false);
     if (success) {
-      setShowStageModal(false);
       setSelectedTests([]);
       // Check if current page might be empty after action, go to previous page if needed
       const currentPage =

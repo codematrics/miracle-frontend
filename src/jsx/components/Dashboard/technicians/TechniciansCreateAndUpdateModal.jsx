@@ -45,7 +45,7 @@ const TechniciansCreateAndUpdate = ({ data, open, onClose, refetch }) => {
           lastName: data?.lastName || '',
           email: data?.email || '',
           password: data?.password || '',
-          role: data?.role || ROLES.RECEPTIONIST,
+          role: data?.role || ROLES.TECHNICIAN,
           isActive: data?.isActive || true,
         }}
         validationSchema={userSchema}
