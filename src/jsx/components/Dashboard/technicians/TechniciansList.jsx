@@ -55,10 +55,10 @@ const TechniciansListing = () => {
       header: 'Last Name',
       key: 'lastName',
     },
-    {
-      header: 'Mobile Number',
-      key: 'mobileNumber',
-    },
+    // {
+    //   header: 'Mobile Number',
+    //   key: 'mobileNumber',
+    // },
     {
       header: 'Email',
       key: 'email',

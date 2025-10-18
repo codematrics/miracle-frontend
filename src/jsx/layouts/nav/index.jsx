@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import { Fragment, useState } from 'react';
 
 //import RightSideBar from "./RightSideBar";
 import ChatBox from '../ChatBox';

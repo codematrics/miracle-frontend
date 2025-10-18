@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Alerts from '../components/chatBox/Alerts';
@@ -18,6 +18,7 @@ const ChatBox = ({ onClick, toggle }) => {
     { href: '#alerts', name: 'Alerts' },
     { href: '#chat', name: 'Chat' },
   ];
+
   return (
     <div className={`chatbox ${toggle === 'chatbox' ? 'active' : ''}`}>
       <div className="chatbox-close" onClick={() => onClick()}></div>
