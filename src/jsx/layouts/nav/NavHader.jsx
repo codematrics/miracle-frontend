@@ -26,10 +26,12 @@ const NavHader = () => {
     <div className="nav-header">
       <Link to="/dashboard" className="brand-logo">
         <img className="logo-abbr" src={logo} alt="logo" />
-        <h6 className="brand-title">Miracle Hospital</h6>
-        <h6 className="brand-title" style={{ textTransform: 'capitalize' }}>
-          {role}
-        </h6>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <h6 className="brand-title">Miracle Hospital</h6>
+          <h6 className="brand-title" style={{ textTransform: 'capitalize' }}>
+            {role}
+          </h6>
+        </div>
         {/* <img className="logo-abbr" src={logo} alt="logo" />
           <img className="logo-compact" src={logotext} alt="text" />
           <img className="brand-title" src={logotext} alt="text" /> */}
