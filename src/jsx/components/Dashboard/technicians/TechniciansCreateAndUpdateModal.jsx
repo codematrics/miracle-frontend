@@ -15,10 +15,10 @@ const TechniciansCreateAndUpdate = ({ data, open, onClose, refetch }) => {
     try {
       if (data) {
         await usersAPIService.update(data._id, values);
-        toast.success('Receptionist updated successfully');
+        toast.success('Technician updated successfully');
       } else {
         await usersAPIService.create(values);
-        toast.success('Receptionist created successfully');
+        toast.success('Technician created successfully');
       }
       refetch?.();
       onClose(false);
@@ -32,10 +32,10 @@ const TechniciansCreateAndUpdate = ({ data, open, onClose, refetch }) => {
 
   return (
     <CommonModal
-      title={data ? 'Update Receptionist' : 'Create Receptionist'}
+      title={data ? 'Update Technician' : 'Create Technician'}
       open={open}
       onClose={onClose}
-      confirmButtonText={data ? 'Update Receptionist' : 'Create Receptionist'}
+      confirmButtonText={data ? 'Update Technician' : 'Create Technician'}
       size="md"
     >
       <Formik
@@ -86,7 +86,7 @@ const TechniciansCreateAndUpdate = ({ data, open, onClose, refetch }) => {
                   {isSubmitting ? (
                     <Spinner animation="border" size="sm" className="me-2" />
                   ) : (
-                    <>{data ? 'Update Receptionist' : 'Create Receptionist'}</>
+                    <>{data ? 'Update Technician' : 'Create Technician'}</>
                   )}
                 </Button>
               </div>
