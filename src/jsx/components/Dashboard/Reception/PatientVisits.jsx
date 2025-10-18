@@ -117,16 +117,13 @@ const PatientVisits = () => {
         setLoading(false);
       }
     },
-    [filters, activeFilters]
+    [activeFilters]
   );
 
   // Handle pagination click
   const onClickPage = i => {
     activePag.current = i;
-    if (
-      i + 1 > Math.ceil(visits.length / sort) &&
-      pagination.currentPage < pagination.totalPages
-    ) {
+    if (i + 1 > Math.ceil(visits.length / sort) && pagination.currentPage < pagination.totalPages) {
       // Load more data if needed
       const nextPage = Math.ceil(visits.length / sort) + 1;
       loadVisits(nextPage, false);
@@ -139,7 +136,7 @@ const PatientVisits = () => {
     .map((_, i) => i + 1);
 
   // Handle modal filter submission
-  const handleFilterSubmit = (filterParams) => {
+  const handleFilterSubmit = filterParams => {
     setActiveFilters(filterParams);
   };
 
@@ -189,11 +186,8 @@ const PatientVisits = () => {
 
   // Load visits on component mount and filter changes
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      loadVisits(1, true);
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
+    loadVisits(1, true);
+    console.log('called');
   }, [filters]);
 
   return (
@@ -208,7 +202,7 @@ const PatientVisits = () => {
               </div>
               <div className="d-flex gap-2">
                 <Button
-                  variant={Object.keys(activeFilters).length > 0 ? "success" : "outline-primary"}
+                  variant={Object.keys(activeFilters).length > 0 ? 'success' : 'outline-primary'}
                   size="sm"
                   onClick={() => setShowFilterModal(true)}
                 >
@@ -324,100 +318,100 @@ const PatientVisits = () => {
                       visits
                         .slice(activePag.current * sort, (activePag.current + 1) * sort)
                         .map((visit, index) => (
-                        <tr key={visit.id || visit._id || index}>
-                          <td>
-                            <code className="text-primary fw-bold">{visit.visitId}</code>
-                          </td>
-                          <td>
-                            <div>
-                              <strong>{formatDate(visit.visitDate)}</strong>
-                              {visit.createdAt !== visit.visitDate && (
+                          <tr key={visit.id || visit._id || index}>
+                            <td>
+                              <code className="text-primary fw-bold">{visit.visitId}</code>
+                            </td>
+                            <td>
+                              <div>
+                                <strong>{formatDate(visit.visitDate)}</strong>
+                                {visit.createdAt !== visit.visitDate && (
+                                  <small className="text-muted d-block">
+                                    Created: {formatDate(visit.createdAt)}
+                                  </small>
+                                )}
+                              </div>
+                            </td>
+                            <td>
+                              <div>
+                                <strong
+                                  className="text-primary cursor-pointer"
+                                  onClick={() => showPatientDetail(visit.patient.id)}
+                                  style={{ cursor: 'pointer' }}
+                                >
+                                  {visit.patient.name}
+                                </strong>
                                 <small className="text-muted d-block">
-                                  Created: {formatDate(visit.createdAt)}
+                                  UHID: {visit.patient.uhid}
+                                </small>
+                                <small className="text-muted d-block">
+                                  Mobile: {visit.patient.mobileNo}
+                                </small>
+                              </div>
+                            </td>
+                            <td>
+                              <div>
+                                <strong>{visit.visitingdoctor}</strong>
+                                {visit.refby && (
+                                  <small className="text-muted d-block">Ref: {visit.refby}</small>
+                                )}
+                              </div>
+                            </td>
+                            <td>
+                              <Badge bg="outline-info">{visit.visittype}</Badge>
+                              {visit.medicolegal === 'Yes' && (
+                                <Badge bg="warning" className="ms-1">
+                                  MLC
+                                </Badge>
+                              )}
+                            </td>
+                            <td>
+                              <strong className="text-success">
+                                ₹{visit.totalAmount?.toLocaleString() || '0'}
+                              </strong>
+                              {visit.services && visit.services.length > 0 && (
+                                <small className="text-muted d-block">
+                                  {visit.services.length} service(s)
                                 </small>
                               )}
-                            </div>
-                          </td>
-                          <td>
-                            <div>
-                              <strong
-                                className="text-primary cursor-pointer"
-                                onClick={() => showPatientDetail(visit.patient.id)}
-                                style={{ cursor: 'pointer' }}
-                              >
-                                {visit.patient.name}
-                              </strong>
-                              <small className="text-muted d-block">
-                                UHID: {visit.patient.uhid}
-                              </small>
-                              <small className="text-muted d-block">
-                                Mobile: {visit.patient.mobileNo}
-                              </small>
-                            </div>
-                          </td>
-                          <td>
-                            <div>
-                              <strong>{visit.visitingdoctor}</strong>
-                              {visit.refby && (
-                                <small className="text-muted d-block">Ref: {visit.refby}</small>
-                              )}
-                            </div>
-                          </td>
-                          <td>
-                            <Badge bg="outline-info">{visit.visittype}</Badge>
-                            {visit.medicolegal === 'Yes' && (
-                              <Badge bg="warning" className="ms-1">
-                                MLC
-                              </Badge>
-                            )}
-                          </td>
-                          <td>
-                            <strong className="text-success">
-                              ₹{visit.totalAmount?.toLocaleString() || '0'}
-                            </strong>
-                            {visit.services && visit.services.length > 0 && (
-                              <small className="text-muted d-block">
-                                {visit.services.length} service(s)
-                              </small>
-                            )}
-                          </td>
-                          <td>
-                            <StatusBadge status={visit.status || 'scheduled'} />
-                          </td>
-                          <td className="text-center">
-                            <Dropdown>
-                              <Dropdown.Toggle
-                                variant="outline-secondary"
-                                size="sm"
-                                className="btn-sm"
-                              >
-                                <i className="fa fa-ellipsis-v"></i>
-                              </Dropdown.Toggle>
-                              <Dropdown.Menu>
-                                <Dropdown.Item
-                                  onClick={() => showPatientDetail(visit.patient.id)}
-                                  className="d-flex align-items-center"
+                            </td>
+                            <td>
+                              <StatusBadge status={visit.status || 'scheduled'} />
+                            </td>
+                            <td className="text-center">
+                              <Dropdown>
+                                <Dropdown.Toggle
+                                  variant="outline-secondary"
+                                  size="sm"
+                                  className="btn-sm"
                                 >
-                                  <i className="fa fa-user me-2 text-info"></i>
-                                  View Patient
-                                </Dropdown.Item>
-                                <Dropdown.Item
-                                  onClick={() => openCaseSheet(visit.id)}
-                                  className="d-flex align-items-center"
-                                >
-                                  <i className="fa fa-file-medical me-2 text-success"></i>
-                                  Case Sheet
-                                </Dropdown.Item>
-                                <Dropdown.Divider />
-                                <Dropdown.Item className="d-flex align-items-center text-warning">
-                                  <i className="fa fa-edit me-2"></i>
-                                  Edit Visit
-                                </Dropdown.Item>
-                              </Dropdown.Menu>
-                            </Dropdown>
-                          </td>
-                        </tr>
-                      ))
+                                  <i className="fa fa-ellipsis-v"></i>
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                  <Dropdown.Item
+                                    onClick={() => showPatientDetail(visit.patient.id)}
+                                    className="d-flex align-items-center"
+                                  >
+                                    <i className="fa fa-user me-2 text-info"></i>
+                                    View Patient
+                                  </Dropdown.Item>
+                                  <Dropdown.Item
+                                    onClick={() => openCaseSheet(visit.id)}
+                                    className="d-flex align-items-center"
+                                  >
+                                    <i className="fa fa-file-medical me-2 text-success"></i>
+                                    Case Sheet
+                                  </Dropdown.Item>
+                                  <Dropdown.Divider />
+                                  <Dropdown.Item className="d-flex align-items-center text-warning">
+                                    <i className="fa fa-edit me-2"></i>
+                                    Edit Visit
+                                  </Dropdown.Item>
+                                </Dropdown.Menu>
+                              </Dropdown>
+                            </td>
+                          </tr>
+                        ))
                     )}
                   </tbody>
                 </Table>
@@ -452,7 +446,8 @@ const PatientVisits = () => {
                   <Link
                     to="#"
                     onClick={() =>
-                      activePag.current + 1 < paggination.length && onClickPage(activePag.current + 1)
+                      activePag.current + 1 < paggination.length &&
+                      onClickPage(activePag.current + 1)
                     }
                   >
                     Next

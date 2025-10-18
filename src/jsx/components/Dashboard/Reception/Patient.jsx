@@ -74,58 +74,52 @@ const Patient = () => {
   const sort = 10;
   const navigate = useNavigate();
 
-  const loadVisits = useCallback(
-    async (page = 1, resetData = false) => {
-      setLoading(true);
-      try {
-        const params = {
-          page,
-          limit: pagination.itemsPerPage,
-          // ...filters,
-        };
+  const loadVisits = useCallback(async (page = 1, resetData = false) => {
+    setLoading(true);
+    try {
+      const params = {
+        page,
+        limit: pagination.itemsPerPage,
+        // ...filters,
+      };
 
-        // Remove empty filters
-        Object.keys(params).forEach(key => {
-          if (!params[key]) delete params[key];
+      // Remove empty filters
+      Object.keys(params).forEach(key => {
+        if (!params[key]) delete params[key];
+      });
+
+      const response = await fetchVisitsWithPagination(params);
+
+      if (response.status) {
+        const visitData = response.data?.visits || [];
+        const totalItems = response.data?.total || 0;
+        const currentPage = response.data?.page || 1;
+        const limit = response.data?.limit || pagination.itemsPerPage;
+
+        setVisitsData(prev => (resetData || page === 1 ? visitData : [...prev, ...visitData]));
+
+        setPagination({
+          currentPage,
+          totalPages: Math.ceil(totalItems / limit),
+          totalItems,
+          itemsPerPage: limit,
         });
-
-        const response = await fetchVisitsWithPagination(params);
-
-        if (response.status) {
-          const visitData = response.data?.visits || [];
-          const totalItems = response.data?.total || 0;
-          const currentPage = response.data?.page || 1;
-          const limit = response.data?.limit || pagination.itemsPerPage;
-
-          setVisitsData(prev => (resetData || page === 1 ? visitData : [...prev, ...visitData]));
-
-          setPagination({
-            currentPage,
-            totalPages: Math.ceil(totalItems / limit),
-            totalItems,
-            itemsPerPage: limit,
-          });
-        } else {
-          throw new Error(response.message || 'Failed to load visits');
-        }
-      } catch (error) {
-        console.error('Error loading visits:', error);
-        toast.error('Failed to load visits. Please try again.', {
-          position: 'top-right',
-          autoClose: 3000,
-        });
-      } finally {
-        setLoading(false);
+      } else {
+        throw new Error(response.message || 'Failed to load visits');
       }
-    },
-    [pagination.itemsPerPage]
-  );
+    } catch (error) {
+      console.error('Error loading visits:', error);
+      toast.error('Failed to load visits. Please try again.', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      loadVisits(1, true);
-    }, 300);
-    return () => clearTimeout(timeoutId);
+    loadVisits(1, true);
   }, [loadVisits]);
 
   const handlePatientCreated = () => toast.success('Patient created successfully!');
