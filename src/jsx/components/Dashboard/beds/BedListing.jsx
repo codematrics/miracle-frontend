@@ -122,7 +122,7 @@ const BedListing = () => {
                           <td>{item.bedNumber}</td>
                           <td>{item.ward}</td>
                           <td>{item.status}</td>
-                          <td>{item.patientName || '-'}</td>
+                          <td>{item.patientId?.name || '-'}</td>
                           <td>
                             <Button onClick={() => setUpdateOpen(true, item)}>Edit</Button>
                             <Button onClick={() => handleDelete(item._id)}>Delete</Button>
