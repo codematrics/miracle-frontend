@@ -112,7 +112,7 @@ const AppointmentCreateAndUpdate = ({ data, open, onClose, refetch }) => {
           doctor: data?.doctor?._id || '',
           appointmentDate: formatDateTimeLocal(data?.appointmentDate),
           reason: data?.reason || '',
-          status: data?.status || 'Scheduled',
+          status: data?.status || 'scheduled',
         }}
         validationSchema={appointmentSchema}
         onSubmit={handleSubmit}
@@ -187,9 +187,9 @@ const AppointmentCreateAndUpdate = ({ data, open, onClose, refetch }) => {
                 <div className="mb-3">
                   <label>Status</label>
                   <Field as="select" name="status" className="form-control">
-                    <option value="Scheduled">Scheduled</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
                   </Field>
                 </div>
               )}

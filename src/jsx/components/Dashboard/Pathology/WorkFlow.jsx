@@ -71,7 +71,11 @@ const WorkFlow = ({ stage = 'collection' }) => {
 
   const handleAccessionClick = async order => {
     if (role === ROLES.DOCTOR) {
-      if (order.status !== 'saved') {
+      if (
+        order.status !== 'saved' &&
+        order.status !== 'authorized' &&
+        order.status !== 'completed'
+      ) {
         return;
       }
     }
