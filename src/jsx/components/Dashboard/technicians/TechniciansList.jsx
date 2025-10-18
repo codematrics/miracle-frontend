@@ -91,11 +91,11 @@ const TechniciansListing = () => {
         style={{ minHeight: '100%' }}
       >
         <div className="me-auto">
-          <h2 className="text-black font-w600">Receptionist Management</h2>
+          <h2 className="text-black font-w600">Technician Management</h2>
         </div>
         <div>
           <Button className="me-2" variant="primary btn-sm" onClick={() => setCreateOpen(true)}>
-            Create Receptionist
+            Create Technician
           </Button>
         </div>
       </div>
