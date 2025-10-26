@@ -30,13 +30,14 @@ bedAPI.interceptors.request.use(
 // Bed API
 export const bedAPIService = {
   // Get all beds with optional status filter
-  getAll: async (status = null, search = '') => {
+  getAll: async (page = 1, status = null, search = '') => {
     try {
       let url = '/';
       const params = new URLSearchParams();
 
       if (status) params.append('status', status);
       if (search) params.append('search', search);
+      if (page) params.append('page', page);
 
       if (params.toString()) {
         url += `?${params.toString()}`;
@@ -79,18 +80,26 @@ export const bedAPIService = {
     }
   },
 
-  loadBedOptions: async (search = '', page = 1, limit = 20) => {
+  loadBedOptions: async (search = '', prevOptions, { page }) => {
     const response = await bedAPI.get(`/dropdown-list`, {
-      params: { search, page, limit, status: 'available' },
+      params: { search, page, status: 'available' },
     });
 
     if (response.data?.status && response.data?.data) {
-      return response.data;
+      return {
+        ...response.data,
+        additional: {
+          page: search ? 1 : page + 1,
+        },
+      };
     }
 
     return {
       options: response.data?.data,
       hasMore: response?.data?.hasMore,
+      additional: {
+        page: search ? 1 : page + 1,
+      },
     };
   },
 };

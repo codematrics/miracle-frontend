@@ -7,8 +7,9 @@ import WardCreateAndUpdate from './WardCreateAndUpdate';
 
 const WardListing = () => {
   const [pagination, setPagination] = useState({
-    current: 1,
-    total: 1,
+    page: 1,
+    limit: 10,
+    total: 0,
   });
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -20,7 +21,7 @@ const WardListing = () => {
   const fetchData = () => {
     setLoading(true);
     wardAPIService
-      .getAll()
+      .getAll(pagination.page)
       .then(res => {
         setData(res?.data?.wards);
         setPagination(prev => ({
@@ -39,7 +40,7 @@ const WardListing = () => {
       .then(response => {
         console.log('ward deleted successfully:', response);
         // Refresh the ward list after deletion
-        wardAPIService.getAll().then(res => {
+        wardAPIService.getAll(pagination.page).then(res => {
           setData(res?.data?.wards);
           setPagination(prev => ({
             ...prev,
@@ -99,7 +100,7 @@ const WardListing = () => {
 
   useEffect(() => {
     fetchData();
-  }, [pagination.current]);
+  }, [pagination.page]);
 
   return (
     <>

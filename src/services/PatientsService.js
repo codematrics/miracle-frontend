@@ -26,17 +26,25 @@ export const fetchPatients = async (search = '', page = 1, limit = 20) => {
   }
 };
 
-export const loadPatientOptions = async (search = '', page = 1, limit = 20) => {
+export const loadPatientOptions = async (search = '', prevOptions, { page }) => {
   const response = await axios.get(`${API_URL}/patients/dropdown-list`, {
-    params: { search, page, limit },
+    params: { search, page },
   });
 
   if (response.data?.status && response.data?.data) {
-    return response.data;
+    return {
+      ...response.data,
+      additional: {
+        page: search ? 1 : page + 1,
+      },
+    };
   }
 
   return {
     options: response.data?.data,
     hasMore: response?.data?.hasMore,
+    additional: {
+      page: search ? 1 : page + 1,
+    },
   };
 };

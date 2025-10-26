@@ -7,8 +7,9 @@ import BedCreateAndUpdate from './BedCreateAndUpdate';
 
 const BedListing = () => {
   const [pagination, setPagination] = useState({
-    current: 1,
-    total: 1,
+    page: 1,
+    limit: 10,
+    total: 0,
   });
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -20,7 +21,7 @@ const BedListing = () => {
   const fetchData = () => {
     setLoading(true);
     bedAPIService
-      .getAll()
+      .getAll(pagination.page)
       .then(res => {
         setData(res?.data?.beds);
         setPagination(prev => ({
@@ -39,9 +40,8 @@ const BedListing = () => {
       .then(response => {
         console.log('Bed deleted successfully:', response);
         // Refresh the bed list after deletion
-        bedAPIService.getAll().then(res => {
+        bedAPIService.getAll(pagination.page).then(res => {
           setData(res?.data?.beds);
-          const totalPages = Math.ceil(res?.data?.total / res?.data?.limit);
           setPagination(prev => ({
             ...prev,
             page: res?.data?.page || prev.page,
@@ -107,7 +107,7 @@ const BedListing = () => {
 
   useEffect(() => {
     fetchData();
-  }, [pagination.current]);
+  }, [pagination.page]);
 
   return (
     <>

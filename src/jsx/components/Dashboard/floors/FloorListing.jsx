@@ -7,8 +7,9 @@ import FloorCreateAndUpdate from './FloorCreateAndUpdate';
 
 const FloorListing = () => {
   const [pagination, setPagination] = useState({
-    current: 1,
-    total: 1,
+    page: 1,
+    limit: 10,
+    total: 0,
   });
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -20,7 +21,7 @@ const FloorListing = () => {
   const fetchData = () => {
     setLoading(true);
     floorAPIService
-      .getAll()
+      .getAll(pagination.page)
       .then(res => {
         setData(res?.data?.floors);
         setPagination(prev => ({
@@ -39,7 +40,7 @@ const FloorListing = () => {
       .then(response => {
         console.log('Floor deleted successfully:', response);
         // Refresh the bed list after deletion
-        floorAPIService.getAll().then(res => {
+        floorAPIService.getAll(pagination.page).then(res => {
           setData(res?.data?.beds);
           setPagination(prev => ({
             ...prev,
@@ -94,7 +95,7 @@ const FloorListing = () => {
 
   useEffect(() => {
     fetchData();
-  }, [pagination.current]);
+  }, [pagination.page]);
 
   return (
     <>

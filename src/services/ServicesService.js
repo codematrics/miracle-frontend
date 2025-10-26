@@ -56,53 +56,72 @@ export const searchServices = async search => {
   }
 };
 
-export const loadServiceOptions = async (
-  search = '',
-  page = 1,
-  limit = 20,
-  serviceApplicableOn = ''
-) => {
+export const loadServiceOptions = async (search = '', prevOptions, { page }) => {
   const response = await axios.get(`${API_URL}/services/dropdown-list`, {
-    params: { search, page, limit, serviceApplicableOn },
+    params: { search, page, limit: 10 },
   });
 
   if (response.data?.status && response.data?.data) {
-    return response.data;
+    return {
+      ...response.data,
+      additional: {
+        page: search ? 1 : page + 1,
+      },
+    };
   }
 
   return {
     options: response.data?.data,
     hasMore: response?.data?.hasMore,
+    additional: {
+      page: search ? 1 : page + 1,
+    },
   };
 };
 
-export const loadOPDServiceOptions = async (search = '', page = 1, limit = 20) => {
+export const loadOPDServiceOptions = async (search = '', prevOptions, { page }) => {
   const response = await axios.get(`${API_URL}/services/dropdown-list`, {
-    params: { search, page, limit, serviceApplicableOn: 'OPD' },
+    params: { search, page, limit: 20, serviceApplicableOn: 'OPD' },
   });
 
   if (response.data?.status && response.data?.data) {
-    return response.data;
+    return {
+      ...response.data,
+      additional: {
+        page: search ? 1 : page + 1,
+      },
+    };
   }
 
   return {
     options: response.data?.data,
     hasMore: response?.data?.hasMore,
+    additional: {
+      page: search ? 1 : page + 1,
+    },
   };
 };
 
-export const loadIPDServiceOptions = async (search = '', page = 1, limit = 20) => {
+export const loadIPDServiceOptions = async (search = '', prevOptions, { page }) => {
   const response = await axios.get(`${API_URL}/services/dropdown-list`, {
-    params: { search, page, limit, serviceApplicableOn: 'IPD' },
+    params: { search, page, limit: 20, serviceApplicableOn: 'IPD' },
   });
 
   if (response.data?.status && response.data?.data) {
-    return response.data;
+    return {
+      ...response.data,
+      additional: {
+        page: search ? 1 : page + 1,
+      },
+    };
   }
 
   return {
     options: response.data?.data,
     hasMore: response?.data?.hasMore,
+    additional: {
+      page: search ? 1 : page + 1,
+    },
   };
 };
 /**

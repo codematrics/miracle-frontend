@@ -168,11 +168,12 @@ const IPDCreateAndUpdate = ({ data, open, onClose, refetch }) => {
         validationSchema={data ? updateIPDSchema : createIPDSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, setFieldValue, isSubmitting }) => {
+        {({ values, setFieldValue, isSubmitting, errors }) => {
           const gross = values.services.reduce((sum, s) => sum + s.amount, 0);
           const net = gross - (values.discount || 0);
           const due = net - (values.paidAmount || 0);
 
+          console.log(errors);
           return (
             <Form>
               {/* Patient */}

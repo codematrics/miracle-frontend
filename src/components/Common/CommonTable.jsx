@@ -5,17 +5,49 @@ const CommonTable = ({
   pagination = { page: 1, limit: 10, total: 0 },
   onPageChange,
 }) => {
-  // derive total pages
   const totalPages = Math.max(Math.ceil(pagination.total / pagination.limit), 1);
-
-  // build page numbers array
-  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   const goToPage = page => {
     if (page >= 1 && page <= totalPages) {
       onPageChange?.(page);
     }
   };
+
+  // Generate page numbers with **only one ellipsis**
+  const getPageNumbers = () => {
+    const current = pagination.page;
+    const delta = 1; // pages around current
+    const pages = [];
+
+    // Always show first page
+    pages.push(1);
+
+    // Ellipsis if needed
+    if (current - delta > 2) {
+      pages.push('...');
+    }
+
+    // Pages around current
+    for (
+      let i = Math.max(2, current - delta);
+      i <= Math.min(totalPages - 1, current + delta);
+      i++
+    ) {
+      pages.push(i);
+    }
+
+    // Ellipsis if needed
+    if (current + delta < totalPages - 1) {
+      pages.push('...');
+    }
+
+    // Always show last page
+    if (totalPages > 1) pages.push(totalPages);
+
+    return pages;
+  };
+
+  const pageNumbers = getPageNumbers();
 
   return (
     <div className="card-table dataTables_wrapper no-footer">
@@ -78,7 +110,6 @@ const CommonTable = ({
         </table>
       </div>
 
-      {/* Pagination Footer */}
       <div className="d-sm-flex text-center justify-content-between align-items-center">
         <div className="dataTables_info">
           Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
@@ -96,17 +127,23 @@ const CommonTable = ({
           </button>
 
           <span className="d-flex">
-            {pageNumbers.map(number => (
-              <button
-                key={number}
-                className={`paginate_button d-flex align-items-center justify-content-center ${
-                  pagination.page === number ? 'current' : ''
-                } ms-1`}
-                onClick={() => goToPage(number)}
-              >
-                {number}
-              </button>
-            ))}
+            {pageNumbers.map((number, index) =>
+              number === '...' ? (
+                <span key={index} className="paginate_ellipsis ms-1 px-2">
+                  …
+                </span>
+              ) : (
+                <button
+                  key={index}
+                  className={`paginate_button d-flex align-items-center justify-content-center ${
+                    pagination.page === number ? 'current' : ''
+                  } ms-1`}
+                  onClick={() => goToPage(number)}
+                >
+                  {number}
+                </button>
+              )
+            )}
           </span>
 
           <button

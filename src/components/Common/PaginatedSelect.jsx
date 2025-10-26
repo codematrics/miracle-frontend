@@ -72,10 +72,11 @@ const PaginatedSelect = ({
         onInputChange={setInputValue}
         isClearable={isClearable}
         placeholder={placeholder}
-        additional={
-          dependentFetch?.value ? { [dependentFetch.key]: dependentFetch.value.value } : {}
-        }
-        defaultOptions={defaultOptions} // ✅ preload fetched options
+        additional={{
+          ...(dependentFetch?.value ? { [dependentFetch.key]: dependentFetch.value.value } : {}),
+          page: 1,
+        }}
+        defaultOptions={defaultOptions}
         {...props}
       />
 

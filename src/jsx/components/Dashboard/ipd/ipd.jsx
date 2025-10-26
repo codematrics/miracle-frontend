@@ -102,7 +102,7 @@ const IPD = () => {
 
   useEffect(() => {
     fetchData();
-  }, [pagination.current]);
+  }, [pagination.page]);
 
   return (
     <>

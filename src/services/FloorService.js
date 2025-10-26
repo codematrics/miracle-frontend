@@ -30,13 +30,14 @@ floorAPI.interceptors.request.use(
 // floor API
 export const floorAPIService = {
   // Get all floors with optional status filter
-  getAll: async (status = null, search = '') => {
+  getAll: async (page = 1, status = null, search = '') => {
     try {
       let url = '/';
       const params = new URLSearchParams();
 
       if (status) params.append('status', status);
       if (search) params.append('search', search);
+      if (page) params.append('page', page);
 
       if (params.toString()) {
         url += `?${params.toString()}`;
@@ -79,18 +80,26 @@ export const floorAPIService = {
     }
   },
 
-  loadFloorOptions: async (search = '', page = 1, limit = 20) => {
+  loadFloorOptions: async (search = '', prevOptions, { page }) => {
     const response = await floorAPI.get(`/dropdown-list`, {
-      params: { search, page, limit, status: 'active' },
+      params: { search, page, limit: 10, status: 'active' },
     });
 
     if (response.data?.status && response.data?.data) {
-      return response.data;
+      return {
+        ...response.data,
+        additional: {
+          page: search ? 1 : page + 1,
+        },
+      };
     }
 
     return {
       options: response.data?.data,
       hasMore: response?.data?.hasMore,
+      additional: {
+        page: search ? 1 : page + 1,
+      },
     };
   },
 };

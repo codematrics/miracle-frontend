@@ -85,7 +85,7 @@ const OPD = () => {
 
   useEffect(() => {
     fetchData();
-  }, [pagination.current]);
+  }, [pagination.page]);
 
   return (
     <>

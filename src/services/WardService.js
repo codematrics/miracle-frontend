@@ -30,13 +30,14 @@ wardAPI.interceptors.request.use(
 // ward API
 export const wardAPIService = {
   // Get all wards with optional status filter
-  getAll: async (status = null, search = '') => {
+  getAll: async (page = 1, status = null, search = '') => {
     try {
       let url = '/';
       const params = new URLSearchParams();
 
       if (status) params.append('status', status);
       if (search) params.append('search', search);
+      if (page) params.append('page', page);
 
       if (params.toString()) {
         url += `?${params.toString()}`;
@@ -82,7 +83,7 @@ export const wardAPIService = {
   loadWardOptions: async (search = '', prevOptions, additional = {}) => {
     const page = additional?.page || 1;
     const limit = additional?.limit || 20;
-    const floorId = additional?.floor; // 👈 dependent key from PaginatedSelect
+    const floorId = additional?.floor;
 
     const params = {
       search,
@@ -98,12 +99,18 @@ export const wardAPIService = {
       return {
         options: response.data?.data,
         hasMore: response.data.hasMore || false,
+        additional: {
+          page: search ? 1 : page + 1,
+        },
       };
     }
 
     return {
       options: [],
       hasMore: false,
+      additional: {
+        page: search ? 1 : page + 1,
+      },
     };
   },
 };
