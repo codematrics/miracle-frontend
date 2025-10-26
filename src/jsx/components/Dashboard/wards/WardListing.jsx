@@ -23,8 +23,12 @@ const WardListing = () => {
       .getAll()
       .then(res => {
         setData(res?.data?.wards);
-        const totalPages = Math.ceil(res?.data?.total / res?.data?.limit);
-        setPagination({ current: res?.data?.page, total: totalPages });
+        setPagination(prev => ({
+          ...prev,
+          page: res?.data?.page || prev.page,
+          total: res?.data?.total || 0,
+          limit: res?.data?.limit || prev.limit,
+        }));
       })
       .finally(() => setLoading(false));
   };
@@ -37,8 +41,12 @@ const WardListing = () => {
         // Refresh the ward list after deletion
         wardAPIService.getAll().then(res => {
           setData(res?.data?.wards);
-          const totalPages = Math.ceil(res?.data?.total / res?.data?.limit);
-          setPagination({ current: res?.data?.page, total: totalPages });
+          setPagination(prev => ({
+            ...prev,
+            page: res?.data?.page || prev.page,
+            total: res?.data?.total || 0,
+            limit: res?.data?.limit || prev.limit,
+          }));
         });
       })
       .catch(error => {

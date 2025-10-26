@@ -23,8 +23,12 @@ const FloorListing = () => {
       .getAll()
       .then(res => {
         setData(res?.data?.floors);
-        const totalPages = Math.ceil(res?.data?.total / res?.data?.limit);
-        setPagination({ current: res?.data?.page, total: totalPages });
+        setPagination(prev => ({
+          ...prev,
+          page: res?.data?.page || prev.page,
+          total: res?.data?.total || 0,
+          limit: res?.data?.limit || prev.limit,
+        }));
       })
       .finally(() => setLoading(false));
   };
@@ -37,8 +41,12 @@ const FloorListing = () => {
         // Refresh the bed list after deletion
         floorAPIService.getAll().then(res => {
           setData(res?.data?.beds);
-          const totalPages = Math.ceil(res?.data?.total / res?.data?.limit);
-          setPagination({ current: res?.data?.page, total: totalPages });
+          setPagination(prev => ({
+            ...prev,
+            page: res?.data?.page || prev.page,
+            total: res?.data?.total || 0,
+            limit: res?.data?.limit || prev.limit,
+          }));
         });
       })
       .catch(error => {

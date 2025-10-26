@@ -14,50 +14,59 @@ import { createBedSchema, updateBedSchema } from '../Reception/schemas/bedValida
 const BedCreateAndUpdate = ({ data, open, onClose, refetch }) => {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      const payload = { ...values, ward: values?.ward?.value, floor: values?.floor?.value };
+      const payload = {
+        ...values,
+        ward: values?.ward?.value,
+        floor: values?.floor?.value,
+      };
+
       if (data) {
-        // Update existing bed
+        // --- Editing: update single bed ---
         const response = await bedAPIService.update(data._id, payload);
-        toast.success('Bed updated successfully', {
-          position: 'top-right',
-          autoClose: 5000,
-        });
+        toast.success('Bed updated successfully');
         refetch?.();
-        console.log('Bed updated successfully:', response);
       } else {
-        // Create new bed
-        const response = await bedAPIService.create(payload);
-        toast.success('Bed created successfully', {
-          position: 'top-right',
-          autoClose: 5000,
-        });
+        // --- Creating: bulk beds from `bedNumberFrom` to `bedNumberTo` ---
+        const from = parseInt(values.bedNumberFrom, 10);
+        const to = parseInt(values.bedNumberTo, 10);
+
+        if (isNaN(from) || isNaN(to) || from > to) {
+          toast.error('Invalid bed number range');
+          setSubmitting(false);
+          return;
+        }
+
+        const createPromises = [];
+        for (let i = from; i <= to; i++) {
+          const bedPayload = { ...payload, bedNumber: i.toString() };
+          createPromises.push(bedAPIService.create(bedPayload));
+        }
+
+        await Promise.all(createPromises);
+        toast.success(`Beds from ${from} to ${to} created successfully`);
         refetch?.();
-        console.log('Bed created successfully:', response);
       }
-      // Close modal after success
+
       onClose?.();
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Error saving bed', {
-        position: 'top-right',
-        autoClose: 5000,
-      });
+      toast.error(error?.response?.data?.message || 'Error saving bed');
       console.error('Error saving bed:', error);
     } finally {
-      // Stop the submitting state no matter success or error
       setSubmitting(false);
     }
   };
 
   return (
     <CommonModal
-      title={data ? 'Update Bed' : 'Create Bed'}
+      title={data ? 'Update Bed' : 'Create Beds'}
       open={open}
       onClose={onClose}
-      confirmButtonText={data ? 'Update Bed' : 'Create Bed'}
+      confirmButtonText={data ? 'Update Bed' : 'Create Beds'}
     >
       <Formik
         initialValues={{
-          bedNumber: data ? data.bedNumber || '' : '',
+          bedNumberFrom: '',
+          bedNumberTo: '',
           status: data ? data.status || '' : '',
           type: data ? data.type || '' : '',
           ward: data ? { value: data.ward._id, label: data.ward.name } : null,
@@ -66,12 +75,32 @@ const BedCreateAndUpdate = ({ data, open, onClose, refetch }) => {
         validationSchema={data ? updateBedSchema : createBedSchema}
         onSubmit={handleSubmit}
       >
-        {({ isSubmitting, values }) => (
+        {({ isSubmitting, values, errors }) => (
           <Form>
-            {console.log(values, data)}
-            <div className="mb-3">
+            {/* --- Bed Number Range (only when creating) --- */}
+            {!data && (
+              <div className="mb-3 d-flex gap-2 w-full">
+                <FormField
+                  className="col-md-6"
+                  name="bedNumberFrom"
+                  label="Bed Number From"
+                  type="number"
+                  placeholder="From"
+                />
+                <FormField
+                  className="col-md-6"
+                  name="bedNumberTo"
+                  label="Bed Number To"
+                  type="number"
+                  placeholder="To"
+                />
+              </div>
+            )}
+
+            {/* --- Status --- */}
+            <div className="mb-3 w-full">
               <FormField
-                className=""
+                className="col-md-12"
                 name="status"
                 label="Status"
                 type="select"
@@ -83,17 +112,17 @@ const BedCreateAndUpdate = ({ data, open, onClose, refetch }) => {
               />
             </div>
 
+            {/* --- Floor --- */}
             <div className="mb-3">
               <PaginatedSelect
                 name="floor"
                 label="Floor"
                 loadOptions={floorAPIService.loadFloorOptions}
                 placeholder="Search Floor..."
-                // value={values.patient}
-                // onChange={option => setFieldValue('patient', option.value)}
               />
             </div>
 
+            {/* --- Ward --- */}
             <div className="mb-3">
               <PaginatedSelect
                 name="ward"
@@ -101,11 +130,10 @@ const BedCreateAndUpdate = ({ data, open, onClose, refetch }) => {
                 loadOptions={wardAPIService.loadWardOptions}
                 placeholder="Search Ward..."
                 dependentFetch={{ key: 'floor', value: values.floor }}
-                // value={values.patient}
-                // onChange={option => setFieldValue('patient', option.value)}
               />
             </div>
 
+            {/* --- Submit Buttons --- */}
             <div className="d-flex justify-content-end gap-2">
               <Button onClick={onClose} variant="dark btn-sm" type="button">
                 Close
@@ -113,11 +141,11 @@ const BedCreateAndUpdate = ({ data, open, onClose, refetch }) => {
               <Button variant="primary btn-sm" type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
-                    <Spinner animation="border" size="sm" className="me-2" />{' '}
+                    <Spinner animation="border" size="sm" className="me-2" />
                     {data ? 'Updating...' : 'Creating...'}
                   </>
                 ) : (
-                  <>{data ? 'Update Bed' : 'Create Bed'}</>
+                  <>{data ? 'Update Bed' : 'Create Beds'}</>
                 )}
               </Button>
             </div>
