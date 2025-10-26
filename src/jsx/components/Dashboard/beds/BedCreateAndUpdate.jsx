@@ -28,7 +28,7 @@ const BedCreateAndUpdate = ({ data, open, onClose, refetch }) => {
       } else {
         // --- Creating: bulk beds from `bedNumberFrom` to `bedNumberTo` ---
         await bedAPIService.create(payload);
-        toast.success(`Beds from ${from} to ${to} created successfully`);
+        toast.success(`Beds created successfully`);
         refetch?.();
       }
 
