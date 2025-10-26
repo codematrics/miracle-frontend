@@ -1,3 +1,5 @@
+import { toast } from 'react-toastify';
+
 import axios from 'axios';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/ipd-billing` || 'http://localhost:3001/api/lab';
@@ -67,6 +69,32 @@ export const IPDApiService = {
       return response.data;
     } catch (error) {
       console.error('Error updating bed:', error);
+      throw error;
+    }
+  },
+
+  print: async ipdId => {
+    try {
+      const response = await IPDApi.get(`/export/${ipdId}`, {
+        responseType: 'blob', // <-- important
+      });
+
+      // response.data is already a Blob
+      const blob = response.data;
+
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `${ipdId}-bill.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+
+      toast.success(`IPD bill downloaded successfully`);
+    } catch (error) {
+      console.error('Error printing IPD bill:', error);
+      toast.error('Failed to download IPD bill');
       throw error;
     }
   },

@@ -72,7 +72,12 @@ const OPD = () => {
           >
             Edit
           </button>
-          <button className="btn btn-sm btn-primary me-2">Print</button>
+          <button
+            className="btn btn-sm btn-primary me-2"
+            onClick={() => OPDApiService.print(item._id)}
+          >
+            Print
+          </button>
         </div>
       ),
     },
