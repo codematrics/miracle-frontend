@@ -111,6 +111,7 @@ const BedListing = () => {
                       <tr>
                         <th>Bed Number</th>
                         <th>Ward</th>
+                        <th>Floor</th>
                         <th>Status</th>
                         <th>Patient Name</th>
                         <th className="text-end">Action</th>
@@ -120,7 +121,8 @@ const BedListing = () => {
                       {data.map((item, ind) => (
                         <tr key={ind}>
                           <td>{item.bedNumber}</td>
-                          <td>{item.ward}</td>
+                          <td>{item.ward?.name}</td>
+                          <td>{item.ward?.floor?.name}</td>
                           <td>{item.status}</td>
                           <td>{item.patientId?.name || '-'}</td>
                           <td>

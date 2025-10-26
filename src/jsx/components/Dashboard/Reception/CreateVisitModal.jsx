@@ -17,8 +17,18 @@ import FormField from './components/FormField';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export const visitSchema = Yup.object({
-  patientId: Yup.string().required('Patient is required'),
-  consultingDoctorId: Yup.string().required('Doctor is required'),
+  patientId: Yup.object()
+    .shape({
+      value: Yup.string().required('Patient is required'),
+      label: Yup.string(), // optional
+    })
+    .required('Patient is required'),
+  consultingDoctorId: Yup.object()
+    .shape({
+      value: Yup.string().required('Doctor is required'),
+      label: Yup.string(), // optional
+    })
+    .required('Doctor is required'),
   visitType: Yup.string()
     .oneOf(Object.values(VISIT_TYPE), 'Invalid visit type')
     .required('Visit type is required'),
@@ -57,7 +67,13 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
     try {
       const response = await axios.post(
         `${API_URL}/visits`,
-        { ...values, medicoLegal: values.medicoLegal === 'Yes' ? true : false },
+        {
+          ...values,
+          services: values?.services,
+          patientId: values?.patientId?.value,
+          consultingDoctorId: values?.consultingDoctorId?.value,
+          medicoLegal: values.medicoLegal === 'Yes' ? true : false,
+        },
         {
           headers: {
             'Content-Type': 'application/json',

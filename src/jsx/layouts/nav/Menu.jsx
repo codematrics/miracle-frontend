@@ -111,6 +111,14 @@ export const MenuList = {
           to: 'radiology-templates',
         },
         {
+          title: 'Floors',
+          to: 'floors',
+        },
+        {
+          title: 'Wards',
+          to: 'wards',
+        },
+        {
           title: 'Beds',
           to: 'beds',
         },

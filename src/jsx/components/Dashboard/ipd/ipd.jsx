@@ -63,18 +63,19 @@ const IPD = () => {
     {
       header: 'Bed Ward',
       key: 'bed',
-      render: item => item.bed?.ward || '',
+      render: item => item.bed?.ward?.name || '',
+    },
+    {
+      header: 'Ward Type',
+      key: 'bed',
+      render: item => item.bed?.ward?.type || '',
     },
     {
       header: 'Bed No',
       key: 'bed',
       render: item => item.bed?.bedNumber || '',
     },
-    {
-      header: 'Bed Type',
-      key: 'bed',
-      render: item => item.bed?.type || '',
-    },
+
     {
       header: 'Status',
       key: 'patientStatus',

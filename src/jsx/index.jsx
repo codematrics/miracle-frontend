@@ -43,6 +43,8 @@ import Task from './components/Dashboard/Task';
 import AppointmentListing from './components/Dashboard/appointments/AppointmentListing.jsx';
 /// Pages
 import BedListing from './components/Dashboard/beds/BedListing.jsx';
+/// Bootstrap
+import FloorListing from './components/Dashboard/floors/FloorListing.jsx';
 /// Layout
 import IPD from './components/Dashboard/ipd/ipd.jsx';
 // Widget
@@ -53,6 +55,8 @@ import ReceptionistListing from './components/Dashboard/receptionists/Receptioni
 import TechniciansListing from './components/Dashboard/technicians/TechniciansList.jsx';
 // Svg Icon
 import TestsPage from './components/Dashboard/tests/TestsPage.jsx';
+/// Plugins
+import WardListing from './components/Dashboard/wards/WardListing.jsx';
 import CkEditor from './components/Forms/CkEditor/CkEditor';
 /// Form
 import Element from './components/Forms/Element/Element';
@@ -61,11 +65,9 @@ import Pickers from './components/Forms/Pickers/Pickers';
 import Wizard from './components/Forms/Wizard/Wizard';
 import JqvMap from './components/PluginsMenu/JqvMap/JqvMap';
 import Lightgallery from './components/PluginsMenu/Lightgallery/Lightgallery';
-/// Plugins
 import Select2 from './components/PluginsMenu/Select2/Select2';
 import MainSweetAlert from './components/PluginsMenu/SweetAlert/SweetAlert';
 import Toastr from './components/PluginsMenu/Toastr/Toastr';
-/// Bootstrap
 import UiAccordion from './components/bootstrap/Accordion';
 import UiAlert from './components/bootstrap/Alert';
 import UiBadge from './components/bootstrap/Badge';
@@ -130,6 +132,8 @@ const Markup = () => {
     { url: 'radiology-workflow', component: <RadiologyWorkflow /> },
     { url: 'doctors', component: <DoctorMaster /> },
     { url: 'beds', component: <BedListing /> },
+    { url: 'floors', component: <FloorListing /> },
+    { url: 'wards', component: <WardListing /> },
     { url: 'appointments', component: <AppointmentListing /> },
 
     //Apps

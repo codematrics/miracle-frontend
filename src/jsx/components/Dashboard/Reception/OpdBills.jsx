@@ -43,11 +43,19 @@ const billingSchema = Yup.object().shape({
 // Main OPD Bill Schema
 export const opdBillSchema = Yup.object()
   .shape({
-    patient: Yup.string().min(1, 'Patient ID is required').required('Patient is required'),
+    patient: Yup.object()
+      .shape({
+        value: Yup.string().required('Patient is required'),
+        label: Yup.string(), // optional
+      })
+      .required('Patient is required'),
+    consultantDoctor: Yup.object()
+      .shape({
+        value: Yup.string().required('Consultant doctor is required'),
+        label: Yup.string(), // optional
+      })
+      .required('Consultant doctor is required'),
     referredBy: Yup.string().min(1, 'Ref By is required').required('Ref By is required'),
-    consultantDoctor: Yup.string()
-      .min(1, 'Doctor ID is required')
-      .required('Consultant Doctor is required'),
     paymentMode: Yup.mixed().oneOf(Object.values(PAYMENT_MODES), 'Invalid Payment Mode').optional(),
     paidAmount: Yup.number()
       .min(0, 'Paid amount must be greater than or equal to 0')
@@ -119,9 +127,18 @@ const OpdBills = () => {
 
   const handleSaveOpdBill = async (values, { setSubmitting, resetForm }) => {
     try {
-      const response = await axios.post(`${API_URL}/opd-billing`, values, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      const response = await axios.post(
+        `${API_URL}/opd-billing`,
+        {
+          ...values,
+          patient: values?.patient?.value,
+          services: values?.services,
+          consultantDoctor: values?.consultantDoctor?.value,
+        },
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
 
       if (response.status) {
         Swal.fire({
@@ -182,7 +199,7 @@ const OpdBillForm = ({
   return (
     <Form>
       <div className="row mb-4">
-        <div className="col-md-8">
+        <div className="col-md-12">
           <label>
             Search Patient <span className="text-danger">*</span>
           </label>
@@ -191,14 +208,9 @@ const OpdBillForm = ({
             loadOptions={loadPatientOptions}
             selectCallback={option => {
               setSelectedPatient(option);
-              setFieldValue('patient', option.value);
             }}
             placeholder="Search patient..."
           />
-        </div>
-        <div className="col-md-4">
-          <label>Patient Category</label>
-          <input className="form-control" value={selectedPatient?.patientType || ''} readOnly />
         </div>
       </div>
       {selectedPatient && (
@@ -294,6 +306,7 @@ const OpdBillForm = ({
           isMulti
           selectCallback={options => {
             const services = options.map(o => ({
+              ...o,
               serviceId: o.value,
               price: o.price,
               quantity: o.qty || 1,
@@ -320,7 +333,7 @@ const OpdBillForm = ({
           <tbody>
             {values.services.map((s, idx) => (
               <tr key={idx}>
-                <td>{s.serviceId}</td>
+                <td>{s.name}</td>
                 <td>
                   <input
                     type="number"

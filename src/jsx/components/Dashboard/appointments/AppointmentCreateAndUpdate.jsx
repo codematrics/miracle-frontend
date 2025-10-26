@@ -79,12 +79,13 @@ const AppointmentCreateAndUpdate = ({ data, open, onClose, refetch }) => {
 
   const handleSubmit = async (values, form) => {
     form.setSubmitting(true);
+    const payload = { ...values, patient: values?.patient?.value, doctor: values?.doctor?.value };
     try {
       if (data) {
-        await appointmentAPIService.update(data._id, values);
+        await appointmentAPIService.update(data._id, payload);
         toast.success('Appointment updated successfully');
       } else {
-        await appointmentAPIService.create(values);
+        await appointmentAPIService.create(payload);
         toast.success('Appointment created successfully');
       }
       refetch?.();
@@ -108,8 +109,8 @@ const AppointmentCreateAndUpdate = ({ data, open, onClose, refetch }) => {
       <Formik
         enableReinitialize
         initialValues={{
-          patient: data?.patient?._id || '',
-          doctor: data?.doctor?._id || '',
+          patient: data ? { value: data.patient._id, label: data.patient.name } : null,
+          doctor: data ? { value: data.doctor._id, label: data.doctor.name } : null,
           appointmentDate: formatDateTimeLocal(data?.appointmentDate),
           reason: data?.reason || '',
           status: data?.status || 'scheduled',
@@ -117,7 +118,7 @@ const AppointmentCreateAndUpdate = ({ data, open, onClose, refetch }) => {
         validationSchema={appointmentSchema}
         onSubmit={handleSubmit}
       >
-        {({ isSubmitting, setFieldValue, values }) => {
+        {({ isSubmitting }) => {
           const selectedPatient = data?.patient || null;
           const selectedDoctor = data?.doctor || null;
           const isEdit = !!data;

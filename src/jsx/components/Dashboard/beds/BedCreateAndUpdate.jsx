@@ -4,16 +4,20 @@ import { toast } from 'react-toastify';
 import { Form, Formik } from 'formik';
 
 import CommonModal from '../../../../components/Common/CommonModal';
+import PaginatedSelect from '../../../../components/Common/PaginatedSelect';
 import bedAPIService from '../../../../services/BedService';
+import floorAPIService from '../../../../services/FloorService';
+import wardAPIService from '../../../../services/WardService';
 import FormField from '../Reception/components/FormField';
 import { createBedSchema, updateBedSchema } from '../Reception/schemas/bedValidation';
 
 const BedCreateAndUpdate = ({ data, open, onClose, refetch }) => {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
+      const payload = { ...values, ward: values?.ward?.value, floor: values?.floor?.value };
       if (data) {
         // Update existing bed
-        const response = await bedAPIService.update(data._id, values);
+        const response = await bedAPIService.update(data._id, payload);
         toast.success('Bed updated successfully', {
           position: 'top-right',
           autoClose: 5000,
@@ -22,7 +26,7 @@ const BedCreateAndUpdate = ({ data, open, onClose, refetch }) => {
         console.log('Bed updated successfully:', response);
       } else {
         // Create new bed
-        const response = await bedAPIService.create(values);
+        const response = await bedAPIService.create(payload);
         toast.success('Bed created successfully', {
           position: 'top-right',
           autoClose: 5000,
@@ -56,13 +60,15 @@ const BedCreateAndUpdate = ({ data, open, onClose, refetch }) => {
           bedNumber: data ? data.bedNumber || '' : '',
           status: data ? data.status || '' : '',
           type: data ? data.type || '' : '',
-          ward: data ? data.ward || '' : '',
+          ward: data ? { value: data.ward._id, label: data.ward.name } : null,
+          floor: data ? { value: data.ward?.floor._id, label: data.ward.floor.name } : null,
         }}
         validationSchema={data ? updateBedSchema : createBedSchema}
         onSubmit={handleSubmit}
       >
-        {({ isSubmitting }) => (
+        {({ isSubmitting, values }) => (
           <Form>
+            {console.log(values, data)}
             <div className="mb-3">
               <FormField
                 className=""
@@ -78,21 +84,26 @@ const BedCreateAndUpdate = ({ data, open, onClose, refetch }) => {
             </div>
 
             <div className="mb-3">
-              <FormField
-                className=""
-                name="type"
-                label="Type"
-                type="select"
-                options={[
-                  { label: 'General', value: 'general' },
-                  { label: 'ICU', value: 'icu' },
-                  { label: 'Ward', value: 'ward' },
-                ]}
+              <PaginatedSelect
+                name="floor"
+                label="Floor"
+                loadOptions={floorAPIService.loadFloorOptions}
+                placeholder="Search Floor..."
+                // value={values.patient}
+                // onChange={option => setFieldValue('patient', option.value)}
               />
             </div>
 
             <div className="mb-3">
-              <FormField name="ward" label="Ward" type="text" className="" />
+              <PaginatedSelect
+                name="ward"
+                label="Ward"
+                loadOptions={wardAPIService.loadWardOptions}
+                placeholder="Search Ward..."
+                dependentFetch={{ key: 'floor', value: values.floor }}
+                // value={values.patient}
+                // onChange={option => setFieldValue('patient', option.value)}
+              />
             </div>
 
             <div className="d-flex justify-content-end gap-2">

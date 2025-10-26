@@ -1,7 +1,7 @@
 import { Badge, Button, Card, Col, Row, Spinner, Table } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
-import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { Field, Form, Formik } from 'formik';
 
 import CommonModal from '../../../../components/Common/CommonModal';
 import PaginatedSelect from '../../../../components/Common/PaginatedSelect';
@@ -81,7 +81,7 @@ const BedInfoCard = ({ bed }) => (
         <strong>Type:</strong> {bed.type}
       </p>
       <p className="mb-1">
-        <strong>Ward:</strong> {bed.ward}
+        <strong>Ward:</strong> {bed.ward?.name}
       </p>
     </Card.Body>
   </Card>
@@ -93,17 +93,28 @@ const IPDCreateAndUpdate = ({ data, open, onClose, refetch }) => {
 
   const handleSubmit = async (values, form) => {
     form.setSubmitting(true);
-    const updatedFields = { ...values };
+    const updatedFields = {
+      ...values,
+      services: values?.services || [],
+      patient: values?.patient?.value,
+      bed: values?.bed?.value,
+      referringDoctor: values?.referringDoctor?.value,
+    };
 
-    if (data) {
-      // Send updated fields (or full values if simpler)
-      await IPDApiService.update(data._id, updatedFields);
-      toast.success('IPD updated successfully');
-    } else {
-      await IPDApiService.create(updatedFields);
-      toast.success('IPD created successfully');
+    console.log(values, 'updatedFields');
+    try {
+      if (data) {
+        // Send updated fields (or full values if simpler)
+        await IPDApiService.update(data._id, updatedFields);
+        toast.success('IPD updated successfully');
+      } else {
+        await IPDApiService.create(updatedFields);
+        toast.success('IPD created successfully');
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.response?.data?.message || err?.message || 'IPD creation Failed');
     }
-
     refetch?.();
     onClose(false);
     form.setSubmitting(false);
@@ -135,7 +146,6 @@ const IPDCreateAndUpdate = ({ data, open, onClose, refetch }) => {
       <Formik
         enableReinitialize
         initialValues={{
-          bed: data?.bed?._id || '',
           services:
             data?.services.map(s => ({
               serviceId: s.serviceId._id || s.serviceId,
@@ -143,9 +153,14 @@ const IPDCreateAndUpdate = ({ data, open, onClose, refetch }) => {
               price: s.price,
               quantity: s.quantity,
               amount: s.price * s.quantity,
+              label: s.name,
+              value: s.serviceId._id || s.serviceId,
             })) || [],
-          patient: data?.patient?._id || '',
-          referringDoctor: data?.referringDoctor?._id || '',
+          patient: data ? { value: data.patient._id, label: data.patient.name } : null,
+          bed: data?.bed ? { value: data?.bed._id, label: data?.bed.name } : null,
+          referringDoctor: data
+            ? { value: data.referringDoctor._id, label: data.referringDoctor.name }
+            : null,
           discount: data?.discount || 0,
           paidAmount: data?.paidAmount || 0,
           paymentMode: data?.paymentMode || PAYMENT_MODES.CASH,
@@ -171,7 +186,6 @@ const IPDCreateAndUpdate = ({ data, open, onClose, refetch }) => {
                     loadOptions={loadPatientOptions}
                     placeholder="Search patient..."
                   />
-                  <ErrorMessage name="patient" component="div" className="text-danger" />
                 </div>
               ) : (
                 <PatientInfoCard patient={data.patient} />
@@ -188,7 +202,6 @@ const IPDCreateAndUpdate = ({ data, open, onClose, refetch }) => {
                     loadOptions={loadDoctorOptions}
                     placeholder="Search doctor..."
                   />
-                  <ErrorMessage name="referringDoctor" component="div" className="text-danger" />
                 </div>
               ) : (
                 <DoctorInfoCard doctor={data.referringDoctor} />
@@ -205,7 +218,6 @@ const IPDCreateAndUpdate = ({ data, open, onClose, refetch }) => {
                     loadOptions={bedAPIService.loadBedOptions}
                     placeholder="Search bed..."
                   />
-                  <ErrorMessage name="bed" component="div" className="text-danger" />
                 </div>
               ) : (
                 <BedInfoCard bed={data.bed} />
@@ -330,7 +342,6 @@ const IPDCreateAndUpdate = ({ data, open, onClose, refetch }) => {
                     <Col md={3}>
                       <label>Paid</label>
                       <Field type="number" name="paidAmount" className="form-control" />
-                      <ErrorMessage name="paidAmount" component="div" className="text-danger" />
                     </Col>
                   </Row>
                   <Row className="mt-2">

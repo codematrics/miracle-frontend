@@ -1,7 +1,14 @@
 import * as yup from 'yup';
 
 const createIPDSchema = yup.object().shape({
-  bed: yup.string().min(1, 'Bed ID is required').required('Bed ID is required'),
+  bed: yup
+    .object()
+    .shape({
+      value: yup.string().required('Bed is required'),
+      label: yup.string(), // optional
+    })
+    .required('Bed is required'),
+
   services: yup
     .array()
     .of(
@@ -15,11 +22,22 @@ const createIPDSchema = yup.object().shape({
       })
     )
     .optional(),
-  patient: yup.string().min(1, 'Patient ID is required').required('Patient ID is required'),
+
+  patient: yup
+    .object()
+    .shape({
+      value: yup.string().required('Patient is required'),
+      label: yup.string(), // optional
+    })
+    .required('Patient is required'),
+
   referringDoctor: yup
-    .string()
-    .min(1, 'Referring Doctor ID is required')
-    .required('Referring Doctor ID is required'),
+    .object()
+    .shape({
+      value: yup.string().required('Referring Doctor is required'),
+      label: yup.string(), // optional
+    })
+    .required('Referring Doctor is required'),
   totalAmount: yup.number().min(0, 'Total amount cannot be negative').optional(),
   discount: yup.number().min(0, 'Discount cannot be negative').optional(),
   netAmount: yup.number().min(0, 'Net amount cannot be negative').optional(),
