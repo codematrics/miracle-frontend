@@ -27,22 +27,7 @@ const BedCreateAndUpdate = ({ data, open, onClose, refetch }) => {
         refetch?.();
       } else {
         // --- Creating: bulk beds from `bedNumberFrom` to `bedNumberTo` ---
-        const from = parseInt(values.bedNumberFrom, 10);
-        const to = parseInt(values.bedNumberTo, 10);
-
-        if (isNaN(from) || isNaN(to) || from > to) {
-          toast.error('Invalid bed number range');
-          setSubmitting(false);
-          return;
-        }
-
-        const createPromises = [];
-        for (let i = from; i <= to; i++) {
-          const bedPayload = { ...payload, bedNumber: i.toString() };
-          createPromises.push(bedAPIService.create(bedPayload));
-        }
-
-        await Promise.all(createPromises);
+        await bedAPIService.create(payload);
         toast.success(`Beds from ${from} to ${to} created successfully`);
         refetch?.();
       }
