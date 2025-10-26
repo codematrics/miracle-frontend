@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button, Table } from 'react-bootstrap';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-import axios from 'axios';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import Swal from 'sweetalert2';
 import * as Yup from 'yup';
 
 import PaginatedSelect from '../../../../components/Common/PaginatedSelect';
@@ -12,7 +11,8 @@ import { PAYMENT_MODES } from '../../../../constants/enums';
 import useDoctorAPI from '../../../../hooks/useDoctorAPI';
 import { loadPatientOptions } from '../../../../services/PatientsService';
 import { loadOPDServiceOptions } from '../../../../services/ServicesService';
-import FormField from './components/FormField';
+import OPDApiService from '../../../../services/opdService';
+import FormField from '../Reception/components/FormField';
 
 // Service Schema
 const serviceSchema = Yup.object().shape({
@@ -98,12 +98,15 @@ export const initialOpdBillValues = {
   },
 };
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
 const OpdBills = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const { loadDoctorOptions } = useDoctorAPI();
   const formikRef = useRef(null);
+  const params = useParams();
+  const billId = params?.id;
+  const navigate = useNavigate();
 
   const resetFormData = () => {
     setSelectedPatient(null);
@@ -127,30 +130,22 @@ const OpdBills = () => {
 
   const handleSaveOpdBill = async (values, { setSubmitting, resetForm }) => {
     try {
-      const response = await axios.post(
-        `${API_URL}/opd-billing`,
-        {
-          ...values,
-          patient: values?.patient?.value,
-          services: values?.services,
-          consultantDoctor: values?.consultantDoctor?.value,
-        },
-        {
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
+      const payload = {
+        ...values,
+        patient: values?.patient?.value,
+        services: values?.services,
+        consultantDoctor: values?.consultantDoctor?.value,
+      };
 
-      if (response.status) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Success!',
-          text: response.data.message || 'OPD Bill created successfully',
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        resetForm();
-        resetFormData();
+      if (billId) {
+        await OPDApiService.update(billId, payload);
+        toast.success('OPD Edited Successfully');
+      } else {
+        await OPDApiService.create(payload);
+        toast.success('OPD Created Successfully');
       }
+
+      navigate(`/opd-bill`);
     } catch (error) {
       console.error('Error creating OPD bill:', error);
       toast.error(error.response?.data?.message || 'Failed to save OPD Bill');
@@ -159,10 +154,63 @@ const OpdBills = () => {
     }
   };
 
+  useEffect(() => {
+    const fetch = async () => {
+      if (billId) {
+        try {
+          const response = await OPDApiService.getOne(billId);
+          response?.data && setData(response?.data);
+        } catch (err) {
+          toast.error(err?.response?.data?.message || err?.message || 'Failed to fetch OPD bill');
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
+
+    fetch();
+  }, [billId]);
+
+  if (loading) {
+    return <p>Loading</p>;
+  }
+
+  if (!data && billId) {
+    return <p>Data Not Found</p>;
+  }
+
   return (
     <Formik
       innerRef={formikRef}
-      initialValues={initialOpdBillValues}
+      initialValues={
+        data
+          ? {
+              patient: {
+                ...data?.patient,
+                label: data?.patient?.name,
+                value: data?.patient?.uhidNo,
+              },
+              referredBy: data?.referredBy || 'Self',
+              consultantDoctor: {
+                ...data?.consultantDoctor,
+                label: data?.consultantDoctor?.name,
+                value: data?.consultantDoctor?._id,
+              },
+              paymentMode: data?.paymentMode,
+              paidAmount: data?.paidAmount,
+              services: data?.services?.map(s => ({
+                ...s,
+                value: s.serviceId?._id,
+                label: s?.serviceId?.serviceName,
+                name: s?.serviceId?.serviceName,
+                serviceId: s.serviceId?._id,
+              })),
+              billing: data?.billing,
+            }
+          : initialOpdBillValues
+      }
       validationSchema={opdBillSchema}
       onSubmit={handleSaveOpdBill}
       enableReinitialize
@@ -318,6 +366,8 @@ const OpdBillForm = ({
           className="col-12"
         />
       </div>
+
+      {console.log(values)}
 
       {/* Services Table */}
       {values.services.length > 0 && (

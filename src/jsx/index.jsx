@@ -33,7 +33,6 @@ import RadiologyWorkflow from './components/Dashboard/Radiology/RadiologyWorkflo
 import BillingDetails from './components/Dashboard/Reception/BillingDetails';
 /// Reception Dashboard
 import HomeReception from './components/Dashboard/Reception/HomeReception';
-import OpdBill from './components/Dashboard/Reception/OpdBills';
 import PatientReception from './components/Dashboard/Reception/Patient';
 import CaseSheet from './components/Dashboard/Reception/pdf/CaseSheet.tsx';
 import Reviews from './components/Dashboard/Reviews';
@@ -47,6 +46,10 @@ import BedListing from './components/Dashboard/beds/BedListing.jsx';
 import FloorListing from './components/Dashboard/floors/FloorListing.jsx';
 /// Layout
 import IPD from './components/Dashboard/ipd/ipd.jsx';
+/// Plugins
+import OpdBills from './components/Dashboard/opd/OpdBills.jsx';
+/// Form
+import OPD from './components/Dashboard/opd/OpdListing.jsx';
 // Widget
 import ParametersPage from './components/Dashboard/parameters/ParameterPage.jsx';
 /// Table
@@ -55,10 +58,8 @@ import ReceptionistListing from './components/Dashboard/receptionists/Receptioni
 import TechniciansListing from './components/Dashboard/technicians/TechniciansList.jsx';
 // Svg Icon
 import TestsPage from './components/Dashboard/tests/TestsPage.jsx';
-/// Plugins
 import WardListing from './components/Dashboard/wards/WardListing.jsx';
 import CkEditor from './components/Forms/CkEditor/CkEditor';
-/// Form
 import Element from './components/Forms/Element/Element';
 import FormValidation from './components/Forms/FormValidation/FormValidation';
 import Pickers from './components/Forms/Pickers/Pickers';
@@ -115,7 +116,9 @@ const Markup = () => {
     { url: 'technicians', component: <TechniciansListing /> },
     { url: 'patient', component: <PatientReception /> },
     { url: 'billing-details', component: <BillingDetails /> },
-    { url: 'opd-bill', component: <OpdBill /> },
+    { url: 'opd-bill', component: <OPD /> },
+    { url: 'create-opd-bill', component: <OpdBills /> },
+    { url: 'edit-opd-bill/:id', component: <OpdBills /> },
     { url: 'ipd-bill', component: <IPD /> },
     { url: 'patient-details/:id', component: <PatientDetails /> },
     { url: 'doctor-details', component: <DoctorDetails /> },
