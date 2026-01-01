@@ -17,6 +17,8 @@ export const SERVICE_CATEGORIES = {
   OTHER: 'other',
 };
 
+export const DOCTOR_TYPES = ['REFERRING', 'CONSULTING'];
+
 export const PAYMENT_MODES = {
   CASH: 'cash',
   CARD: 'card',

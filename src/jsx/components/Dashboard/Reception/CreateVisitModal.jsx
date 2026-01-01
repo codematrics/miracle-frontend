@@ -29,15 +29,27 @@ export const visitSchema = Yup.object({
       label: Yup.string(), // optional
     })
     .required('Doctor is required'),
+  referredBy: Yup.object()
+    .shape({
+      value: Yup.string().required('Doctor is required'),
+      label: Yup.string(),
+    })
+    .required('Doctor is required'),
   visitType: Yup.string()
     .oneOf(Object.values(VISIT_TYPE), 'Invalid visit type')
     .required('Visit type is required'),
-  referredBy: Yup.string().nullable(),
   visitNote: Yup.string().nullable(),
   medicoLegal: Yup.string().oneOf(['Yes', 'No']),
   insuranceType: Yup.string().nullable(),
   policyNumber: Yup.string().nullable(),
-  services: Yup.array().of(Yup.string()).min(1, 'Select at least one service'),
+  services: Yup.array()
+    .of(
+      Yup.object().shape({
+        value: Yup.string().required('Doctor is required'),
+        label: Yup.string(),
+      })
+    )
+    .min(1, 'Select at least one service'),
 });
 
 export const initialVisitValues = {
@@ -53,7 +65,7 @@ export const initialVisitValues = {
 };
 
 const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
-  const { loadDoctorOptions } = useDoctorAPI();
+  const { loadDoctorOptions, loadReferredDoctorOptions } = useDoctorAPI();
 
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedServices, setSelectedServices] = useState([]);
@@ -72,6 +84,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
           services: values?.services,
           patientId: values?.patientId?.value,
           consultingDoctorId: values?.consultingDoctorId?.value,
+          referredBy: values?.referredBy?.value,
           medicoLegal: values.medicoLegal === 'Yes' ? true : false,
         },
         {
@@ -189,7 +202,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
         onSubmit={handleSubmit}
         enableReinitialize={true}
       >
-        {({ isSubmitting, errors, values }) => (
+        {({ isSubmitting }) => (
           <Form>
             <Modal.Body>
               {/* Patient Selection */}
@@ -283,14 +296,12 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                   className="col-md-4"
                   options={Object.values(VISIT_TYPE).map(value => ({ value, label: value }))}
                 />
-                <FormField
+                <PaginatedSelect
                   name="referredBy"
                   label="Referred By"
-                  type="select"
-                  required
+                  loadOptions={loadReferredDoctorOptions}
+                  placeholder="Search doctor..."
                   className="col-md-4"
-                  options={[{ value: 'Self', label: 'Self' }]}
-                  hideEmptyOption={true}
                 />
                 <FormField
                   name="visitNote"

@@ -55,7 +55,13 @@ export const opdBillSchema = Yup.object()
         label: Yup.string(), // optional
       })
       .required('Consultant doctor is required'),
-    referredBy: Yup.string().min(1, 'Ref By is required').required('Ref By is required'),
+
+    referredBy: Yup.object()
+      .shape({
+        value: Yup.string().required('Referred by is required'),
+        label: Yup.string(),
+      })
+      .required('Referred by is required'),
     paymentMode: Yup.mixed().oneOf(Object.values(PAYMENT_MODES), 'Invalid Payment Mode').optional(),
     paidAmount: Yup.number()
       .min(0, 'Paid amount must be greater than or equal to 0')
@@ -135,6 +141,7 @@ const OpdBills = () => {
         patient: values?.patient?.value,
         services: values?.services,
         consultantDoctor: values?.consultantDoctor?.value,
+        referredBy: values?.referredBy?.value,
       };
 
       if (billId) {
@@ -192,7 +199,11 @@ const OpdBills = () => {
                 label: data?.patient?.name,
                 value: data?.patient?.uhidNo,
               },
-              referredBy: data?.referredBy || 'Self',
+              referredBy: {
+                ...data?.referringDoctor,
+                label: data?.referringDoctor?.name,
+                value: data?.referringDoctor?._id,
+              },
               consultantDoctor: {
                 ...data?.consultantDoctor,
                 label: data?.consultantDoctor?.name,
@@ -238,6 +249,7 @@ const OpdBillForm = ({
   loadDoctorOptions,
 }) => {
   const { values, setFieldValue, isSubmitting, errors } = formik;
+  const { loadReferredDoctorOptions } = useDoctorAPI();
 
   // ✅ Hook is legal here
   useEffect(() => {
@@ -323,14 +335,12 @@ const OpdBillForm = ({
                 <i className="fa fa-clipboard me-2 text-success"></i>Visit Details
               </h6>
               <div className="row">
-                <FormField
+                <PaginatedSelect
                   name="referredBy"
                   label="Referred By"
-                  required
+                  loadOptions={loadReferredDoctorOptions}
+                  placeholder="Search doctor..."
                   className="col-md-6"
-                  type="select"
-                  options={[{ value: 'Self', label: 'Self' }]}
-                  hideEmptyOption={true}
                 />
                 <PaginatedSelect
                   name="consultantDoctor"

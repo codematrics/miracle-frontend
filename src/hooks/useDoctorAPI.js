@@ -85,6 +85,29 @@ const useDoctorAPI = () => {
     };
   };
 
+  const loadReferredDoctorOptions = async (search = '', prevOptions, { page }) => {
+    const response = await axios.get(`${API_URL}/doctors/dropdown-list`, {
+      params: { search, page, limit: 10, type: 'REFERRING' },
+    });
+
+    if (response.data?.status && response.data?.data) {
+      return {
+        ...response.data,
+        additional: {
+          page: search ? 1 : page + 1,
+        },
+      };
+    }
+
+    return {
+      options: response.data?.data,
+      hasMore: response?.data?.hasMore,
+      additional: {
+        page: search ? 1 : page + 1,
+      },
+    };
+  };
+
   const createDoctor = useCallback(
     async doctorData => {
       setLoading(true);
@@ -237,6 +260,7 @@ const useDoctorAPI = () => {
     getDoctorById,
     getDoctorsDropdown,
     loadDoctorOptions,
+    loadReferredDoctorOptions,
   };
 };
 

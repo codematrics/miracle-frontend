@@ -3,7 +3,11 @@ import { Button, Modal } from 'react-bootstrap';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
-import { DOCTOR_DEPARTMENTS, DOCTOR_SPECIALIZATION } from '../../../../../constants/enums';
+import {
+  DOCTOR_DEPARTMENTS,
+  DOCTOR_SPECIALIZATION,
+  DOCTOR_TYPES,
+} from '../../../../../constants/enums';
 import FormField from '../../Reception/components/FormField';
 
 const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -11,6 +15,7 @@ const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const DoctorValidationSchema = Yup.object().shape({
   _id: Yup.string().optional(),
   name: Yup.string().required('Doctor name is required'),
+  doctorType: Yup.string().optional(),
   specialization: Yup.string().required('Specialization is required'),
   qualification: Yup.string().optional(),
   licenseNumber: Yup.string().required('License number is required'),
@@ -42,6 +47,7 @@ const DoctorForm = ({ show, onHide, onSubmit, loading, initialData = null }) => 
   const initialValues = initialData || {
     _id: '',
     name: '',
+    doctorType: 'Consultant',
     specialization: '',
     qualification: '',
     licenseNumber: '',
@@ -98,6 +104,16 @@ const DoctorForm = ({ show, onHide, onSubmit, loading, initialData = null }) => 
                   required
                 />
                 <FormField name="designation" label="Designation" />
+              </div>
+
+              <div className="row mt-3">
+                <FormField
+                  name="doctorType"
+                  label="Doctor Type"
+                  type="select"
+                  options={DOCTOR_TYPES}
+                  required
+                />
               </div>
 
               <h6 className="mt-4 mb-3">Contact Information</h6>
