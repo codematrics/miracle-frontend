@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Badge, Button, Card, Col, Modal, Row, Table } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
+import { format } from 'date-fns';
+
 import RadiologyTemplateForm from './modals/RadiologyTemplateForm';
 
 const RadiologyTemplateMaster = () => {
@@ -272,7 +274,9 @@ const RadiologyTemplateMaster = () => {
                             </small>
                           </td>
                           <td>
-                            <small>{new Date(template.createdAt).toLocaleDateString()}</small>
+                            <small>
+                              {format(new Date(template.createdAt), 'dd/MM/yyyy hh:mm')}
+                            </small>
                           </td>
                           <td>
                             <div className="d-flex gap-1">

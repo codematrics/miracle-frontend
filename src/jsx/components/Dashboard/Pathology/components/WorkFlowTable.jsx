@@ -1,6 +1,8 @@
 import { Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
+import { format } from 'date-fns';
+
 import PathologyService, { TEST_STATUS } from '../../../../../services/PathologyService';
 
 const WorkFlowTable = ({
@@ -90,8 +92,7 @@ const WorkFlowTable = ({
                     </span>
                   </td>
                   <td className={getStatusClass(item.status)}>
-                    {new Date(item.labOrder.orderDate).toLocaleDateString()}{' '}
-                    {new Date(item.labOrder.orderDate).toLocaleTimeString()}
+                    {format(new Date(item.labOrder.orderDate), 'dd/MM/yyyy hh:mm')}
                   </td>
                   <td className={getStatusClass(item.status)}>
                     {item.service.headType || 'Lab Report'}

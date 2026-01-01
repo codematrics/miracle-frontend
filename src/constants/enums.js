@@ -241,7 +241,10 @@ export const AGE_UNITS = {
 export const VISIT_TYPE = {
   OPD: 'OPD',
   IPD: 'IPD',
-  EMERGENCY: 'Emergency',
+  EMG: 'EMG',
+  CAMP: 'Camp',
+  DAY_CARE: 'Day Care',
+  INVESTIGATION: 'Investigation',
 };
 
 export const INSURANCE_TYPE = {

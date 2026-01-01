@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Badge, Button, Card, Col, Dropdown, Form, InputGroup, Row, Table } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
+import { format } from 'date-fns';
+
 import RadiologyTemplateEditor from './modals/RadiologyTemplateEditor';
 
 const RadiologyWorkflow = () => {
@@ -107,7 +109,7 @@ const RadiologyWorkflow = () => {
     });
   };
 
-  const handleAccessionClick = (labTest) => {
+  const handleAccessionClick = labTest => {
     setSelectedLabTest(labTest);
     setShowTemplateEditor(true);
   };
@@ -119,7 +121,7 @@ const RadiologyWorkflow = () => {
     loadLabTests(1, true);
   };
 
-  const handlePrintReport = async (labTest) => {
+  const handlePrintReport = async labTest => {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/lab-test-orders/print-radiology?labTestOrderId=${labTest._id}`,
@@ -141,7 +143,7 @@ const RadiologyWorkflow = () => {
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
-        
+
         toast.success('Report downloaded successfully');
       } else {
         const errorData = await response.json();
@@ -331,7 +333,8 @@ const RadiologyWorkflow = () => {
                               </small>
                               <br />
                               <small className="text-muted">
-                                {labTest.patient?.contactNumber || 'N/A'} | {labTest.patient?.age || 'N/A'} | {labTest.patient?.gender || 'N/A'}
+                                {labTest.patient?.contactNumber || 'N/A'} |{' '}
+                                {labTest.patient?.age || 'N/A'} | {labTest.patient?.gender || 'N/A'}
                               </small>
                             </div>
                           </td>
@@ -358,16 +361,15 @@ const RadiologyWorkflow = () => {
                             </div>
                           </td>
                           <td>
-                            <Badge bg={getStatusVariant(labTest.status)} className="text-capitalize">
+                            <Badge
+                              bg={getStatusVariant(labTest.status)}
+                              className="text-capitalize"
+                            >
                               {labTest.status || 'Unknown'}
                             </Badge>
                           </td>
                           <td>
-                            <small>
-                              {new Date(labTest.createdAt).toLocaleDateString()}
-                              <br />
-                              {new Date(labTest.createdAt).toLocaleTimeString()}
-                            </small>
+                            <small>{format(new Date(labTest.createdAt), 'dd/MM/yyyy hh:mm')}</small>
                           </td>
                           <td>
                             <Dropdown>

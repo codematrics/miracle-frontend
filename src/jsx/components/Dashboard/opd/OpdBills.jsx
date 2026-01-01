@@ -69,8 +69,24 @@ export const opdBillSchema = Yup.object()
       .required('Paid Amount is required'),
     services: Yup.array().of(serviceSchema).min(1, 'At least one service is required'),
     billing: billingSchema,
+    mobileNumber: Yup.string().optional(),
+    referenceNumber: Yup.string().optional(),
   })
   // Custom validation for service amount = rate × quantity
+  .test('number-check', 'Fields must be numbers', data => {
+    //if card or upi is selected, reference number and mobile number is required
+    if (!data) return true;
+    if (!data.paymentMode === PAYMENT_MODES.CARD) {
+      if (!data.mobileNumber) return false;
+      if (!data.referenceNumber) return false;
+      return true;
+    }
+    if (!data.paymentMode === PAYMENT_MODES.UPI) {
+      if (!data.mobileNumber) return false;
+      if (!data.referenceNumber) return false;
+      return true;
+    }
+  })
   .test('service-amount-check', 'Service amounts must equal price × quantity', data => {
     if (!data || !data.services) return true;
     return data.services.every(s => s.amount === s.price * s.quantity);
@@ -218,6 +234,8 @@ const OpdBills = () => {
                 name: s?.serviceId?.serviceName,
                 serviceId: s.serviceId?._id,
               })),
+              mobileNumber: data?.mobileNumber,
+              referenceNumber: data?.referenceNumber,
               billing: data?.billing,
             }
           : initialOpdBillValues
@@ -377,8 +395,6 @@ const OpdBillForm = ({
         />
       </div>
 
-      {console.log(values)}
-
       {/* Services Table */}
       {values.services.length > 0 && (
         <Table bordered>
@@ -466,6 +482,28 @@ const OpdBillForm = ({
         ]}
         hideEmptyOption={true}
       />
+
+      {/* Reference Number and Mobile Number */}
+      {(values.paymentMode === PAYMENT_MODES.CARD || values.paymentMode === PAYMENT_MODES.UPI) && (
+        <>
+          <div className="row mb-4">
+            <FormField
+              name="referenceNumber"
+              label="Reference Number"
+              type="text"
+              required
+              className="col-md-6"
+            />
+            <FormField
+              name="mobileNumber"
+              label="Mobile Number"
+              type="text"
+              required
+              className="col-md-6"
+            />
+          </div>
+        </>
+      )}
 
       {/* Actions */}
       <div className="mt-4 d-flex gap-2">
