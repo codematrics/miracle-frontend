@@ -26,6 +26,8 @@ import ProductOrder from './components/AppsMenu/Shop/ProductOrder';
 import Doctor from './components/Dashboard/Doctor';
 import DoctorDetails from './components/Dashboard/DoctorDetails';
 import DoctorMaster from './components/Dashboard/Doctors/DoctorMaster';
+/// Charts
+import Collections from './components/Dashboard/Home.jsx';
 import WorkFlow from './components/Dashboard/Pathology/WorkFlow.jsx';
 import PatientDetails from './components/Dashboard/PatientDetails';
 import RadiologyTemplateMaster from './components/Dashboard/Radiology/RadiologyTemplateMaster';
@@ -56,7 +58,6 @@ import ParametersPage from './components/Dashboard/parameters/ParameterPage.jsx'
 import ReceptionistListing from './components/Dashboard/receptionists/ReceptionistsList.jsx';
 // Svg Icon
 import ServiceTypeListing from './components/Dashboard/service-type/ServiceTypeListing.jsx';
-/// Charts
 import TechniciansListing from './components/Dashboard/technicians/TechniciansList.jsx';
 import TestsPage from './components/Dashboard/tests/TestsPage.jsx';
 import WardListing from './components/Dashboard/wards/WardListing.jsx';
@@ -140,6 +141,7 @@ const Markup = () => {
     { url: 'wards', component: <WardListing /> },
     { url: 'service-types', component: <ServiceTypeListing /> },
     { url: 'appointments', component: <AppointmentListing /> },
+    { url: 'collections', component: <Collections /> },
 
     //Apps
     { url: 'app-profile', component: <AppProfile /> },

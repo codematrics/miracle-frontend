@@ -128,6 +128,17 @@ export const MenuList = {
         },
       ],
     },
+    {
+      title: 'Reports',
+      classsChange: 'mm-collapse',
+      iconStyle: <i className="fa fa-x-ray" />,
+      content: [
+        {
+          title: 'Collection',
+          to: 'collections',
+        },
+      ],
+    },
   ],
   Receptionist: [
     {

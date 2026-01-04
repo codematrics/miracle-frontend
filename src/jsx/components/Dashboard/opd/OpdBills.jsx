@@ -76,15 +76,9 @@ export const opdBillSchema = Yup.object()
   .test('number-check', 'Fields must be numbers', data => {
     //if card or upi is selected, reference number and mobile number is required
     if (!data) return true;
-    if (!data.paymentMode === PAYMENT_MODES.CARD) {
+    if (data.paymentMode === PAYMENT_MODES.CARD || data.paymentMode === PAYMENT_MODES.UPI) {
       if (!data.mobileNumber) return false;
       if (!data.referenceNumber) return false;
-      return true;
-    }
-    if (!data.paymentMode === PAYMENT_MODES.UPI) {
-      if (!data.mobileNumber) return false;
-      if (!data.referenceNumber) return false;
-      return true;
     }
   })
   .test('service-amount-check', 'Service amounts must equal price × quantity', data => {
@@ -95,7 +89,7 @@ export const opdBillSchema = Yup.object()
   .test('net-amount-check', 'Net amount must equal services total minus discount', data => {
     if (!data || !data.services || !data.billing) return true;
     const servicesTotal = data.services.reduce((sum, s) => sum + s.amount, 0);
-    const expectedNet = servicesTotal - (data.billing.discount || 0);
+    const expectedNet = Math.max(servicesTotal - (data.billing.discount || 0), 0);
     return Math.abs(data.billing.netAmount - expectedNet) < 0.01;
   })
   // Custom validation for paid ≤ net amount
@@ -138,9 +132,10 @@ const OpdBills = () => {
   };
 
   const recalcBilling = (values, setFieldValue) => {
-    const gross = values.services.reduce((sum, s) => sum + s.quantity * s.price, 0);
+    const gross = values.services?.reduce((sum, s) => sum + s.quantity * s.price, 0);
     const discount = values.billing.discount || 0;
     const net = gross - discount;
+    console.log(gross, discount, net, values.services);
 
     setFieldValue('billing.grossAmount', gross);
     setFieldValue('billing.netAmount', net >= 0 ? net : 0);
@@ -152,6 +147,7 @@ const OpdBills = () => {
 
   const handleSaveOpdBill = async (values, { setSubmitting, resetForm }) => {
     try {
+      console.log(values);
       const payload = {
         ...values,
         patient: values?.patient?.value,
@@ -396,7 +392,7 @@ const OpdBillForm = ({
       </div>
 
       {/* Services Table */}
-      {values.services.length > 0 && (
+      {values.services?.length > 0 && (
         <Table bordered>
           <thead>
             <tr>
