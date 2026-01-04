@@ -7,11 +7,11 @@ import { FieldArray, Form, Formik } from 'formik';
 import Swal from 'sweetalert2';
 import * as Yup from 'yup';
 
-import useDoctorAPI from '../../../../hooks/useDoctorAPI';
 import FormField from './components/FormField';
 
 export const prescriptionSchema = Yup.object({
   visitId: Yup.string().required('Visit is required'),
+
   medicines: Yup.array()
     .of(
       Yup.object({
@@ -23,6 +23,12 @@ export const prescriptionSchema = Yup.object({
       })
     )
     .min(1, 'At least one medicine is required'),
+
+  provisionalDiagnosis: Yup.string().nullable(),
+  finalDiagnosis: Yup.string().nullable(),
+  investigationAdvised: Yup.string().nullable(),
+  treatment: Yup.string().nullable(),
+
   notes: Yup.string().nullable(),
   followUpDate: Yup.date().nullable(),
 });
@@ -30,6 +36,12 @@ export const prescriptionSchema = Yup.object({
 export const initialPrescriptionValues = {
   visitId: '',
   medicines: [],
+
+  provisionalDiagnosis: '',
+  finalDiagnosis: '',
+  investigationAdvised: '',
+  treatment: '',
+
   notes: '',
   followUpDate: '',
 };
@@ -37,8 +49,6 @@ export const initialPrescriptionValues = {
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const CreatePrescriptionModal = ({ show, onHide, onPrescriptionCreated, visitId, patientId }) => {
-  const { loadDoctorOptions } = useDoctorAPI();
-
   const formikRef = useRef(null);
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
@@ -161,6 +171,32 @@ const CreatePrescriptionModal = ({ show, onHide, onPrescriptionCreated, visitId,
                   </div>
                 )}
               />
+
+              {/* Diagnosis & Treatment */}
+              <h6 className="mt-4">Diagnosis & Treatment</h6>
+
+              <div className="row">
+                <FormField
+                  name="provisionalDiagnosis"
+                  label="Provisional Diagnosis"
+                  className="col-md-6"
+                />
+
+                <FormField name="finalDiagnosis" label="Final Diagnosis" className="col-md-6" />
+
+                <FormField
+                  name="investigationAdvised"
+                  label="Investigation Advised"
+                  className="col-md-12 mt-2"
+                />
+
+                <FormField
+                  name="treatment"
+                  label="Treatment"
+                  as="textarea"
+                  className="col-md-12 mt-2"
+                />
+              </div>
 
               {/* Notes & Follow-up */}
               <div className="row mt-3">

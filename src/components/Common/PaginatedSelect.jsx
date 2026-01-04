@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AsyncPaginate } from 'react-select-async-paginate';
 
 import { useField, useFormikContext } from 'formik';
@@ -12,47 +12,52 @@ const PaginatedSelect = ({
   required = false,
   className = '',
   selectCallback,
-  dependentFetch, // 👈 { key: 'floor', value: { value, label } }
+  dependentFetch,
   ...props
 }) => {
   const [field, meta] = useField(name);
   const { setFieldValue } = useFormikContext();
-  const [inputValue, setInputValue] = useState('');
-  const [defaultOptions, setDefaultOptions] = useState([]); // 👈 use defaultOptions instead of options
-  const [componentKey, setComponentKey] = useState(Date.now()); // 👈 force re-render
 
-  const handleChange = selectedOption => {
-    if (props?.isMulti) {
-      setFieldValue(name, selectedOption || null);
-    } else {
-      setFieldValue(name, selectedOption || null);
-    }
-    if (selectCallback) selectCallback(selectedOption);
+  const [inputValue, setInputValue] = useState('');
+  const [defaultOptions, setDefaultOptions] = useState([]);
+  const [componentKey, setComponentKey] = useState(Date.now());
+
+  const prevDependentValue = useRef(null);
+
+  const handleChange = option => {
+    setFieldValue(name, option || null);
+    selectCallback?.(option);
   };
 
-  const value = field.value || (props?.isMulti ? [] : null);
+  const value = field.value || null;
 
-  // 👇 Refetch when dependent value changes
+  // ✅ Runs ONLY when serviceHead actually changes
   useEffect(() => {
-    const fetchDependentOptions = async () => {
-      if (dependentFetch?.key && dependentFetch?.value?.value) {
+    if (prevDependentValue.current === dependentFetch?.value) return;
+
+    prevDependentValue.current = dependentFetch?.value;
+
+    const fetchOptions = async () => {
+      if (dependentFetch?.key && dependentFetch?.value) {
         const res = await loadOptions('', [], {
-          [dependentFetch.key]: dependentFetch.value.value,
+          [dependentFetch.key]: dependentFetch.value,
+          page: 1,
         });
 
-        setDefaultOptions(res.options || []);
-        handleChange(null); // reset current selection
+        setDefaultOptions(res?.options || []);
       } else {
         setDefaultOptions([]);
       }
 
-      // Force re-render to clear AsyncPaginate internal cache
+      // ✅ reset serviceType when serviceHead changes
+      setFieldValue(name, null);
+
+      // ✅ clear AsyncPaginate internal cache
       setComponentKey(Date.now());
     };
 
-    fetchDependentOptions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dependentFetch?.value]);
+    fetchOptions();
+  }, [dependentFetch?.value, loadOptions, name, setFieldValue]);
 
   return (
     <div className={`form-group ${className}`}>
@@ -63,9 +68,9 @@ const PaginatedSelect = ({
       )}
 
       <AsyncPaginate
-        key={componentKey} // 👈 ensures re-render
-        debounceTimeout={300}
+        key={componentKey}
         loadOptions={loadOptions}
+        debounceTimeout={300}
         value={value}
         onChange={handleChange}
         inputValue={inputValue}
@@ -73,7 +78,7 @@ const PaginatedSelect = ({
         isClearable={isClearable}
         placeholder={placeholder}
         additional={{
-          ...(dependentFetch?.value ? { [dependentFetch.key]: dependentFetch.value.value } : {}),
+          ...(dependentFetch?.value ? { [dependentFetch.key]: dependentFetch.value } : {}),
           page: 1,
         }}
         defaultOptions={defaultOptions}

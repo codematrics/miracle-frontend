@@ -5,7 +5,9 @@ import { Form, Formik } from 'formik';
 import Swal from 'sweetalert2';
 import * as Yup from 'yup';
 
+import PaginatedSelect from '../../../../components/Common/PaginatedSelect';
 import { SERVICE_APPLICABLE, SERVICE_CATEGORY, SERVICE_HEADS } from '../../../../constants/enums';
+import serviceTypeAPIService from '../../../../services/ServiceTypeService';
 import { createService, updateService } from '../../../../services/ServicesService';
 import FormField from '../Reception/components/FormField';
 
@@ -53,6 +55,9 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
         serviceName: service.serviceName || '',
         unit: service.unit || '',
         headType: service.headType || '',
+        serviceType: service.serviceType
+          ? { value: service.serviceType?._id, name: service.serviceType?.name }
+          : '',
         serviceApplicableOn: service.serviceApplicableOn || '',
         price: service.price || '',
         isActive: service.isActive ?? true,
@@ -66,7 +71,10 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
     try {
       let response;
       if (isEditing) {
-        response = await updateService(service._id, values);
+        response = await updateService(service._id, {
+          ...values,
+          serviceType: values.serviceType.value,
+        });
       } else {
         response = await createService(values);
       }
@@ -117,9 +125,15 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
       >
         {({ isSubmitting, values, errors }) => (
           <Form>
-            {console.log(values, errors)}
             <Modal.Body className="px-4">
               <div className="row g-3">
+                <FormField
+                  type="select"
+                  name="headType"
+                  label="Head Type *"
+                  className="col-12 col-md-6"
+                  options={categoryOptions}
+                />
                 <FormField
                   name="serviceHead"
                   label="Service Head *"
@@ -130,15 +144,18 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
                   }))}
                   className="col-12 col-md-6"
                 />
+                <PaginatedSelect
+                  name="serviceType"
+                  label="Service Type *"
+                  loadOptions={serviceTypeAPIService.loadServiceTypeOptions}
+                  dependentFetch={{
+                    key: 'serviceHead',
+                    value: values.serviceHead || null, // ✅ primitive
+                  }}
+                />
+
                 <FormField name="serviceName" label="Service Name *" className="col-12 col-md-6" />
                 <FormField name="unit" label="Unit" className="col-12 col-md-6" />
-                <FormField
-                  type="select"
-                  name="headType"
-                  label="Head Type *"
-                  className="col-12 col-md-6"
-                  options={categoryOptions}
-                />
                 <FormField
                   type="select"
                   name="serviceApplicableOn"
@@ -146,7 +163,6 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
                   className="col-12 col-md-6"
                   options={applicableOptions}
                 />
-
                 <FormField name="price" label="Price *" type="number" className="col-12 col-md-6" />
                 <FormField
                   type="select"
@@ -158,7 +174,6 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
                     { label: 'Inactive', value: false },
                   ]}
                 />
-
                 <FormField
                   name="isOutSource"
                   label="Out Source *"

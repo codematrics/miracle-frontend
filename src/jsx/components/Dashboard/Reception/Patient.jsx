@@ -13,6 +13,7 @@ import '../../../casesheet.css';
 import CreatePatientModal from './CreatePatientModal.jsx';
 import CreateVisitModal from './CreateVisitModal.jsx';
 import CreatePrescriptionModal from './PrescriptionModal.jsx';
+import AddPrimaryExaminationModal from './PrimaryEaminationModal.jsx';
 
 // Status badge generator
 const getStatusComponent = status => {
@@ -57,6 +58,7 @@ const Patient = () => {
   const [openAddPatientModel, setOpenAddPatientModal] = useState(false);
   const [visitModal, setVisitModal] = useState(false);
   const [prescriptionModal, setPrescriptionModal] = useState(null);
+  const [primaryExamination, setPrimaryExamination] = useState(null);
   const [dateFilterModal, setDateFilterModal] = useState(false);
 
   const [visitsData, setVisitsData] = useState([]);
@@ -249,6 +251,17 @@ const Patient = () => {
                           </Dropdown.Item>
                           <Dropdown.Item
                             onClick={() =>
+                              setPrimaryExamination({
+                                visitId: visit._id,
+                                patientId: visit.patientId._id,
+                                patientGender: visit.patientId.gender,
+                              })
+                            }
+                          >
+                            Add Primary Examinations
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() =>
                               setPrescriptionModal({
                                 visitId: visit._id,
                                 patientId: visit.patientId._id,
@@ -314,13 +327,21 @@ const Patient = () => {
         onHide={() => setVisitModal(false)}
         onVisitCreated={handleVisitCreated}
       />
-      {console.log(prescriptionModal)}
+
       <CreatePrescriptionModal
         show={Boolean(prescriptionModal)}
         onHide={() => setPrescriptionModal(null)}
         visitId={prescriptionModal?.visitId}
         patientId={prescriptionModal?.patientId}
         onPrescriptionCreated={handlePrescriptionCreated}
+      />
+      <AddPrimaryExaminationModal
+        show={Boolean(primaryExamination)}
+        onHide={() => setPrimaryExamination(null)}
+        visitId={primaryExamination?.visitId}
+        patientId={primaryExamination?.patientId}
+        patientGender={primaryExamination?.patientGender}
+        onSaved={handlePrescriptionCreated}
       />
       {/* Date Filter Modal omitted for brevity, same as before */}
       {/* Prescription Modal omitted for brevity, same as before */}

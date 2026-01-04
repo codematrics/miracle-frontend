@@ -56,9 +56,9 @@ export const searchServices = async search => {
   }
 };
 
-export const loadServiceOptions = async (search = '', prevOptions, { page }) => {
+export const loadConsultancyServiceOptions = async (search = '', prevOptions, { page }) => {
   const response = await axios.get(`${API_URL}/services/dropdown-list`, {
-    params: { search, page, limit: 10 },
+    params: { search, page, limit: 10, isVisit: 'true' },
   });
 
   if (response.data?.status && response.data?.data) {

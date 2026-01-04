@@ -11,7 +11,7 @@ import PaginatedSelect from '../../../../components/Common/PaginatedSelect';
 import { INSURANCE_TYPE, VISIT_TYPE } from '../../../../constants/enums';
 import useDoctorAPI from '../../../../hooks/useDoctorAPI';
 import { loadPatientOptions } from '../../../../services/PatientsService';
-import { loadServiceOptions } from '../../../../services/ServicesService';
+import { loadConsultancyServiceOptions } from '../../../../services/ServicesService';
 import FormField from './components/FormField';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -355,7 +355,7 @@ const CreateVisitModal = ({ show, onHide, onVisitCreated }) => {
                   <div className="form-group">
                     <PaginatedSelect
                       name="services"
-                      loadOptions={loadServiceOptions}
+                      loadOptions={loadConsultancyServiceOptions}
                       placeholder="Search services..."
                       selectCallback={option => {
                         setSelectedServices(option);

@@ -150,7 +150,7 @@ const FormField = ({
     <div className={className}>
       <div className="form-group">
         {/* ✅ Don’t render external label for single checkbox, it has its own inline label */}
-        {!(type === 'checkbox') && (
+        {!(type === 'checkbox') && label && (
           <label className="text-black">
             {label} {required && <span className="text-danger">*</span>}
           </label>

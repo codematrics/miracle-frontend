@@ -54,9 +54,10 @@ import OPD from './components/Dashboard/opd/OpdListing.jsx';
 import ParametersPage from './components/Dashboard/parameters/ParameterPage.jsx';
 /// Table
 import ReceptionistListing from './components/Dashboard/receptionists/ReceptionistsList.jsx';
+// Svg Icon
+import ServiceTypeListing from './components/Dashboard/service-type/ServiceTypeListing.jsx';
 /// Charts
 import TechniciansListing from './components/Dashboard/technicians/TechniciansList.jsx';
-// Svg Icon
 import TestsPage from './components/Dashboard/tests/TestsPage.jsx';
 import WardListing from './components/Dashboard/wards/WardListing.jsx';
 import CkEditor from './components/Forms/CkEditor/CkEditor';
@@ -137,6 +138,7 @@ const Markup = () => {
     { url: 'beds', component: <BedListing /> },
     { url: 'floors', component: <FloorListing /> },
     { url: 'wards', component: <WardListing /> },
+    { url: 'service-types', component: <ServiceTypeListing /> },
     { url: 'appointments', component: <AppointmentListing /> },
 
     //Apps

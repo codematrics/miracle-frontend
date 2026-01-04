@@ -103,6 +103,10 @@ export const MenuList = {
           to: 'services',
         },
         {
+          title: 'Service Types',
+          to: 'service-types',
+        },
+        {
           title: 'Parameters',
           to: 'parameters',
         },
