@@ -192,8 +192,11 @@ const Patient = () => {
       </div>
 
       {/* Table */}
-      <div className="card-table dataTables_wrapper no-footer">
-        <div id="workflow_list" className="table-responsive">
+      <div
+        className="card-table dataTables_wrapper no-footer"
+        style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+      >
+        <div id="workflow_list" className="table-responsive" style={{ flexGrow: 1 }}>
           <table className="table table-striped no-footer display table-responsive-xl dataTable text-black">
             <thead>
               <tr>

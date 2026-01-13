@@ -7,8 +7,8 @@ import Swal from 'sweetalert2';
 import { SERVICE_HEADS } from '../../../../constants/enums';
 import { deleteService, fetchServicesWithPagination } from '../../../../services/ServicesService';
 import LinkParametersModal from './ParameterServiceLinkingModal';
-import RadiologyTemplateLinkModal from './modals/RadiologyTemplateLinkModal';
 import ServiceModal from './ServiceModal';
+import RadiologyTemplateLinkModal from './modals/RadiologyTemplateLinkModal';
 
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
@@ -23,6 +23,7 @@ const ServicesPage = () => {
     totalItems: 0,
     itemsPerPage: 10,
   });
+  console.log(pagination);
   const [filters, setFilters] = useState({
     search: '',
     serviceHead: '',
@@ -364,22 +365,26 @@ const ServicesPage = () => {
                                   <i className="fas fa-edit me-2 text-warning"></i>
                                   Edit
                                 </Dropdown.Item>
-                                <Dropdown.Item
-                                  onClick={() => handleLinkParameter(service)} // ✅ parameter linking option
-                                  className="d-flex align-items-center"
-                                >
-                                  <i className="fas fa-link me-2 text-primary"></i>
-                                  Link Parameters
-                                </Dropdown.Item>
-                                {service.headType && service.headType.toLowerCase() === 'radiology' && (
-                                  <Dropdown.Item
-                                    onClick={() => handleLinkTemplate(service)} // ✅ template linking option for radiology
-                                    className="d-flex align-items-center"
-                                  >
-                                    <i className="fas fa-file-medical me-2 text-success"></i>
-                                    Link Template
-                                  </Dropdown.Item>
-                                )}
+                                {service.headType &&
+                                  service.headType.toLowerCase() === 'pathology' && (
+                                    <Dropdown.Item
+                                      onClick={() => handleLinkParameter(service)} // ✅ parameter linking option
+                                      className="d-flex align-items-center"
+                                    >
+                                      <i className="fas fa-link me-2 text-primary"></i>
+                                      Link Parameters
+                                    </Dropdown.Item>
+                                  )}
+                                {service.headType &&
+                                  service.headType.toLowerCase() === 'radiology' && (
+                                    <Dropdown.Item
+                                      onClick={() => handleLinkTemplate(service)} // ✅ template linking option for radiology
+                                      className="d-flex align-items-center"
+                                    >
+                                      <i className="fas fa-file-medical me-2 text-success"></i>
+                                      Link Template
+                                    </Dropdown.Item>
+                                  )}
                                 <Dropdown.Divider />
                                 <Dropdown.Item
                                   onClick={() => handleDeleteService(service)}

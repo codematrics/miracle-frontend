@@ -17,6 +17,7 @@ const PaginatedSelect = ({
 }) => {
   const [field, meta] = useField(name);
   const { setFieldValue } = useFormikContext();
+  const isFirstRender = useRef(true);
 
   const [inputValue, setInputValue] = useState('');
   const [defaultOptions, setDefaultOptions] = useState([]);
@@ -30,9 +31,17 @@ const PaginatedSelect = ({
   };
 
   const value = field.value || null;
+  console.log(value);
 
-  // ✅ Runs ONLY when serviceHead actually changes
   useEffect(() => {
+    // ⛔ skip first render
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      prevDependentValue.current = dependentFetch?.value;
+      return;
+    }
+
+    // ⛔ no actual change
     if (prevDependentValue.current === dependentFetch?.value) return;
 
     prevDependentValue.current = dependentFetch?.value;
@@ -49,16 +58,15 @@ const PaginatedSelect = ({
         setDefaultOptions([]);
       }
 
-      // ✅ reset serviceType when serviceHead changes
+      // ✅ reset ONLY when dependency changes
       setFieldValue(name, null);
 
-      // ✅ clear AsyncPaginate internal cache
+      // clear AsyncPaginate cache
       setComponentKey(Date.now());
     };
 
     fetchOptions();
   }, [dependentFetch?.value, loadOptions, name, setFieldValue]);
-
   return (
     <div className={`form-group ${className}`}>
       {label && (

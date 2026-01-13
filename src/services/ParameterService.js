@@ -123,7 +123,7 @@ export const updateLabParameter = async (parameterId, parameterData) => {
  */
 export const deleteParameter = async parameterId => {
   try {
-    const response = await axios.delete(`${API_URL}/parameters/${parameterId}`);
+    const response = await axios.delete(`${API_URL}/lab-parameters/${parameterId}`);
     return response.data;
   } catch (error) {
     console.error('Error deleting parameter:', error);

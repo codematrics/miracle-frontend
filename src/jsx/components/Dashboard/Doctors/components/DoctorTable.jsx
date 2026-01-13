@@ -1,19 +1,7 @@
-import { Badge, Dropdown } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-const DoctorTable = ({
-  doctors,
-  loading,
-  pagination,
-  onEdit,
-  onDelete,
-  onPageChange,
-  currentPage,
-}) => {
-  const getStatusBadge = isActive => {
-    return <Badge bg={isActive ? 'success' : 'danger'}>{isActive ? 'Active' : 'Inactive'}</Badge>;
-  };
-
+const DoctorTable = ({ doctors, loading, pagination, onEdit, onDelete, onPageChange }) => {
   const formatAvailableDays = days => {
     if (!days || days.length === 0) return 'Not Set';
     return days.slice(0, 2).join(', ') + (days.length > 2 ? ` +${days.length - 2}` : '');
@@ -35,8 +23,11 @@ const DoctorTable = ({
   const paginationArray = Array.from({ length: pagination.totalPages || 1 }, (_, i) => i + 1);
 
   return (
-    <div className="card-table dataTables_wrapper no-footer">
-      <div className="table-responsive">
+    <div
+      className="card-table dataTables_wrapper no-footer"
+      style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+    >
+      <div className="table-responsive" style={{ flexGrow: 1 }}>
         <table className="dataTable text-black" style={{ width: '100%' }}>
           <thead>
             <tr>
@@ -137,8 +128,9 @@ const DoctorTable = ({
       {/* Pagination */}
       <div className="d-sm-flex text-center justify-content-between align-items-center">
         <div className="dataTables_info">
-          Showing {Math.min((currentPage - 1) * 10 + 1, pagination.total || 0)} to{' '}
-          {Math.min(currentPage * 10, pagination.total || 0)} of {pagination.total || 0} entries
+          Showing {Math.min((pagination.currentPage - 1) * 10 + 1, pagination.total || 0)} to{' '}
+          {Math.min(pagination.currentPage * 10, pagination.total || 0)} of {pagination.total || 0}{' '}
+          entries
         </div>
         <div className="dataTables_paginate paging_simple_numbers d-flex justify-content-center align-items-center pb-3">
           <Link
@@ -146,7 +138,7 @@ const DoctorTable = ({
             className={`paginate_button previous ${!pagination.hasPrev ? 'disabled' : ''}`}
             onClick={e => {
               e.preventDefault();
-              if (pagination.hasPrev) onPageChange(currentPage - 1);
+              if (pagination.hasPrev) onPageChange(pagination.currentPage - 1);
             }}
           >
             Previous
@@ -157,7 +149,7 @@ const DoctorTable = ({
                 key={number}
                 to="#"
                 className={`paginate_button d-flex align-items-center justify-content-center ${
-                  currentPage === number ? 'current' : ''
+                  pagination.currentPage === number ? 'current' : ''
                 } ${number > 1 ? 'ms-1' : ''}`}
                 onClick={e => {
                   e.preventDefault();
@@ -173,7 +165,7 @@ const DoctorTable = ({
             className={`paginate_button next ${!pagination.hasNext ? 'disabled' : ''}`}
             onClick={e => {
               e.preventDefault();
-              if (pagination.hasNext) onPageChange(currentPage + 1);
+              if (pagination.hasNext) onPageChange(pagination.currentPage + 1);
             }}
           >
             Next

@@ -16,6 +16,7 @@ const DoctorMaster = () => {
     totalItems: 0,
     limit: 10,
   });
+  console.log(pagination);
   const [showForm, setShowForm] = useState(false);
   const [editingDoctor, setEditingDoctor] = useState(null);
   const [filters, setFilters] = useState({

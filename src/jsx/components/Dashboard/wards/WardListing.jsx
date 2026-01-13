@@ -104,10 +104,7 @@ const WardListing = () => {
 
   return (
     <>
-      <div
-        className="form-head align-items-center d-flex mb-sm-4 mb-3"
-        style={{ minHeight: '100%' }}
-      >
+      <div className="form-head align-items-center d-flex mb-sm-4 mb-3">
         <div className="me-auto">
           <h2 className="text-black font-w600">Wards Management</h2>
         </div>
@@ -135,15 +132,13 @@ const WardListing = () => {
         </div>
       </div>
 
-      <div className="row">
-        <CommonTable
-          columns={columns}
-          data={data}
-          loading={loading}
-          pagination={pagination}
-          onPageChange={page => setPagination(prev => ({ ...prev, page }))}
-        />
-      </div>
+      <CommonTable
+        columns={columns}
+        data={data}
+        loading={loading}
+        pagination={pagination}
+        onPageChange={page => setPagination(prev => ({ ...prev, page }))}
+      />
 
       <WardCreateAndUpdate
         refetch={fetchData}

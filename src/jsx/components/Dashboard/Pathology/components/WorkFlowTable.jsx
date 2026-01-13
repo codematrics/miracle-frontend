@@ -39,8 +39,15 @@ const WorkFlowTable = ({
     .map((_, i) => i + 1);
 
   return (
-    <div className="card-table dataTables_wrapper no-footer">
-      <div id="workflow_list" className="table-responsive">
+    <div
+      className="card-table dataTables_wrapper no-footer"
+      style={{
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <div id="workflow_list" className="table-responsive" style={{ flexGrow: 1 }}>
         <table id="example5" className="dataTable text-black">
           <thead>
             <tr>
@@ -119,7 +126,6 @@ const WorkFlowTable = ({
           </tbody>
         </table>
       </div>
-
       <div className="d-sm-flex text-center justify-content-between align-items-center">
         <div className="dataTables_info" id="example5_info" role="status" aria-live="polite">
           Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}

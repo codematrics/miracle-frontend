@@ -56,7 +56,7 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
         unit: service.unit || '',
         headType: service.headType || '',
         serviceType: service.serviceType
-          ? { value: service.serviceType?._id, name: service.serviceType?.name }
+          ? { value: service.serviceType?._id, label: service.serviceType?.name }
           : '',
         serviceApplicableOn: service.serviceApplicableOn || '',
         price: service.price || '',
@@ -76,7 +76,10 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
           serviceType: values.serviceType.value,
         });
       } else {
-        response = await createService(values);
+        response = await createService({
+          ...values,
+          serviceType: values.serviceType.value,
+        });
       }
 
       if (response.status) {
@@ -150,7 +153,7 @@ const ServiceModal = ({ show, onHide, service = null, onServiceSaved }) => {
                   loadOptions={serviceTypeAPIService.loadServiceTypeOptions}
                   dependentFetch={{
                     key: 'serviceHead',
-                    value: values.serviceHead || null, // ✅ primitive
+                    value: values.serviceHead || null,
                   }}
                 />
 

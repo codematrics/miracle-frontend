@@ -306,21 +306,17 @@ const WorkFlow = ({ stage = 'collection' }) => {
         </div>
       </div>
 
-      <div className="row">
-        <div className="col-xl-12">
-          <WorkFlowTable
-            tableData={tableData}
-            loading={loading}
-            pagination={pagination}
-            onAccessionClick={handleAccessionClick}
-            stage={stage}
-            activePag={activePag}
-            onClick={onClick}
-            onPrevious={handlePrevious}
-            onNext={handleNext}
-          />
-        </div>
-      </div>
+      <WorkFlowTable
+        tableData={tableData}
+        loading={loading}
+        pagination={pagination}
+        onAccessionClick={handleAccessionClick}
+        stage={stage}
+        activePag={activePag}
+        onClick={onClick}
+        onPrevious={handlePrevious}
+        onNext={handleNext}
+      />
 
       <DateFilterModal
         show={dateFilterModal}

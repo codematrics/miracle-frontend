@@ -249,11 +249,19 @@ function MainLayout() {
       className={`show ${sidebariconHover ? 'iconhover-toggle' : ''} ${menuToggle ? 'menu-toggle' : ''}`}
     >
       <Nav />
-      <div className="content-body" style={{ minHeight: window.screen.height - 85 }}>
-        <div className="container-fluid">
+      <div
+        className="content-body"
+        style={{
+          minHeight: window.screen.height - 85,
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <Outlet />
         </div>
       </div>
+
       <Footer />
       <ToastContainer
         position="top-right"

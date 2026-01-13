@@ -50,8 +50,11 @@ const CommonTable = ({
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className="card-table dataTables_wrapper no-footer">
-      <div className="table-responsive">
+    <div
+      className="card-table dataTables_wrapper no-footer"
+      style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+    >
+      <div className="table-responsive" style={{ flexGrow: 1 }}>
         <table className="dataTable text-black" style={{ width: '100%' }}>
           <thead>
             <tr>

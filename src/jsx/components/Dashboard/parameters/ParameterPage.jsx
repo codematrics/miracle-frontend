@@ -104,7 +104,7 @@ const ParametersPage = () => {
     if (result.isConfirmed) {
       try {
         const response = await deleteParameter(param._id);
-        if (response.success) {
+        if (response.status) {
           Swal.fire('Deleted!', response.message || 'Parameter deleted successfully.', 'success');
           loadParameters(1, true);
         } else {
